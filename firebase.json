@@ -1,0 +1,14 @@
+{
+  "apphosting": [
+    {
+      "backendId": "outreach-agent",
+      "rootDir": "backend",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log"
+      ]
+    }
+  ]
+}
