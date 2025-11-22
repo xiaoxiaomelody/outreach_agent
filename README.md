@@ -1,182 +1,300 @@
-# Outreach Application
+# Outreach Agent
 
-Full-stack application with Firebase backend and frontend integration.
+AI-powered contact sourcing and outreach application with automated email personalization.
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 outreach_cloud_functions/
-├── backend/              # Backend API (Express + Firebase Admin SDK)
-│   ├── index.js         # Main server file
-│   ├── package.json     # Backend dependencies
-│   └── test-auth.js     # Authentication tests
-├── frontend/            # Frontend application
-│   └── src/
-│       ├── api/         # API integration
-│       ├── config/      # Firebase config
-│       └── pages/       # React pages
-├── firebase.json        # Firebase configuration
-├── apphosting.yaml      # Cloud Run settings
-├── README.md           # This file
-└── FRONTEND_INTEGRATION.md  # Frontend setup guide
+├── backend/                          # Backend API (Express + Firebase)
+│   ├── src/
+│   │   ├── services/                 # Business logic
+│   │   │   ├── hunter-direct.service.js         # Hunter.io API integration
+│   │   │   ├── hunter-with-summaries.service.js # Hunter + AI summaries
+│   │   │   └── openai.service.js                # OpenAI integration
+│   │   ├── controllers/              # Request handlers
+│   │   │   └── contact.controller.js
+│   │   ├── routes/                   # API routes
+│   │   │   └── contact.routes.js
+│   │   └── middleware/               # Express middleware
+│   ├── index.js                      # Main server
+│   ├── test-hunter-with-summaries.js # Test script
+│   ├── package.json
+│   └── .env                          # Environment variables (create this)
+│
+├── frontend/                         # React frontend
+│   ├── src/
+│   │   ├── api/                      # API client
+│   │   │   ├── backend.js
+│   │   │   └── hunter.js
+│   │   ├── components/               # React components
+│   │   │   ├── sourcing/             # Contact sourcing UI
+│   │   │   ├── email/                # Email drafting UI
+│   │   │   └── auth/                 # Authentication UI
+│   │   ├── pages/                    # Page components
+│   │   │   ├── Login.js
+│   │   │   └── Dashboard.js
+│   │   ├── config/                   # Configuration
+│   │   │   └── firebase.js
+│   │   └── index.js
+│   ├── package.json
+│   └── .env.local                    # Frontend env vars (create this)
+│
+├── PROJECT_FILE_STRUCTURE.md         # Detailed architecture guide
+├── backend/AI_SUMMARIES_GUIDE.md     # AI summaries documentation
+└── backend/ENVIRONMENT_VARIABLES.md  # Environment setup guide
 ```
 
-## Getting Started
+## 🚀 Quick Start
 
-### Backend Setup
+### Prerequisites
+- Node.js 18+
+- Firebase project
+- Hunter.io API key
+- OpenAI API key
+
+### 1. Backend Setup
 
 ```bash
+# Navigate to backend
 cd backend
+
+# Install dependencies
 npm install
+
+# Create .env file
+cat > .env << EOL
+PORT=8080
+HUNTER_API_KEY=your-hunter-api-key-here
+OPENAI_API_KEY=your-openai-api-key-here
+EOL
+
+# Start development server
 npm run dev
 ```
 
-The backend will run on `http://localhost:8080`
+Backend runs on `http://localhost:8080`
 
-### Frontend Setup
+### 2. Frontend Setup
 
-Your frontend is in a separate directory. See `FRONTEND_INTEGRATION.md` for complete setup instructions.
+```bash
+# Navigate to frontend
+cd frontend
 
-## Authentication Overview
+# Install dependencies
+npm install
 
-This application uses **Firebase Authentication** with ID token verification:
+# Create .env.local file
+cat > .env.local << EOL
+VITE_FIREBASE_API_KEY=your-firebase-api-key
+VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your-project-id
+VITE_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
+VITE_FIREBASE_APP_ID=your-app-id
+VITE_BACKEND_URL=http://localhost:8080
+EOL
 
-### Flow:
-1. **Frontend**: User signs in using Firebase Client SDK (email/password, Google, etc.)
-2. **Frontend**: Gets an ID token from Firebase: `await user.getIdToken()`
-3. **Frontend**: Sends the token in the `Authorization` header to backend
-4. **Backend**: Verifies the token using Firebase Admin SDK
-5. **Backend**: If valid, processes the request with the user's identity
-
-### You DON'T need a separate "login dataset"
-Firebase Authentication IS your user database. It securely stores:
-- User credentials (hashed passwords)
-- OAuth provider links (Google, Facebook, etc.)
-- User profiles (email, name, photo)
-
-## API Endpoints
-
-### Public Endpoints (No Auth Required)
-- `GET /api/hello` - Test endpoint
-- `GET /api/health` - Health check
-
-### Protected Endpoints (Require Authentication)
-- `GET /api/user/profile` - Get current user's profile
-- `PUT /api/user/profile` - Update current user's profile
-- `GET /api/data/:collection` - Get user's own data
-- `POST /api/data/:collection` - Create data (auto-adds userId)
-- `PUT /api/data/:collection/:id` - Update user's own data
-- `DELETE /api/data/:collection/:id` - Delete user's own data
-
-### Admin Endpoints
-- `POST /api/admin/users` - Create a new user account
-- `GET /api/admin/users/:uid` - Get user info by UID
-
-## Frontend Integration
-
-### Quick Example
-
-```javascript
-import { auth } from './firebase';
-
-// Get user token
-const user = auth.currentUser;
-const idToken = await user.getIdToken();
-
-// Make authenticated request
-const response = await fetch('http://localhost:8080/api/user/profile', {
-  headers: {
-    'Authorization': `Bearer ${idToken}`,
-    'Content-Type': 'application/json',
-  },
-});
-
-const data = await response.json();
+# Start development server
+npm run dev
 ```
 
-For complete frontend integration guide with React examples, see **[FRONTEND_INTEGRATION.md](./FRONTEND_INTEGRATION.md)**
+Frontend runs on `http://localhost:3000` (or similar)
 
-## Deployment
+### 3. Test the Integration
 
-### Deploy Backend to Cloud Run
+```bash
+cd backend
+node test-hunter-with-summaries.js
+```
 
+You'll see real contact data with AI-generated summaries!
+
+## 🔑 API Keys Setup
+
+### Hunter.io API Key
+1. Go to [https://hunter.io/api_keys](https://hunter.io/api_keys)
+2. Sign up or log in
+3. Copy your API key
+4. Add to `backend/.env`: `HUNTER_API_KEY=your-key-here`
+
+### OpenAI API Key
+1. Go to [https://platform.openai.com/api-keys](https://platform.openai.com/api-keys)
+2. Create a new API key
+3. Copy the key
+4. Add to `backend/.env`: `OPENAI_API_KEY=your-key-here`
+
+### Firebase Configuration
+1. Go to [Firebase Console](https://console.firebase.google.com)
+2. Create a new project or select existing
+3. Go to Project Settings → General
+4. Under "Your apps", add a web app
+5. Copy the config values to `frontend/.env.local`
+
+## ✨ Key Features
+
+- **AI-Powered Contact Search**: Find professionals using Hunter.io API
+- **Automated Summaries**: OpenAI generates professional summaries for each contact
+- **Smart Filtering**: Search by company, department, seniority
+- **Email Personalization**: AI drafts personalized emails based on contact info
+- **Firebase Authentication**: Secure user authentication
+- **Session Management**: Save and manage outreach campaigns
+
+## 📊 Example Usage
+
+### Find Contacts with AI Summaries
+
+```javascript
+// Backend API call
+const result = await hunterWithSummaries.domainSearchWithSummaries('stripe.com', {
+  limit: 10,
+  department: 'it'
+});
+
+// Returns contacts with AI summaries:
+{
+  name: "Joel Karacozoff",
+  email: "joel@stripe.com",
+  position: "Partnerships Director",
+  department: "management",
+  summary: "Joel Karacozoff is an executive-level Partnerships Director at Stripe..."
+  // ✨ AI-generated summary!
+}
+```
+
+## 🏗️ Architecture
+
+```
+User Input → React Frontend → Express Backend → Hunter.io API
+                                              → OpenAI API (summaries)
+                                              → Firebase (auth & storage)
+```
+
+## 📚 Documentation
+
+- **PROJECT_FILE_STRUCTURE.md** - Complete architecture and file structure guide
+- **backend/AI_SUMMARIES_GUIDE.md** - AI summary feature documentation
+- **backend/ENVIRONMENT_VARIABLES.md** - Environment configuration guide
+
+## 🧪 Testing
+
+### Test Contact Search with Summaries
+```bash
+cd backend
+node test-hunter-with-summaries.js
+```
+
+### Test Backend API
+```bash
+cd backend
+npm run dev
+
+# In another terminal
+curl http://localhost:8080/api/hello
+```
+
+## 💰 Cost Considerations
+
+- **Hunter.io**: $49-$399/month (based on plan)
+- **OpenAI**: ~$0.001-$0.002 per contact summary (very affordable!)
+- **Firebase**: Free tier available, scales as needed
+
+**Example**: Finding 10 contacts with summaries costs ~$0.01-$0.02 in OpenAI fees.
+
+## 🔒 Security
+
+- ✅ Firebase Authentication for user management
+- ✅ Protected API endpoints with token verification
+- ✅ API keys stored in environment variables (never committed)
+- ✅ CORS configuration for allowed origins
+- ✅ Input validation on all endpoints
+
+## 🚢 Deployment
+
+### Backend (Cloud Run)
 ```bash
 firebase deploy --only apphosting
 ```
 
-### Deploy Frontend
+### Frontend (Choose one)
+- Firebase Hosting: `firebase deploy --only hosting`
+- Vercel: `vercel deploy`
+- Netlify: `netlify deploy`
 
-Deploy your frontend to:
-- Firebase Hosting
-- Vercel
-- Netlify
-- Any static hosting service
+## 🛠️ Tech Stack
 
-## Security Best Practices
+**Frontend:**
+- React 18
+- Vite
+- Firebase Client SDK
+- React Router
 
-1. ✅ **Always verify tokens on the backend** - Never trust client-side claims
-2. ✅ **Use HTTPS in production** - Tokens should never be sent over HTTP
-3. ✅ **Don't log tokens** - They're sensitive credentials
-4. ✅ **Set up Firestore Security Rules** - Backend auth + Firestore rules = defense in depth
-5. ✅ **Implement rate limiting** - Prevent abuse
-6. ✅ **Use custom claims for roles** - Add admin/user roles to tokens
+**Backend:**
+- Node.js + Express
+- Firebase Admin SDK
+- Hunter.io API
+- OpenAI API
 
-## Token Expiration & Refresh
+## 📝 Environment Variables
 
-Firebase ID tokens expire after **1 hour**. The Firebase Client SDK automatically handles token refresh:
-
-```javascript
-// This automatically gets a fresh token if the old one expired
-const idToken = await user.getIdToken(); // force refresh: getIdToken(true)
-```
-
-## Testing
-
-### Test Backend
-
+### Backend (`backend/.env`)
 ```bash
-cd backend
-node test-auth.js
+PORT=8080
+HUNTER_API_KEY=your-hunter-api-key
+OPENAI_API_KEY=your-openai-api-key
 ```
 
-### Test with curl
-
+### Frontend (`frontend/.env.local`)
 ```bash
-# Public endpoint (no token needed)
-curl http://localhost:8080/api/hello
-
-# Protected endpoint (needs token)
-curl -H "Authorization: Bearer YOUR_ID_TOKEN" \
-     http://localhost:8080/api/user/profile
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_STORAGE_BUCKET=
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+VITE_FIREBASE_APP_ID=
+VITE_BACKEND_URL=http://localhost:8080
 ```
 
-## What You DON'T Need
+## 🆘 Troubleshooting
 
-❌ A separate login database - Firebase Auth handles this  
-❌ Password hashing/salting - Firebase does this securely  
-❌ Session management - Tokens handle this  
-❌ The client SDK code in your backend - Only use Admin SDK
+**"HUNTER_API_KEY is not set"**
+- Create `backend/.env` file
+- Add your Hunter.io API key
 
-## Documentation Files
+**"OPENAI_API_KEY is not set"**
+- Add your OpenAI API key to `backend/.env`
+- Get key from [https://platform.openai.com/api-keys](https://platform.openai.com/api-keys)
 
-- **README.md** (this file) - Project overview
-- **[FRONTEND_INTEGRATION.md](./FRONTEND_INTEGRATION.md)** - Complete frontend setup guide with examples
-- **[backend/README.md](./backend/README.md)** - Backend-specific documentation
+**CORS errors**
+- Update `allowedOrigins` in `backend/index.js`
+- Add your frontend URL
 
-## Next Steps
+**No contacts found**
+- Check your Hunter.io API quota
+- Try a well-known company (Google, Stripe, Microsoft)
 
-1. ✅ Backend authentication is set up
-2. ✅ Backend organized in `backend/` folder
-3. Add Firebase Auth to your frontend (see FRONTEND_INTEGRATION.md)
-4. Implement sign up/sign in UI
-5. Test authenticated API calls
-6. Set up custom claims for admin roles (if needed)
-7. Configure Firestore security rules
-8. Deploy to production
+## 📖 Next Steps
 
-## Support
+1. ✅ Set up environment variables
+2. ✅ Test backend with `node test-hunter-with-summaries.js`
+3. Build SourceInput component for contact search
+4. Build ContactCard component to display contacts with summaries
+5. Implement accept/reject workflow
+6. Add email template functionality
+7. Integrate Gmail API for sending
 
-For issues or questions:
-1. Check `FRONTEND_INTEGRATION.md` for frontend setup
-2. Check `backend/README.md` for backend details
-3. Review the code comments in `backend/index.js`
+## 🤝 Contributing
+
+Follow the architecture defined in `PROJECT_FILE_STRUCTURE.md`:
+- Use functional programming principles
+- Keep components small and focused
+- Write pure functions where possible
+- Add tests for new features
+
+## 📄 License
+
+MIT
+
+---
+
+**Built with ❤️ for efficient outreach automation**

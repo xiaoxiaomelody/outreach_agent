@@ -1,98 +1,30 @@
-// Backend - Firebase Admin SDK (server-side)
-const admin = require('firebase-admin');
+/**
+ * Outreach Agent Backend Server
+ * Express server with Firebase Admin SDK
+ */
+
+require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
+const { initializeFirebase, getFirestore } = require('./src/config/firebase');
+const corsMiddleware = require('./src/config/cors');
+const { PORT } = require('./src/config/constants');
 
-// Initialize Firebase Admin SDK
-// In production on Cloud Run, this automatically uses Application Default Credentials
-admin.initializeApp();
+// Initialize Firebase (skipped in DEV_MODE)
+initializeFirebase();
+const db = getFirestore(); // null in DEV_MODE
 
-const db = admin.firestore();
+// Initialize Express
 const app = express();
 
 // Middleware
-// CORS configuration - Update with your frontend URL after deployment
-const allowedOrigins = [
-  'http://localhost:3000',  // Local development
-  // Add your production frontend URL here after deployment:
-  // 'https://your-app.vercel.app',
-  // 'https://your-custom-domain.com',
-];
-
-app.use(cors({
-  origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps, Postman, or curl)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.warn(`CORS: Blocked request from origin: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true
-}));
-
+app.use(corsMiddleware);
 app.use(express.json());
 
 // ============================================
 // AUTHENTICATION MIDDLEWARE
 // ============================================
 
-// Middleware to verify Firebase ID token
-async function authenticateUser(req, res, next) {
-  try {
-    // Get the token from the Authorization header
-    const authHeader = req.headers.authorization;
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'No token provided' });
-    }
-
-    const idToken = authHeader.split('Bearer ')[1];
-    
-    // Verify the token with Firebase Admin SDK
-    const decodedToken = await admin.auth().verifyIdToken(idToken);
-    
-    // Attach user info to request object for use in route handlers
-    req.user = {
-      uid: decodedToken.uid,
-      email: decodedToken.email,
-      emailVerified: decodedToken.email_verified,
-      name: decodedToken.name,
-      picture: decodedToken.picture,
-    };
-    
-    next();
-  } catch (error) {
-    console.error('Token verification failed:', error);
-    return res.status(403).json({ error: 'Invalid or expired token' });
-  }
-}
-
-// Optional: Middleware that verifies token but doesn't require it
-async function optionalAuth(req, res, next) {
-  try {
-    const authHeader = req.headers.authorization;
-    
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const idToken = authHeader.split('Bearer ')[1];
-      const decodedToken = await admin.auth().verifyIdToken(idToken);
-      req.user = {
-        uid: decodedToken.uid,
-        email: decodedToken.email,
-        emailVerified: decodedToken.email_verified,
-        name: decodedToken.name,
-        picture: decodedToken.picture,
-      };
-    }
-  } catch (error) {
-    // Token is invalid, but we don't block the request
-    console.warn('Optional auth failed:', error.message);
-  }
-  next();
-}
+const { authenticateUser, optionalAuth } = require('./src/middleware/auth');
 
 // ============================================
 // PUBLIC ENDPOINTS (No Authentication Required)
@@ -110,6 +42,12 @@ app.get('/api/health', (req, res) => {
 // ============================================
 // PROTECTED ENDPOINTS (Authentication Required)
 // ============================================
+
+// Import routes
+const contactRoutes = require('./src/routes/contact.routes');
+
+// Register contact routes (protected)
+app.use('/api/contacts', authenticateUser, contactRoutes);
 
 // Get current user profile
 app.get('/api/user/profile', authenticateUser, async (req, res) => {
@@ -222,54 +160,11 @@ app.delete('/api/data/:collection/:id', authenticateUser, async (req, res) => {
 });
 
 // ============================================
-// ADMIN ENDPOINTS (Optional - for admin operations)
+// START SERVER
 // ============================================
 
-// Create a new user (admin only - requires custom claims check)
-app.post('/api/admin/users', authenticateUser, async (req, res) => {
-  try {
-    const { email, password, displayName } = req.body;
-    
-    // Create user with Firebase Admin SDK
-    const userRecord = await admin.auth().createUser({
-      email,
-      password,
-      displayName,
-      emailVerified: false,
-    });
-    
-    res.json({ 
-      message: 'User created successfully', 
-      uid: userRecord.uid,
-      email: userRecord.email,
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Get user by UID (admin only)
-app.get('/api/admin/users/:uid', authenticateUser, async (req, res) => {
-  try {
-    const { uid } = req.params;
-    const userRecord = await admin.auth().getUser(uid);
-    
-    res.json({
-      uid: userRecord.uid,
-      email: userRecord.email,
-      emailVerified: userRecord.emailVerified,
-      displayName: userRecord.displayName,
-      photoURL: userRecord.photoURL,
-      disabled: userRecord.disabled,
-      metadata: userRecord.metadata,
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-  console.log(`Backend server running on port ${PORT}`);
+  console.log(`✅ Outreach Agent Backend running on port ${PORT}`);
+  console.log(`📡 API available at http://localhost:${PORT}`);
 });
 
