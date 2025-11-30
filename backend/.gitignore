@@ -3,6 +3,8 @@ node_modules/
 firebase-debug.log
 firebase-debug.*.log
 serviceAccountKey.json
+firebase-service-account.json
+*-service-account.json
 .env
 .env.local
 

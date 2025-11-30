@@ -20,3 +20,6 @@ Thumbs.db
 # Service Account Keys (NEVER commit these!)
 serviceAccountKey.json
 *-serviceAccountKey.json
+firebase-service-account.json
+*-service-account.json
+**/firebase-service-account.json
