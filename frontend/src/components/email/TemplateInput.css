@@ -1,0 +1,111 @@
+.template-input-container {
+    margin-bottom: 1.5rem;
+}
+
+.template-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.template-header label {
+    font-weight: 600;
+    color: #333;
+    font-size: 1rem;
+}
+
+.btn-toggle-variables {
+    padding: 6px 12px;
+    background: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.btn-toggle-variables:hover {
+    background: #e0e0e0;
+}
+
+.variables-panel {
+    background: #f8f9ff;
+    border: 2px solid #667eea;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+}
+
+.variables-panel h4 {
+    margin: 0 0 12px 0;
+    color: #667eea;
+    font-size: 14px;
+}
+
+.variables-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.variable-chip {
+    padding: 8px 12px;
+    background: white;
+    border: 1px solid #667eea;
+    border-radius: 6px;
+    color: #667eea;
+    font-size: 13px;
+    font-family: 'Courier New', monospace;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.variable-chip:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.btn-example {
+    width: 100%;
+    padding: 8px;
+    background: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.btn-example:hover {
+    background: #45a049;
+}
+
+.template-textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    line-height: 1.6;
+    resize: vertical;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+.template-textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.template-hint {
+    font-size: 12px;
+    color: #999;
+    margin-top: 8px;
+}
+

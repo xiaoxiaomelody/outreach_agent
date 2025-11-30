@@ -14,20 +14,28 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080';
 export async function apiCall(endpoint, options = {}) {
   const user = auth.currentUser;
   
-  if (!user) {
-    throw new Error('User not authenticated. Please sign in.');
-  }
+  // Build headers - include auth token if user is logged in
+  const headers = {
+    ...options.headers,
+    'Content-Type': 'application/json',
+  };
   
-  // Get fresh ID token
-  const idToken = await user.getIdToken();
+  // Add Authorization header only if user exists
+  if (user) {
+    try {
+      const idToken = await user.getIdToken();
+      headers['Authorization'] = `Bearer ${idToken}`;
+    } catch (error) {
+      console.warn('Failed to get ID token:', error.message);
+      // Continue without auth - backend DEV_MODE will handle it
+    }
+  } else {
+    console.log('No user logged in - making request without auth (DEV_MODE should handle this)');
+  }
   
   const response = await fetch(`${BACKEND_URL}${endpoint}`, {
     ...options,
-    headers: {
-      ...options.headers,
-      'Authorization': `Bearer ${idToken}`,
-      'Content-Type': 'application/json',
-    },
+    headers,
   });
   
   if (!response.ok) {

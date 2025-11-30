@@ -33,7 +33,27 @@ async function authenticateUser(req, res, next) {
     }
 
     const idToken = authHeader.split('Bearer ')[1];
-    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    
+    // Check if Firebase Admin is properly initialized
+    if (!admin.apps.length) {
+      console.error('❌ Firebase Admin SDK not initialized');
+      return res.status(500).json({ error: 'Server configuration error' });
+    }
+    
+    let decodedToken;
+    try {
+      decodedToken = await admin.auth().verifyIdToken(idToken);
+    } catch (verifyError) {
+      // Provide more helpful error message
+      if (verifyError.message.includes('Project Id')) {
+        console.error('❌ Token verification failed: Firebase project not configured properly');
+        console.error('💡 Make sure FIREBASE_PROJECT_ID is set and Firebase is initialized with credentials');
+        return res.status(500).json({ 
+          error: 'Server configuration error: Firebase project not properly configured' 
+        });
+      }
+      throw verifyError; // Re-throw other errors
+    }
     
     req.user = {
       uid: decodedToken.uid,

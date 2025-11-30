@@ -216,7 +216,13 @@ Your response (JSON only):`;
  * @returns {Promise<Object>} Drafted email
  */
 const generatePersonalizedEmail = async (params) => {
-  const systemPrompt = `You are a professional email writer. Personalize email templates based on recipient information. Keep the tone professional but warm. Make specific references to the recipient's role and background.`;
+  const systemPrompt = `You are a professional email writer. Personalize email templates based on recipient information. Keep the tone professional but warm. Make specific references to the recipient's role and background. 
+
+IMPORTANT: 
+- Return ONLY the email body content (no subject line)
+- Do NOT include "Subject:" in your response
+- Format the email body as clean HTML or plain text
+- Use proper paragraph breaks and formatting`;
 
   const userPrompt = `Personalize this email template:
 
@@ -231,7 +237,7 @@ Recipient Information:
 
 Sender: ${params.senderName}
 
-Generate a personalized version of this email:`;
+Generate a personalized version of this email. Return ONLY the email body content (no subject line, no "Subject:" header):`;
 
   const result = await chatCompletion(systemPrompt, userPrompt, 'gpt-4o-mini');
   
@@ -275,11 +281,92 @@ Subject line:`;
   }
 };
 
+/**
+ * Parse natural language query and extract company domain
+ * @param {string} query - User's natural language input
+ * @returns {Promise<Object>} Parsed query with company domain and search parameters
+ */
+const parseContactSearchQuery = async (query) => {
+  const systemPrompt = `You are an intelligent assistant that parses natural language queries for finding business contacts.
+
+Extract the following information from the user's query:
+1. company: The company name or domain (convert to domain format like "google.com")
+2. count: Number of contacts to find (default: 10)
+3. role: Job role/title if specified
+4. department: Department if specified (e.g., "marketing", "engineering", "sales")
+5. seniority: Seniority level if specified (e.g., "executive", "senior", "junior")
+
+Return ONLY a JSON object with these fields. Omit fields that aren't mentioned.
+
+Examples:
+- "Find 5 engineers at Google" → {"company": "google.com", "count": 5, "role": "engineer"}
+- "Show me marketing people at Stripe" → {"company": "stripe.com", "department": "marketing"}
+- "Get 10 senior executives from Microsoft" → {"company": "microsoft.com", "count": 10, "seniority": "senior"}
+- "Find contacts at amazon.com" → {"company": "amazon.com"}`;
+
+  const userPrompt = `Parse this query and return JSON:
+"${query}"
+
+JSON:`;
+
+  const result = await chatCompletion(systemPrompt, userPrompt, 'gpt-4o-mini');
+  
+  if (result.success) {
+    try {
+      // Extract JSON from response (in case there's extra text)
+      let jsonText = result.data.trim();
+      const jsonMatch = jsonText.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        jsonText = jsonMatch[0];
+      }
+      
+      const parsed = JSON.parse(jsonText);
+      
+      // Validate that we at least have a company
+      if (!parsed.company) {
+        return {
+          success: false,
+          error: 'Could not identify a company from your query. Please specify a company name or domain.'
+        };
+      }
+      
+      // Ensure company is in domain format
+      if (!parsed.company.includes('.')) {
+        parsed.company = parsed.company.toLowerCase() + '.com';
+      }
+      
+      return {
+        success: true,
+        data: {
+          company: parsed.company,
+          count: parsed.count || 10,
+          role: parsed.role,
+          department: parsed.department,
+          seniority: parsed.seniority,
+          originalQuery: query
+        }
+      };
+    } catch (e) {
+      console.error('Failed to parse OpenAI response:', e);
+      return {
+        success: false,
+        error: 'Failed to understand your query. Please try rephrasing.'
+      };
+    }
+  } else {
+    return {
+      success: false,
+      error: result.error || 'Failed to process query'
+    };
+  }
+};
+
 module.exports = {
   chatCompletion,
   generateContactSummary,
   generateContactSummaries,
   extractSearchCriteria,
+  parseContactSearchQuery,
   generatePersonalizedEmail,
   generateSubjectLine,
   validateConfig

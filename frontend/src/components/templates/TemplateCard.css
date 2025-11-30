@@ -1,0 +1,81 @@
+.template-card {
+    background-color: #ffffff;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    min-width: 120px;
+}
+
+.template-card:hover {
+    border-color: #999;
+}
+
+.template-card.selected {
+    border-color: #333;
+    background-color: #f9f9f9;
+}
+
+.template-card.new-template {
+    border-style: dashed;
+}
+
+.template-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #333;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin: 0 auto 0.75rem;
+}
+
+.template-icon-placeholder {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 auto 0.75rem;
+}
+
+.template-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #333;
+    margin: 0;
+}
+
+.template-delete {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #999;
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+.template-delete:hover {
+    background-color: #ffebee;
+    color: #c62828;
+}
+

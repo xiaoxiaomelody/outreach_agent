@@ -2,6 +2,10 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import SearchPage from "./pages/SearchPage";
+import TemplatesPage from "./pages/TemplatesPage";
+import MyListPage from "./pages/MyListPage";
+import GmailConnection from "./pages/GmailConnection";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "./styles/App.css";
 
@@ -17,12 +21,45 @@ function App() {
                     {/* Public Route - Login */}
                     <Route path="/" element={<Login />} />
 
-                    {/* Protected Route - Dashboard */}
+                    {/* Protected Routes */}
+                    <Route
+                        path="/gmail-connection"
+                        element={
+                            <ProtectedRoute>
+                                <GmailConnection />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/search"
+                        element={
+                            <ProtectedRoute>
+                                <SearchPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/templates"
+                        element={
+                            <ProtectedRoute>
+                                <TemplatesPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/my-list"
+                        element={
+                            <ProtectedRoute>
+                                <MyListPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    {/* Legacy Dashboard route - redirect to search */}
                     <Route
                         path="/dashboard"
                         element={
                             <ProtectedRoute>
-                                <Dashboard />
+                                <SearchPage />
                             </ProtectedRoute>
                         }
                     />

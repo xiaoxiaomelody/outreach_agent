@@ -1,0 +1,63 @@
+.my-list-page {
+    min-height: 100vh;
+    background-color: #f9f9f9;
+}
+
+.my-list-page-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.list-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    justify-content: center;
+}
+
+.list-tab {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 20px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    background-color: #f5f5f5;
+    color: #666;
+    transition: all 0.2s;
+}
+
+.list-tab:hover {
+    background-color: #e0e0e0;
+}
+
+.list-tab.active {
+    background-color: #333;
+    color: white;
+}
+
+.list-content {
+    position: relative;
+}
+
+.list-table-container {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 1rem;
+    transition: width 0.3s;
+}
+
+.list-table-container.with-preview {
+    width: 60%;
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 2rem;
+}
+
+.loading {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+}
+

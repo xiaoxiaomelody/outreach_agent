@@ -2,11 +2,17 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { logOut, getCurrentUser } from "../config/authUtils";
 import hunterApi from "../api/hunter";
+import gmailApi from "../api/gmail";
+import nlpSearchApi from "../api/nlpSearch";
+import GmailConnectButton from "../components/email/GmailConnectButton";
+import TemplateInput from "../components/email/TemplateInput";
+import EmailDraftCard from "../components/email/EmailDraftCard";
+import ChatSearch from "../components/search/ChatSearch";
 import "../styles/Dashboard.css";
 
 /**
  * Dashboard Component
- * Outreach Agent - Contact sourcing and email management
+ * Outreach Agent - Contact sourcing, email drafting, and sending
  */
 const Dashboard = () => {
     const [user, setUser] = useState(null);
@@ -14,9 +20,15 @@ const Dashboard = () => {
     const [searchLoading, setSearchLoading] = useState(false);
     const [contacts, setContacts] = useState([]);
     const [acceptedContacts, setAcceptedContacts] = useState([]);
-    const [companyDomain, setCompanyDomain] = useState("");
-    const [searchLimit, setSearchLimit] = useState(10);
     const [error, setError] = useState(null);
+    
+    // Gmail & Email state
+    const [gmailConnected, setGmailConnected] = useState(false);
+    const [emailTemplate, setEmailTemplate] = useState("");
+    const [draftedEmails, setDraftedEmails] = useState({});
+    const [isDrafting, setIsDrafting] = useState(false);
+    const [draftingError, setDraftingError] = useState(null);
+    
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -52,71 +64,231 @@ const Dashboard = () => {
     };
 
     /**
-     * Search for contacts at a company
+     * Handle NLP search query
      */
-    const handleSearch = async (e) => {
-        e.preventDefault();
-        
-        if (!companyDomain.trim()) {
-            setError("Please enter a company domain");
-            return;
-        }
-
+    const handleNLPSearch = async (query) => {
         setSearchLoading(true);
         setError(null);
         setContacts([]);
 
         try {
-            // Note: This would call your backend which uses hunter-with-summaries service
-            // You'll need to create the backend endpoint that returns contacts with AI summaries
-            const result = await hunterApi.findCompanyContacts(companyDomain, searchLimit);
+            const result = await nlpSearchApi.nlpSearch(query);
 
             if (result.success && result.data) {
-                // Extract contacts from the response
-                const contactData = result.data.contacts || result.data.data?.contacts || [];
-                setContacts(contactData);
+                const contactData = result.data.contacts || [];
+                console.log('📊 Received contact data:', contactData);
+                console.log('📊 Sample contact structure:', contactData[0]);
                 
-                if (contactData.length === 0) {
-                    setError(`No contacts found for ${companyDomain}. Try another company.`);
+                // Validate contacts data before setting
+                const validContacts = contactData.filter(contact => {
+                    if (!contact) {
+                        console.warn('Skipping null/undefined contact');
+                        return false;
+                    }
+                    if (!contact.first_name && !contact.last_name && !contact.name) {
+                        console.warn('Skipping contact with no name:', contact);
+                        return false;
+                    }
+                    return true;
+                });
+
+                console.log(`Setting ${validContacts.length} valid contacts out of ${contactData.length} total`);
+                setContacts(validContacts);
+                
+                if (validContacts.length === 0) {
+                    setError(`No valid contacts found for your query. Try a different search.`);
                 }
+                
+                return result; // Return result for chat component
             } else {
                 setError(result.error || "Failed to search contacts. Make sure backend is running.");
+                return result;
             }
         } catch (err) {
-            console.error("Search error:", err);
+            console.error("NLP Search error:", err);
             setError("Error connecting to backend. Is your server running on port 8080?");
+            return { 
+                success: false, 
+                error: "Connection error. Please check your backend server." 
+            };
         } finally {
             setSearchLoading(false);
         }
     };
 
+
     /**
      * Accept a contact - move to accepted list
      */
     const handleAccept = (contact) => {
-        setContacts(contacts.filter(c => c.email !== contact.email));
-        setAcceptedContacts([...acceptedContacts, { ...contact, status: 'accepted' }]);
+        // Use 'value' field (email) as identifier from Hunter API
+        const email = contact.value || contact.email;
+        setContacts(contacts.filter(c => (c.value || c.email) !== email));
+        setAcceptedContacts([...acceptedContacts, { ...contact, email, status: 'accepted' }]);
     };
 
     /**
      * Reject a contact - remove from list
      */
     const handleReject = (contact) => {
-        setContacts(contacts.filter(c => c.email !== contact.email));
+        const email = contact.value || contact.email;
+        setContacts(contacts.filter(c => (c.value || c.email) !== email));
     };
 
     /**
      * Remove from accepted list
      */
-    const handleRemoveAccepted = (contact) => {
-        setAcceptedContacts(acceptedContacts.filter(c => c.email !== contact.email));
+    const handleRemoveAccepted = (email) => {
+        setAcceptedContacts(acceptedContacts.filter(c => c.email !== email && c.value !== email));
+        // Also remove from drafted emails
+        const newDrafted = { ...draftedEmails };
+        delete newDrafted[email];
+        setDraftedEmails(newDrafted);
+    };
+
+
+    /**
+     * Handle Gmail status change
+     */
+    const handleGmailStatusChange = (connected) => {
+        setGmailConnected(connected);
     };
 
     /**
-     * Try example search
+     * Draft emails for all accepted contacts
      */
-    const tryExample = (domain) => {
-        setCompanyDomain(domain);
+    const handleDraftEmails = async () => {
+        if (!emailTemplate.trim()) {
+            setDraftingError("Please enter an email template first");
+            return;
+        }
+
+        if (acceptedContacts.length === 0) {
+            setDraftingError("Please accept some contacts first");
+            return;
+        }
+
+        setIsDrafting(true);
+        setDraftingError(null);
+
+        const newDrafted = {};
+        
+        try {
+            for (const contact of acceptedContacts) {
+                const email = contact.value || contact.email;
+                const fullName = `${contact.first_name} ${contact.last_name}`;
+                
+                const result = await gmailApi.draftEmail({
+                    recipientName: fullName,
+                    recipientEmail: email,
+                    recipientPosition: contact.position,
+                    recipientCompany: contact.company,
+                    recipientSummary: contact.summary || `${fullName} works as ${contact.position} at ${contact.company}`,
+                    template: emailTemplate,
+                    senderName: user?.displayName || user?.email || 'Outreach Agent'
+                });
+
+                if (result.success) {
+                    newDrafted[email] = result.data;
+                } else {
+                    console.error(`Failed to draft email for ${email}:`, result.error);
+                }
+
+                // Small delay to avoid rate limits
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+
+            setDraftedEmails(newDrafted);
+            console.log(`✅ Drafted ${Object.keys(newDrafted).length} emails`);
+        } catch (err) {
+            console.error("Drafting error:", err);
+            setDraftingError("Failed to draft emails: " + err.message);
+        } finally {
+            setIsDrafting(false);
+        }
+    };
+
+    /**
+     * Send a single email
+     */
+    const handleSendEmail = async (contact, draftedEmail) => {
+        console.log('📧 [FRONTEND] Send email button clicked');
+        console.log('📧 [FRONTEND] Gmail connected status:', gmailConnected);
+        console.log('📧 [FRONTEND] Email data:', {
+            to: draftedEmail.to,
+            subject: draftedEmail.subject?.substring(0, 50),
+            hasBody: !!draftedEmail.body
+        });
+
+        if (!gmailConnected) {
+            console.warn('⚠️ [FRONTEND] Gmail not connected, aborting send');
+            alert("⚠️ Please connect your Gmail account first using the 'Connect Gmail' button.");
+            return;
+        }
+
+        try {
+            console.log('📧 [FRONTEND] Calling gmailApi.sendEmail...');
+            const result = await gmailApi.sendEmail({
+                to: draftedEmail.to,
+                subject: draftedEmail.subject,
+                body: draftedEmail.body,
+                fromName: user?.displayName || user?.email || 'Outreach Agent'
+            });
+
+            console.log('📧 [FRONTEND] Send email result:', result);
+
+            if (result.success) {
+                console.log('✅ [FRONTEND] Email sent successfully!');
+                alert(`✅ Email sent successfully to ${draftedEmail.to}!`);
+                return result;
+            } else {
+                const errorMsg = result.error || 'Failed to send email';
+                console.error('❌ [FRONTEND] Send email error:', errorMsg);
+                throw new Error(errorMsg);
+            }
+        } catch (err) {
+            console.error('❌ [FRONTEND] Send email exception:', err);
+            const errorMsg = err.message || 'Failed to send email. Please check your Gmail connection.';
+            throw new Error(errorMsg);
+        }
+    };
+
+    /**
+     * Send all drafted emails (batch)
+     */
+    const handleSendAllEmails = async () => {
+        if (!gmailConnected) {
+            alert("Please connect your Gmail account first");
+            return;
+        }
+
+        if (Object.keys(draftedEmails).length === 0) {
+            alert("No drafted emails to send");
+            return;
+        }
+
+        if (!confirm(`Send ${Object.keys(draftedEmails).length} emails? This action cannot be undone.`)) {
+            return;
+        }
+
+        try {
+            const emails = Object.values(draftedEmails).map(draft => ({
+                to: draft.to,
+                subject: draft.subject,
+                body: draft.body,
+                fromName: user?.displayName || user?.email || 'Outreach Agent'
+            }));
+
+            const result = await gmailApi.batchSendEmails(emails);
+
+            if (result.success) {
+                alert(`✅ Batch send complete! ${result.data.successful}/${result.data.total} emails sent`);
+            } else {
+                alert(`⚠️ Batch send failed: ${result.error}`);
+            }
+        } catch (err) {
+            alert(`❌ Error sending emails: ${err.message}`);
+        }
     };
 
     if (loading) {
@@ -131,6 +303,8 @@ const Dashboard = () => {
         return null;
     }
 
+    const draftedEmailsCount = Object.keys(draftedEmails).length;
+
     return (
         <div className="dashboard-container">
             {/* Header */}
@@ -139,66 +313,24 @@ const Dashboard = () => {
                     <h1>🎯 Outreach Agent</h1>
                     <div className="header-right">
                         <span className="user-email">{user.email}</span>
-                        <button onClick={handleLogout} className="btn btn-logout">
-                            Logout
-                        </button>
+                    <button onClick={handleLogout} className="btn btn-logout">
+                        Logout
+                    </button>
                     </div>
                 </div>
             </div>
 
             <div className="dashboard-content">
-                {/* Search Section */}
+                {/* NLP Chat Search Section */}
                 <div className="search-section">
-                    <form onSubmit={handleSearch} className="search-form">
-                        <div className="form-group">
-                            <label>🏢 Company Domain</label>
-                            <input
-                                type="text"
-                                value={companyDomain}
-                                onChange={(e) => setCompanyDomain(e.target.value)}
-                                placeholder="e.g., stripe.com, google.com"
-                                className="search-input"
-                                disabled={searchLoading}
-                            />
-                        </div>
-                        <div className="form-group-small">
-                            <label>📊 Limit</label>
-                            <select 
-                                value={searchLimit} 
-                                onChange={(e) => setSearchLimit(Number(e.target.value))}
-                                disabled={searchLoading}
-                                className="search-select"
-                            >
-                                <option value={5}>5</option>
-                                <option value={10}>10</option>
-                                <option value={15}>15</option>
-                                <option value={20}>20</option>
-                            </select>
-                        </div>
-                        <button 
-                            type="submit" 
-                            className="btn btn-search"
-                            disabled={searchLoading}
-                        >
-                            {searchLoading ? "🔍 Searching..." : "🔍 Find Contacts"}
-                        </button>
-                    </form>
-
-                    <div className="examples">
-                        <span>Try: </span>
-                        <button onClick={() => tryExample("stripe.com")} className="example-btn">
-                            Stripe
-                        </button>
-                        <button onClick={() => tryExample("google.com")} className="example-btn">
-                            Google
-                        </button>
-                        <button onClick={() => tryExample("microsoft.com")} className="example-btn">
-                            Microsoft
-                        </button>
-                    </div>
-
+                    <h2 className="section-title">🤖 Ask me to find contacts</h2>
+                    <ChatSearch 
+                        onSearch={handleNLPSearch}
+                        isSearching={searchLoading}
+                    />
+                    
                     {error && (
-                        <div className="error-message">
+                        <div className="error-message" style={{ marginTop: '1rem' }}>
                             ⚠️ {error}
                         </div>
                     )}
@@ -226,35 +358,99 @@ const Dashboard = () => {
                         <div className="contacts-grid">
                             {contacts.map((contact, index) => (
                                 <ContactCard
-                                    key={contact.email || index}
+                                    key={contact.value || contact.email || index}
                                     contact={contact}
                                     onAccept={handleAccept}
                                     onReject={handleReject}
                                 />
                             ))}
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Right: Accepted Contacts */}
-                    <div className="accepted-section">
-                        <h2>✅ Accepted Contacts ({acceptedContacts.length})</h2>
+                    {/* Right: Email Management */}
+                    <div className="email-management-section">
+                        <h2>✅ Accepted Contacts & Email ({acceptedContacts.length})</h2>
                         
+                        {/* Gmail Connection */}
+                        <GmailConnectButton onStatusChange={handleGmailStatusChange} />
+                        
+                        {/* Email Template */}
+                        <TemplateInput 
+                            value={emailTemplate}
+                            onTemplateChange={setEmailTemplate}
+                        />
+
+                        {/* Draft Button */}
+                        {acceptedContacts.length > 0 && emailTemplate.trim() && (
+                            <button
+                                onClick={handleDraftEmails}
+                                disabled={isDrafting}
+                                className="btn btn-draft-all"
+                            >
+                                {isDrafting ? '✨ Drafting Emails...' : `✨ Draft ${acceptedContacts.length} Email${acceptedContacts.length > 1 ? 's' : ''}`}
+                            </button>
+                        )}
+
+                        {draftingError && (
+                            <div className="error-message">{draftingError}</div>
+                        )}
+
+                        {/* Accepted Contacts List */}
                         {acceptedContacts.length === 0 && (
                             <div className="empty-state">
                                 <p>📬 No contacts accepted yet</p>
                                 <p className="hint">Click "Accept" on contacts to add them here</p>
-                            </div>
+                    </div>
+                )}
+
+                        {/* Drafted Emails */}
+                        {draftedEmailsCount > 0 && (
+                            <>
+                                <div className="drafted-emails-header">
+                                    <h3>📝 Drafted Emails ({draftedEmailsCount})</h3>
+                                    {gmailConnected && (
+                                        <button
+                                            onClick={handleSendAllEmails}
+                                            className="btn btn-send-all"
+                                        >
+                                            📧 Send All ({draftedEmailsCount})
+                                        </button>
+                    )}
+                </div>
+
+                                <div className="drafted-emails-list">
+                                    {acceptedContacts.map((contact, index) => {
+                                        const email = contact.value || contact.email;
+                                        const draft = draftedEmails[email];
+                                        
+                                        if (!draft) return null;
+
+                                        return (
+                                            <EmailDraftCard
+                                                key={email || index}
+                                                contact={contact}
+                                                draftedEmail={draft}
+                                                onSend={handleSendEmail}
+                                                onRemove={handleRemoveAccepted}
+                                            />
+                                        );
+                                    })}
+                        </div>
+                            </>
                         )}
 
-                        <div className="accepted-list">
-                            {acceptedContacts.map((contact, index) => (
-                                <AcceptedContactCard
-                                    key={contact.email || index}
-                                    contact={contact}
-                                    onRemove={handleRemoveAccepted}
-                                />
-                            ))}
+                        {/* Show accepted contacts without drafts */}
+                        {acceptedContacts.length > 0 && draftedEmailsCount === 0 && (
+                            <div className="accepted-list">
+                                {acceptedContacts.map((contact, index) => (
+                                    <AcceptedContactCard
+                                        key={contact.value || contact.email || index}
+                                        contact={contact}
+                                        onRemove={handleRemoveAccepted}
+                                    />
+                                ))}
                         </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -267,18 +463,28 @@ const Dashboard = () => {
  * Displays individual contact with AI summary and actions
  */
 const ContactCard = ({ contact, onAccept, onReject }) => {
+    // Defensive checks to prevent crashes
+    if (!contact) {
+        console.error('ContactCard received null/undefined contact');
+        return null;
+    }
+
+    const fullName = `${contact.first_name || ''} ${contact.last_name || ''}`.trim() || 'Unknown';
+    const email = contact.value || contact.email || 'No email';
+    const isVerified = contact.verification?.status === 'valid';
+
     return (
         <div className="contact-card">
             <div className="contact-header">
-                <h3>{contact.name || "Unknown"}</h3>
-                {contact.verified && <span className="verified-badge">✓ Verified</span>}
+                <h3>{fullName}</h3>
+                {isVerified && <span className="verified-badge">✓ Verified</span>}
             </div>
 
             <div className="contact-body">
                 <div className="contact-info">
                     <div className="info-row">
                         <span className="label">📧 Email:</span>
-                        <span className="value email">{contact.email}</span>
+                        <span className="value email">{email}</span>
                     </div>
                     <div className="info-row">
                         <span className="label">💼 Position:</span>
@@ -296,8 +502,8 @@ const ContactCard = ({ contact, onAccept, onReject }) => {
                     )}
                     {contact.seniority && (
                         <div className="info-row">
-                            <span className="label">⭐ Level:</span>
-                            <span className="value capitalize">{contact.seniority}</span>
+                            <span className="label">⭐ Seniority:</span>
+                            <span className="value">{contact.seniority}</span>
                         </div>
                     )}
                     {contact.linkedin && (
@@ -307,7 +513,7 @@ const ContactCard = ({ contact, onAccept, onReject }) => {
                                 href={contact.linkedin} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                className="value link"
+                                className="value linkedin"
                             >
                                 View Profile
                             </a>
@@ -315,42 +521,38 @@ const ContactCard = ({ contact, onAccept, onReject }) => {
                     )}
                 </div>
 
-                {/* AI-Generated Summary */}
+                {/* AI Summary */}
                 {contact.summary && (
-                    <div className="contact-summary">
-                        <div className="summary-header">
-                            <span className="summary-label">✨ AI Summary</span>
-                            {contact.summaryGenerated && (
-                                <span className="ai-badge">AI Generated</span>
-                            )}
-                        </div>
-                        <p className="summary-text">{contact.summary}</p>
+                    <div className="ai-summary">
+                        <strong>🤖 AI Summary:</strong>
+                        <p>{contact.summary}</p>
                     </div>
                 )}
 
+                {/* Confidence Score */}
                 {contact.confidence && (
-                    <div className="confidence-bar">
-                        <span className="confidence-label">Confidence: {contact.confidence}%</span>
-                        <div className="confidence-progress">
-                            <div 
-                                className="confidence-fill" 
-                                style={{ width: `${contact.confidence}%` }}
-                            ></div>
-                        </div>
+                    <div className="confidence-bar-container">
+                        <div 
+                            className="confidence-bar"
+                            style={{ width: `${contact.confidence}%` }}
+                        ></div>
+                        <span className="confidence-text">
+                            Confidence: {contact.confidence}%
+                        </span>
                     </div>
                 )}
             </div>
 
             <div className="contact-actions">
                 <button 
+                    onClick={() => onAccept(contact)} 
                     className="btn btn-accept"
-                    onClick={() => onAccept(contact)}
                 >
                     ✓ Accept
                 </button>
                 <button 
+                    onClick={() => onReject(contact)} 
                     className="btn btn-reject"
-                    onClick={() => onReject(contact)}
                 >
                     ✕ Reject
                 </button>
@@ -360,29 +562,33 @@ const ContactCard = ({ contact, onAccept, onReject }) => {
 };
 
 /**
- * Accepted Contact Card Component
- * Displays accepted contacts in the right panel
+ * Accepted Contact Card Component (Simple version for non-drafted contacts)
  */
 const AcceptedContactCard = ({ contact, onRemove }) => {
+    // Defensive checks
+    if (!contact) {
+        console.error('AcceptedContactCard received null/undefined contact');
+        return null;
+    }
+
+    const fullName = `${contact.first_name || ''} ${contact.last_name || ''}`.trim() || 'Unknown';
+    const email = contact.value || contact.email || 'No email';
+
     return (
         <div className="accepted-contact-card">
-            <div className="accepted-header">
-                <div>
-                    <h4>{contact.name}</h4>
-                    <p className="accepted-position">{contact.position}</p>
-                </div>
-                <button 
-                    className="btn btn-remove"
-                    onClick={() => onRemove(contact)}
-                    title="Remove from list"
-                >
-                    ✕
-                </button>
+            <div className="accepted-contact-info">
+                <h4>{fullName}</h4>
+                <p className="contact-email">{email}</p>
+                <p className="contact-company">
+                    {contact.position || 'Position N/A'} at {contact.company || 'Company N/A'}
+                </p>
             </div>
-            <div className="accepted-email">{contact.email}</div>
-            {contact.summary && (
-                <p className="accepted-summary">{contact.summary}</p>
-            )}
+            <button
+                onClick={() => onRemove(email)}
+                className="btn btn-remove-small"
+            >
+                Remove
+            </button>
         </div>
     );
 };

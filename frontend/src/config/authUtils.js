@@ -6,6 +6,8 @@ import {
     signInWithEmailAndPassword,
     signOut,
     onAuthStateChanged,
+    GoogleAuthProvider,
+    signInWithPopup,
 } from "firebase/auth";
 import { auth } from "./firebase";
 
@@ -43,6 +45,25 @@ export const signInWithEmail = async (email, password) => {
         );
         return { success: true, user: userCredential.user };
     } catch (error) {
+        return { success: false, error: error.message };
+    }
+};
+
+/**
+ * Sign in with Google OAuth
+ * @returns {Promise} Google user credential
+ */
+export const signInWithGoogle = async () => {
+    try {
+        const provider = new GoogleAuthProvider();
+        // Add scopes for Gmail if needed later
+        provider.addScope('https://www.googleapis.com/auth/userinfo.email');
+        provider.addScope('https://www.googleapis.com/auth/userinfo.profile');
+        
+        const userCredential = await signInWithPopup(auth, provider);
+        return { success: true, user: userCredential.user };
+    } catch (error) {
+        console.error('Google sign-in error:', error);
         return { success: false, error: error.message };
     }
 };

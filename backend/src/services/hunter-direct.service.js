@@ -49,22 +49,25 @@ const domainSearch = async (domain, options = {}) => {
       timeout: 30000
     });
 
-    // Format the response
+    // Format the response - preserve Hunter.io's original field names
     const contacts = response.data.data.emails.map(email => ({
-      name: `${email.first_name} ${email.last_name}`,
-      firstName: email.first_name,
-      lastName: email.last_name,
-      email: email.value,
-      company: response.data.data.organization,
+      // Keep original Hunter.io snake_case fields for frontend compatibility
+      first_name: email.first_name,
+      last_name: email.last_name,
+      value: email.value, // This is Hunter's field name for email address
       position: email.position,
       department: email.department,
       seniority: email.seniority,
       linkedin: email.linkedin,
       twitter: email.twitter,
       confidence: email.confidence,
-      verified: email.verification?.status === 'valid',
-      verificationDate: email.verification?.date,
-      sources: email.sources
+      verification: email.verification,
+      sources: email.sources,
+      // Additional computed/aliased fields
+      name: `${email.first_name} ${email.last_name}`,
+      email: email.value, // Alias for convenience
+      company: response.data.data.organization,
+      verified: email.verification?.status === 'valid'
     }));
 
     return {

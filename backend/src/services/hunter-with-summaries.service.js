@@ -125,10 +125,29 @@ const naturalLanguageSearchWithSummaries = async (query) => {
   }
 };
 
+/**
+ * Alias functions for compatibility with controller naming
+ */
+const getCompanyContactsWithSummaries = async (domain, limit = 10) => {
+  return domainSearchWithSummaries(domain, { limit });
+};
+
+const getContactsByDepartmentWithSummaries = async (domain, department, limit = 10) => {
+  return searchByDepartmentWithSummaries(domain, department, limit);
+};
+
+const getContactsBySeniorityWithSummaries = async (domain, seniority, limit = 10) => {
+  return searchBySeniorityWithSummaries(domain, seniority, limit);
+};
+
 module.exports = {
   domainSearchWithSummaries,
   searchByDepartmentWithSummaries,
   searchBySeniorityWithSummaries,
-  naturalLanguageSearchWithSummaries
+  naturalLanguageSearchWithSummaries,
+  // Alias exports for controller compatibility
+  getCompanyContactsWithSummaries,
+  getContactsByDepartmentWithSummaries,
+  getContactsBySeniorityWithSummaries
 };
 

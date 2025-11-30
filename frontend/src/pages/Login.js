@@ -5,6 +5,7 @@ import {
     signUpWithEmail,
     demoLogin,
 } from "../config/authUtils";
+import GoogleSignInButton from "../components/auth/GoogleSignInButton";
 import "../styles/Login.css";
 
 /**
@@ -73,7 +74,13 @@ const Login = () => {
                         JSON.stringify(result.user)
                     );
                 }
-                navigate("/dashboard");
+                
+                // Both sign-up and sign-in redirect to Gmail connection page
+                // Mark if this is a new signup for auto-connect feature
+                if (isSignUp) {
+                    sessionStorage.setItem("isNewSignup", "true");
+                }
+                navigate("/gmail-connection");
             } else {
                 setError(result.error);
             }
@@ -96,91 +103,92 @@ const Login = () => {
     };
 
     return (
-        <div className="login-container">
-            <div className="login-card">
-                <div className="login-header">
-                    <h1>WeKruit</h1>
-                    <h2>{isSignUp ? "Create Account" : "Welcome Back"}</h2>
-                    <p>
-                        {isSignUp
-                            ? "Sign up to get started"
-                            : "Sign in to continue"}
-                    </p>
-                </div>
-
-                {error && <div className="error-message">{error}</div>}
-
-                <form onSubmit={handleSubmit} className="login-form">
-                    <div className="form-group">
-                        <label htmlFor="email">Email</label>
-                        <input
-                            type="email"
-                            id="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Enter your email"
-                            disabled={loading}
-                            required
-                        />
+        <div className="login-page">
+            <div className="login-container">
+                <div className="login-hero">
+                    <h1 className="login-title">Say hello to better networking.</h1>
+                    
+                    <div className="login-actions">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setIsSignUp(true);
+                                setError("");
+                            }}
+                            className={`action-btn ${isSignUp ? "primary" : "secondary"}`}>
+                            Sign up
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setIsSignUp(false);
+                                setError("");
+                            }}
+                            className={`action-btn ${!isSignUp ? "primary" : "secondary"}`}>
+                            Sign in
+                        </button>
                     </div>
 
-                    <div className="form-group">
-                        <label htmlFor="password">Password</label>
-                        <input
-                            type="password"
-                            id="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Enter your password"
-                            disabled={loading}
-                            required
-                        />
-                    </div>
+                    {error && <div className="error-message">{error}</div>}
 
-                    {isSignUp && (
+                    <form onSubmit={handleSubmit} className="login-form">
                         <div className="form-group">
-                            <label htmlFor="confirmPassword">
-                                Confirm Password
-                            </label>
                             <input
-                                type="password"
-                                id="confirmPassword"
-                                value={confirmPassword}
-                                onChange={(e) =>
-                                    setConfirmPassword(e.target.value)
-                                }
-                                placeholder="Confirm your password"
+                                type="email"
+                                id="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="Email"
                                 disabled={loading}
                                 required
                             />
                         </div>
-                    )}
 
-                    <button
-                        type="submit"
-                        className="btn btn-primary"
-                        disabled={loading}>
-                        {loading
-                            ? "Processing..."
-                            : isSignUp
-                            ? "Sign Up"
-                            : "Sign In"}
-                    </button>
-                </form>
+                        <div className="form-group">
+                            <input
+                                type="password"
+                                id="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Password"
+                                disabled={loading}
+                                required
+                            />
+                        </div>
 
-                <div className="toggle-mode">
-                    <p>
-                        {isSignUp
-                            ? "Already have an account?"
-                            : "Don't have an account?"}{" "}
+                        {isSignUp && (
+                            <div className="form-group">
+                                <input
+                                    type="password"
+                                    id="confirmPassword"
+                                    value={confirmPassword}
+                                    onChange={(e) =>
+                                        setConfirmPassword(e.target.value)
+                                    }
+                                    placeholder="Confirm Password"
+                                    disabled={loading}
+                                    required
+                                />
+                            </div>
+                        )}
+
                         <button
-                            type="button"
-                            onClick={toggleMode}
-                            className="link-button"
+                            type="submit"
+                            className="btn btn-submit"
                             disabled={loading}>
-                            {isSignUp ? "Sign In" : "Sign Up"}
+                            {loading
+                                ? "Processing..."
+                                : isSignUp
+                                ? "Sign Up"
+                                : "Sign In"}
                         </button>
-                    </p>
+                    </form>
+
+                    <div className="divider">
+                        <span>OR</span>
+                    </div>
+
+                    <GoogleSignInButton />
                 </div>
             </div>
         </div>

@@ -1,0 +1,184 @@
+.gmail-connection-page {
+    min-height: 100vh;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.connection-container {
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+}
+
+.connection-header {
+    margin-bottom: 3rem;
+}
+
+.connection-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 1rem 0;
+}
+
+.connection-subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    margin: 0;
+    line-height: 1.6;
+}
+
+.connection-content {
+    margin-bottom: 3rem;
+}
+
+.connection-benefits {
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.connection-benefits h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 1rem 0;
+}
+
+.connection-benefits ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.connection-benefits li {
+    padding: 0.5rem 0;
+    color: #666;
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.connection-benefits li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #333;
+    font-weight: 600;
+}
+
+.connection-action {
+    margin-bottom: 2rem;
+}
+
+.connection-privacy {
+    background-color: #f0f7ff;
+    border: 1px solid #b3d9ff;
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: left;
+}
+
+.connection-privacy p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #555;
+    line-height: 1.5;
+}
+
+.connection-privacy strong {
+    color: #333;
+}
+
+.connection-skip {
+    padding-top: 2rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+.skip-button {
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.skip-button:hover {
+    color: #333;
+}
+
+.skip-hint {
+    font-size: 0.85rem;
+    color: #999;
+    margin: 0;
+}
+
+.connection-success {
+    text-align: center;
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #4caf50;
+    color: white;
+    font-size: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-weight: 600;
+}
+
+.connection-success h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 0.5rem 0;
+}
+
+.connection-success p {
+    font-size: 1rem;
+    color: #666;
+    margin: 0.5rem 0;
+}
+
+.redirect-message {
+    font-size: 0.9rem;
+    color: #999;
+    font-style: italic;
+}
+
+.loading {
+    text-align: center;
+    color: #666;
+    font-size: 1.1rem;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .gmail-connection-page {
+        padding: 1rem;
+    }
+
+    .connection-header h1 {
+        font-size: 2rem;
+    }
+
+    .connection-subtitle {
+        font-size: 1rem;
+    }
+
+    .connection-benefits {
+        padding: 1.5rem;
+    }
+}
+

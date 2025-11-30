@@ -45,9 +45,19 @@ app.get('/api/health', (req, res) => {
 
 // Import routes
 const contactRoutes = require('./src/routes/contact.routes');
+const authRoutes = require('./src/routes/auth.routes');
+const emailRoutes = require('./src/routes/email.routes');
+const nlpSearchRoutes = require('./src/routes/nlp-search.routes');
 
-// Register contact routes (protected)
+// Register Gmail callback route (NO authentication - called by Google)
+const authController = require('./src/controllers/auth.controller');
+app.get('/api/auth/gmail/callback', authController.handleGmailCallback);
+
+// Register protected routes (WITH authentication)
 app.use('/api/contacts', authenticateUser, contactRoutes);
+app.use('/api/auth', authenticateUser, authRoutes);
+app.use('/api/emails', authenticateUser, emailRoutes);
+app.use('/api/search', authenticateUser, nlpSearchRoutes);
 
 // Get current user profile
 app.get('/api/user/profile', authenticateUser, async (req, res) => {
