@@ -10,10 +10,11 @@ const ContactCard = ({ contact }) => {
     const [disliked, setDisliked] = useState(false);
 
     const fullName = `${contact?.first_name || ''} ${contact?.last_name || ''}`.trim() || contact?.name || "Unknown";
-    const email = contact?.value || contact?.email || "No email";
+    const email = contact?.value || contact?.email || null;
     const company = contact?.company || contact?.organization || "N/A";
     const position = contact?.position || "N/A";
     const industry = contact?.department || "N/A";
+    const linkedin = contact?.linkedin || null;
     const summary = contact?.ai_summary || contact?.summary || `${fullName} works as ${position} at ${company}`;
 
     const handleLike = () => {
@@ -66,8 +67,27 @@ const ContactCard = ({ contact }) => {
             </div>
             <div className="contact-info">
                 <h3 className="contact-name">{fullName}</h3>
+                {position && position !== "N/A" && (
+                    <p className="contact-position">{position}</p>
+                )}
                 <p className="contact-employer">{company}</p>
-                <p className="contact-industry">{industry}</p>
+                {industry && industry !== "N/A" && (
+                    <p className="contact-industry">{industry}</p>
+                )}
+                {email && (
+                    <p className="contact-email">
+                        <span className="contact-label">Email:</span> 
+                        <a href={`mailto:${email}`} className="contact-link">{email}</a>
+                    </p>
+                )}
+                {linkedin && (
+                    <p className="contact-linkedin">
+                        <span className="contact-label">LinkedIn:</span> 
+                        <a href={linkedin} target="_blank" rel="noopener noreferrer" className="contact-link">
+                            View Profile
+                        </a>
+                    </p>
+                )}
                 <p className="contact-summary">{summary}</p>
             </div>
             <div className="contact-actions">
