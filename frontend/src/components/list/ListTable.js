@@ -94,6 +94,8 @@ const ListTable = ({
                     </button>
                     {/* per-row actions removed */}
                   </td>
+                  {/* spacer cell to match header actions column so hover fills full width */}
+                  <td className="actions-header-cell" aria-hidden="true"></td>
                 </tr>
               );
             })

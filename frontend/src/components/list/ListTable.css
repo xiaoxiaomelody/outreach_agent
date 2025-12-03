@@ -32,6 +32,11 @@
   background-color: #f9f9f9;
 }
 
+/* Ensure hover covers the full row width including rightmost cells */
+.list-table tbody tr:hover td {
+  background-color: #f9f9f9;
+}
+
 .list-table tbody tr.selected {
   background-color: #e3f2fd;
 }
@@ -77,6 +82,13 @@
   gap: 0.5rem;
 }
 
+/* Empty spacer cell to align with header actions column and receive hover background */
+.actions-header-cell {
+  width: 56px;
+  padding: 0.5rem;
+  pointer-events: none;
+}
+
 /* Header menu styles */
 .actions-header {
   width: 56px;
@@ -88,6 +100,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Keep header-menu and its button transparent so row hover shows through */
+.header-menu,
+.header-menu .table-menu-btn {
+  background: transparent;
 }
 
 .table-menu-btn {
