@@ -5,6 +5,7 @@
 
 const hunterDirect = require('./hunter-direct.service');
 const openaiService = require('./openai.service');
+const { getFirestore } = require('../config/firebase');
 
 /**
  * Domain search with AI-generated summaries for each contact
@@ -33,13 +34,26 @@ const domainSearchWithSummaries = async (domain, options = {}) => {
       );
       
       if (summariesResult.success) {
-        return {
-          success: true,
-          data: {
-            ...hunterResult.data,
-            contacts: summariesResult.contacts
+          // Attach summaries and optionally re-rank
+          let contactsWithSummaries = summariesResult.contacts;
+
+          // If options.query or other criteria provided, run a simple deterministic re-ranker
+          if (options.query || options.department || options.seniority) {
+            contactsWithSummaries = reRankContacts(contactsWithSummaries, {
+              query: options.query,
+              department: options.department,
+              seniority: options.seniority,
+              limit: options.limit
+            });
           }
-        };
+
+          return {
+            success: true,
+            data: {
+              ...hunterResult.data,
+              contacts: contactsWithSummaries
+            }
+          };
       } else {
         // Return contacts without summaries if generation fails
         console.warn('Summary generation failed, returning contacts without summaries');
@@ -55,6 +69,96 @@ const domainSearchWithSummaries = async (domain, options = {}) => {
       error: error.message
     };
   }
+};
+
+/**
+ * Simple deterministic re-ranker
+ * Combines normalized signals into a single relevance score and sorts contacts.
+ * Very small, interpretable linear blend; weights are configurable.
+ * Operates in O(n) time.
+ */
+const reRankContacts = (contacts = [], opts = {}) => {
+  const query = (opts.query || '').toLowerCase();
+  const departmentGoal = opts.department ? String(opts.department).toLowerCase() : null;
+  const seniorityGoal = opts.seniority ? String(opts.seniority).toLowerCase() : null;
+  const limit = opts.limit || contacts.length;
+
+  // Default weights (sum to 1)
+  const weights = Object.assign({
+    confidence: 0.4,
+    verification: 0.25,
+    title: 0.2,
+    semantic: 0.15
+  }, opts.weights || {});
+
+  // Helper: normalize confidence (Hunter gives 0-100 sometimes)
+  const normalizeConfidence = (c) => {
+    if (c === undefined || c === null) return 0;
+    let n = Number(c);
+    if (isNaN(n)) return 0;
+    if (n > 1) n = Math.min(100, n) / 100; // assume 0-100 scale
+    return Math.max(0, Math.min(1, n));
+  };
+
+  // Helper: simple Jaccard similarity between query and target text
+  const jaccard = (a = '', b = '') => {
+    if (!a || !b) return 0;
+    const tokenize = (s) => (s || '')
+      .toLowerCase()
+      .split(/\W+/)
+      .filter(t => t.length > 2);
+    const A = new Set(tokenize(a));
+    const B = new Set(tokenize(b));
+    if (A.size === 0 || B.size === 0) return 0;
+    const inter = [...A].filter(x => B.has(x)).length;
+    const uni = new Set([...A, ...B]).size;
+    return uni === 0 ? 0 : inter / uni;
+  };
+
+  // Score each contact
+  const scored = contacts.map(contact => {
+    // Hunter confidence
+    const conf = normalizeConfidence(contact.confidence || contact.confidence_score || contact.confidenceScore || 0);
+
+    // Verification flag (boolean)
+    const verified = contact.verified === true || contact.verification?.status === 'valid' ? 1 : 0;
+
+    // Title match score: how much query overlaps with position/title
+    const titleText = (contact.position || contact.role || contact.title || contact.position_raw || '').toString();
+    const titleScore = Math.max(jaccard(query, titleText), jaccard(query, (contact.name || '')));
+
+    // Department/seniority alignment: boost when explicit match present
+    let deptMatch = 0;
+    if (departmentGoal && contact.department) {
+      deptMatch = String(contact.department).toLowerCase().includes(departmentGoal) ? 1 : 0;
+    }
+    let seniorMatch = 0;
+    if (seniorityGoal && contact.seniority) {
+      seniorMatch = String(contact.seniority).toLowerCase().includes(seniorityGoal) ? 1 : 0;
+    }
+
+    // Semantic similarity: use summary if exists, else position or name
+    const semanticSource = contact.summary || contact.snippet || contact.position || contact.name || '';
+    const semanticScore = jaccard(query, semanticSource);
+
+    // Compose final score using weights; include small contributions from dept/seniority
+    const score = (
+      weights.confidence * conf +
+      weights.verification * verified +
+      weights.title * titleScore +
+      weights.semantic * semanticScore +
+      0.05 * deptMatch +
+      0.05 * seniorMatch
+    );
+
+    return Object.assign({}, contact, { _relevanceScore: score });
+  });
+
+  // Sort descending by score
+  scored.sort((a, b) => (b._relevanceScore || 0) - (a._relevanceScore || 0));
+
+  // Return top-k (respect original order for ties)
+  return scored.slice(0, Math.max(0, limit));
 };
 
 /**
@@ -128,16 +232,16 @@ const naturalLanguageSearchWithSummaries = async (query) => {
 /**
  * Alias functions for compatibility with controller naming
  */
-const getCompanyContactsWithSummaries = async (domain, limit = 10) => {
-  return domainSearchWithSummaries(domain, { limit });
+const getCompanyContactsWithSummaries = async (domain, limit = 10, options = {}) => {
+  return domainSearchWithSummaries(domain, Object.assign({}, options, { limit }));
 };
 
-const getContactsByDepartmentWithSummaries = async (domain, department, limit = 10) => {
-  return searchByDepartmentWithSummaries(domain, department, limit);
+const getContactsByDepartmentWithSummaries = async (domain, department, limit = 10, options = {}) => {
+  return searchByDepartmentWithSummaries(domain, department, Object.assign({}, options, { limit }));
 };
 
-const getContactsBySeniorityWithSummaries = async (domain, seniority, limit = 10) => {
-  return searchBySeniorityWithSummaries(domain, seniority, limit);
+const getContactsBySeniorityWithSummaries = async (domain, seniority, limit = 10, options = {}) => {
+  return searchBySeniorityWithSummaries(domain, seniority, Object.assign({}, options, { limit }));
 };
 
 module.exports = {
