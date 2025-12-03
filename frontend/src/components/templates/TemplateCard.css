@@ -1,81 +1,93 @@
 .template-card {
-    background-color: #ffffff;
-    border: 2px solid #e0e0e0;
-    border-radius: 12px;
-    padding: 1.5rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
-    min-width: 120px;
+  background-color: #ffffff;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  min-width: 120px;
 }
 
 .template-card:hover {
-    border-color: #999;
+  border-color: #999;
 }
 
 .template-card.selected {
-    border-color: #333;
-    background-color: #f9f9f9;
+  border-color: #333;
+  background-color: #f9f9f9;
 }
 
 .template-card.new-template {
-    border-style: dashed;
+  border-style: dashed;
 }
 
 .template-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background-color: #333;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-    margin: 0 auto 0.75rem;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #333;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin: 0 auto 0.75rem;
 }
 
 .template-icon-placeholder {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background-color: #e0e0e0;
-    color: #666;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin: 0 auto 0.75rem;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 auto 0.75rem;
 }
 
 .template-name {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #333;
-    margin: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #333;
+  margin: 0;
 }
 
 .template-delete {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: #999;
-    cursor: pointer;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  font-size: 1.15rem;
+  color: #666;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: background-color 0.15s, color 0.15s, transform 0.08s;
+  padding: 0;
+  line-height: 0; /* ensure glyph is centered vertically */
+  transform: translateY(-4px); /* small visual nudge upwards to center glyph */
 }
 
 .template-delete:hover {
-    background-color: #ffebee;
-    color: #c62828;
+  background-color: #e6e6e6; /* darker gray highlight */
+  color: #333; /* darker icon color */
 }
 
+.template-delete:active {
+  transform: translateY(-4px) scale(0.98);
+}
+
+.template-delete:focus {
+  outline: 2px solid rgba(0, 0, 0, 0.08);
+  outline-offset: 2px;
+}
