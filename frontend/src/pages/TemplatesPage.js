@@ -72,6 +72,8 @@ const TemplatesPage = () => {
     );
     setTemplates(updated);
     localStorage.setItem("emailTemplates", JSON.stringify(updated));
+    // Ensure the selected template reference is updated so the UI shows saved changes
+    setSelectedTemplate(updatedTemplate);
     setIsEditing(false);
   };
 
