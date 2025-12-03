@@ -63,6 +63,16 @@
   outline: none;
 }
 
+.editor-input::placeholder {
+  color: #bfbfbf;
+}
+
+.field-error {
+  color: #c62828;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
 .editor-input:focus {
   border-color: #333;
 }
@@ -81,6 +91,10 @@
 
 .editor-textarea:focus {
   border-color: #333;
+}
+
+.editor-textarea::placeholder {
+  color: #bfbfbf;
 }
 
 .editor-actions {

@@ -6,18 +6,26 @@ import "./TemplateEditor.css";
  * View and edit email templates
  */
 const TemplateEditor = ({ template, isEditing, onEdit, onSave, onCancel }) => {
-  const [editedName, setEditedName] = useState(template.name);
-  const [editedContent, setEditedContent] = useState(template.content);
+  const [editedName, setEditedName] = useState(template.name || "");
+  const [editedContent, setEditedContent] = useState(template.content || "");
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    setEditedName(template.name);
-    setEditedContent(template.content);
+    setEditedName(template.name || "");
+    setEditedContent(template.content || "");
+    setError("");
   }, [template]);
 
   const handleSave = () => {
+    if (!editedName || editedName.trim() === "") {
+      setError("Template name cannot be blank");
+      return;
+    }
+
+    setError("");
     onSave({
       ...template,
-      name: editedName,
+      name: editedName.trim(),
       content: editedContent,
     });
   };
@@ -46,7 +54,10 @@ const TemplateEditor = ({ template, isEditing, onEdit, onSave, onCancel }) => {
                 value={editedName}
                 onChange={(e) => setEditedName(e.target.value)}
                 className="editor-input"
+                placeholder="New Template"
+                aria-label="Template name"
               />
+              {error && <div className="field-error">{error}</div>}
             </div>
             <div className="editor-field">
               <label>Email Content</label>
@@ -55,6 +66,8 @@ const TemplateEditor = ({ template, isEditing, onEdit, onSave, onCancel }) => {
                 onChange={(e) => setEditedContent(e.target.value)}
                 className="editor-textarea"
                 rows={15}
+                placeholder="Write your email template here..."
+                aria-label="Email content"
               />
             </div>
             <div className="editor-actions">

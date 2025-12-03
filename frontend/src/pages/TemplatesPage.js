@@ -57,9 +57,8 @@ const TemplatesPage = () => {
   const handleCreateNew = () => {
     const newTemplate = {
       id: Date.now(),
-      name: "New Template",
-      content:
-        "Hello [Name],\n\n[Your message here]\n\nBest regards,\n[Your name]",
+      name: "",
+      content: "",
     };
     setTemplates([...templates, newTemplate]);
     setSelectedTemplate(newTemplate);
