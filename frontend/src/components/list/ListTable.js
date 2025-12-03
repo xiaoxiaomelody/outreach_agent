@@ -123,7 +123,7 @@ const HeaderMenu = () => {
   return (
     <div className="header-menu" ref={ref} onClick={(e) => e.stopPropagation()}>
       <button
-        className="table-menu-btn"
+        className={`table-menu-btn ${selectionView ? "active" : ""}`}
         onClick={() => setOpen((s) => !s)}
         aria-label="Table options"
       >
