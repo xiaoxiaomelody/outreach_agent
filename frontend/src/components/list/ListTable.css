@@ -1,73 +1,138 @@
 .list-table {
-    background-color: #ffffff;
-    border-radius: 12px;
-    overflow: hidden;
+  background-color: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .list-table table {
-    width: 100%;
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
 }
 
 .list-table thead {
-    background-color: #f9f9f9;
+  background-color: #f9f9f9;
 }
 
 .list-table th {
-    padding: 1rem;
-    text-align: left;
-    font-weight: 600;
-    color: #333;
-    font-size: 0.9rem;
-    border-bottom: 2px solid #e0e0e0;
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.9rem;
+  border-bottom: 2px solid #e0e0e0;
 }
 
 .list-table tbody tr {
-    border-bottom: 1px solid #f0f0f0;
-    cursor: pointer;
-    transition: background-color 0.2s;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .list-table tbody tr:hover {
-    background-color: #f9f9f9;
+  background-color: #f9f9f9;
 }
 
 .list-table tbody tr.selected {
-    background-color: #e3f2fd;
+  background-color: #e3f2fd;
 }
 
 .list-table td {
-    padding: 1rem;
-    color: #333;
-    font-size: 0.9rem;
+  padding: 1rem;
+  color: #333;
+  font-size: 0.9rem;
 }
 
 .empty-message {
-    text-align: center;
-    color: #999;
-    padding: 3rem !important;
+  text-align: center;
+  color: #999;
+  padding: 3rem !important;
 }
 
 .template-badge {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    background-color: #f5f5f5;
-    border-radius: 12px;
-    font-size: 0.85rem;
-    color: #666;
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background-color: #f5f5f5;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  color: #666;
 }
 
 .send-icon {
-    background: none;
-    border: none;
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 0.25rem;
-    opacity: 0.6;
-    transition: opacity 0.2s;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  opacity: 0.6;
+  transition: opacity 0.2s;
 }
 
 .send-icon:hover {
-    opacity: 1;
+  opacity: 1;
 }
 
+.actions-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Header menu styles */
+.actions-header {
+  width: 56px;
+  padding: 0.5rem;
+}
+
+.header-menu {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.table-menu-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #666;
+  padding: 0.25rem;
+  /* use vertical ellipsis character for stacked dots */
+}
+
+.table-menu-btn:hover {
+  color: #333;
+}
+
+.table-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  min-width: 180px;
+  z-index: 60;
+  padding: 0.25rem;
+}
+
+.table-menu-item {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  color: #666;
+}
+
+.table-menu-item:hover {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.table-menu-item.toggle-selection.active {
+  color: #000;
+}
