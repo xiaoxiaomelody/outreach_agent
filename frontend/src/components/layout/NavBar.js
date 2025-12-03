@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { logOut, getCurrentUser } from "../../config/authUtils";
 import "./NavBar.css";
@@ -12,10 +12,24 @@ const NavBar = () => {
     const location = useLocation();
     const user = getCurrentUser();
 
+    const [menuOpen, setMenuOpen] = useState(false);
+    const wrapperRef = useRef(null);
+
     const handleLogout = async () => {
         await logOut();
         navigate("/");
     };
+
+    // close dropdown when clicking outside
+    useEffect(() => {
+        const onDocClick = (e) => {
+            if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+                setMenuOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", onDocClick);
+        return () => document.removeEventListener("mousedown", onDocClick);
+    }, []);
 
     const isActive = (path) => {
         return location.pathname === path;
@@ -46,13 +60,26 @@ const NavBar = () => {
                     >
                         Search
                     </button>
-                    <div className="navbar-user">
+                    <div className="navbar-user" ref={wrapperRef}>
                         <div className="user-avatar">
                             {user?.displayName?.charAt(0) || user?.email?.charAt(0) || "U"}
                         </div>
-                        <button className="user-dropdown" onClick={handleLogout}>
+                        <button
+                            className={`user-dropdown ${menuOpen ? "open" : ""}`}
+                            onClick={() => setMenuOpen((s) => !s)}
+                            aria-haspopup="true"
+                            aria-expanded={menuOpen}
+                        >
                             ▼
                         </button>
+
+                        {menuOpen && (
+                            <div className="user-menu" role="menu">
+                                <button className="user-menu-item" onClick={() => { setMenuOpen(false); handleLogout(); }} role="menuitem">
+                                    Sign Out
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
