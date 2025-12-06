@@ -62,9 +62,40 @@ const SearchPage = () => {
           (contact) =>
             contact &&
             (contact.first_name || contact.last_name || contact.name) &&
-            (contact.value || contact.email)
+            (contact.value ||
+              contact.email ||
+              (contact.emails && contact.emails[0]))
         );
-        setContacts(validContacts);
+
+        // Normalize contact shape so ContactCard behaves like mock pages
+        const normalize = (c) => {
+          const value = c.value || c.email || (c.emails && c.emails[0]) || null;
+          const name =
+            c.name ||
+            `${c.first_name || ""} ${c.last_name || ""}`.trim() ||
+            null;
+          let first_name = c.first_name || null;
+          let last_name = c.last_name || null;
+          if (!first_name && name) {
+            const parts = name.split(" ");
+            first_name = parts.slice(0, -1).join(" ") || parts[0] || null;
+            last_name = parts.length > 1 ? parts.slice(-1).join(" ") : null;
+          }
+          return {
+            ...c,
+            value,
+            email: value,
+            name,
+            first_name,
+            last_name,
+            company: c.company || c.organization || c.employer || null,
+            position: c.position || c.title || null,
+            linkedin: c.linkedin || c.linkedin_url || c.linkedinUrl || null,
+            ai_summary: c.ai_summary || c.summary || null,
+          };
+        };
+
+        setContacts(validContacts.map(normalize));
 
         if (validContacts.length === 0) {
           setError(

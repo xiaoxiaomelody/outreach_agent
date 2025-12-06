@@ -54,7 +54,7 @@ const ContactCard = ({ contact }) => {
 
       shortlist.shortlist.push(contact);
       localStorage.setItem("myContacts", JSON.stringify(shortlist));
-      setLiked(true);
+      // Do not auto-like when adding to shortlist; only update disliked state
       setDisliked(false);
 
       if (!silent) {
