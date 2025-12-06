@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./ContactCard.css";
+import Icon from "../icons/Icon";
 
 /**
  * Contact Card Component
@@ -126,21 +127,21 @@ const ContactCard = ({ contact }) => {
           onClick={handleLike}
           title="Like"
         >
-          👍
+          <Icon name="check" />
         </button>
         <button
           className={`contact-action-btn ${disliked ? "disliked" : ""}`}
           onClick={handleDislike}
           title="Dislike"
         >
-          👎
+          <Icon name="error" />
         </button>
         <button
           className="contact-action-btn add-btn"
           onClick={handleAdd}
           title="Add to list"
         >
-          ➕
+          <Icon name="plus" />
         </button>
       </div>
     </div>

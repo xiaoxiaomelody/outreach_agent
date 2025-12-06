@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import gmailApi from "../../api/gmail";
 import "./EmailPreview.css";
+import Icon from "../icons/Icon";
 
 /**
  * Email Preview Component
@@ -124,7 +125,7 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
       const gmailStatus = await gmailApi.getGmailStatus();
       if (!gmailStatus.success || !gmailStatus.data.connected) {
         alert(
-          "⚠️ Please connect your Gmail account first using the 'Connect Gmail' button in Search page."
+          "Please connect your Gmail account first using the 'Connect Gmail' button in Search page."
         );
         setSending(false);
         return;
@@ -156,7 +157,7 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
         }
         localStorage.setItem("myContacts", JSON.stringify(contacts));
 
-        alert("✅ Email sent successfully!");
+        alert("Email sent successfully!");
         onClose();
       } else {
         throw new Error(result.error);
@@ -248,22 +249,11 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
           )}
           <button className="btn-send" onClick={handleSend} disabled={sending}>
             {sending ? "Sending..." : "Send"}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
+            <Icon
+              name="paper-plane"
+              size={18}
               style={{ marginLeft: "0.5rem" }}
-            >
-              <path d="M22 2L11 13" />
-              <path d="M22 2l-7 20  -4-9-9-4 20-7z" />
-            </svg>
+            />
           </button>
         </div>
       </div>
