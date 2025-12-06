@@ -82,6 +82,16 @@ const NavBar = () => {
                   className="user-menu-item"
                   onClick={() => {
                     setMenuOpen(false);
+                    navigate("/profile");
+                  }}
+                  role="menuitem"
+                >
+                  My Profile
+                </button>
+                <button
+                  className="user-menu-item"
+                  onClick={() => {
+                    setMenuOpen(false);
                     handleLogout();
                   }}
                   role="menuitem"

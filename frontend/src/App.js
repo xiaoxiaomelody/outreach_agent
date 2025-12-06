@@ -5,6 +5,9 @@ import Dashboard from "./pages/Dashboard";
 import SearchPage from "./pages/SearchPage";
 import TemplatesPage from "./pages/TemplatesPage";
 import MyListPage from "./pages/MyListPage";
+import ProfileLayout from "./pages/ProfileLayout";
+import ProfileInfo from "./pages/ProfileInfo";
+import AccountSettings from "./pages/AccountSettings";
 import GmailConnection from "./pages/GmailConnection";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ToastContainer from "./components/ui/ToastContainer";
@@ -57,6 +60,17 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/profile/*"
+            element={
+              <ProtectedRoute>
+                <ProfileLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<ProfileInfo />} />
+            <Route path="settings" element={<AccountSettings />} />
+          </Route>
           {/* Legacy Dashboard route - redirect to search */}
           <Route
             path="/dashboard"
