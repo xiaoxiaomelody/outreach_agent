@@ -525,50 +525,48 @@ const MyListPage = () => {
                   <Icon name="close" size={14} />
                   <span className="btn-label">Cancel</span>
                 </button>
-                <button
-                  className="btn btn-primary"
-                  onClick={
-                    activeTab === "trash" ? handleBulkRestore : handleBulkSend
-                  }
-                  title={
-                    activeTab === "trash"
-                      ? "Restore selected"
-                      : "Send to selected"
-                  }
-                >
-                  {activeTab !== "sent" && (
-                    <button
-                      className="btn btn-primary"
-                      onClick={
-                        activeTab === "trash"
-                          ? handleBulkRestore
-                          : handleBulkSend
-                      }
-                      title={
-                        activeTab === "trash"
-                          ? "Restore selected"
-                          : "Send to selected"
-                      }
-                    >
-                      <Icon
-                        name={activeTab === "trash" ? "undo" : "paper-plane"}
-                        size={14}
-                      />
-                      <span className="btn-label">
-                        {activeTab === "trash" ? "Restore" : "Send"}
-                      </span>
-                    </button>
-                  )}
-                  } title=
-                  {activeTab === "trash"
-                    ? "Delete permanently"
-                    : "Move selected to trash"}
+
+                {/* Primary action: Restore (when in trash) or Send (when not in sent and not in trash) */}
+                {activeTab === "trash" ? (
+                  <button
+                    className="btn btn-primary"
+                    onClick={handleBulkRestore}
+                    title="Restore selected"
                   >
-                  <Icon name="trash" size={14} />
-                  <span className="btn-label">
-                    {activeTab === "trash" ? "Delete" : "Trash"}
-                  </span>
-                </button>
+                    <Icon name="undo" size={14} />
+                    <span className="btn-label">Restore</span>
+                  </button>
+                ) : activeTab !== "sent" ? (
+                  <button
+                    className="btn btn-primary"
+                    onClick={handleBulkSend}
+                    title="Send to selected"
+                  >
+                    <Icon name="paper-plane" size={14} />
+                    <span className="btn-label">Send</span>
+                  </button>
+                ) : null}
+
+                {/* Secondary destructive action: Move to Trash or Delete Permanently */}
+                {activeTab === "trash" ? (
+                  <button
+                    className="btn btn-danger"
+                    onClick={handleBulkDeletePermanent}
+                    title="Delete permanently"
+                  >
+                    <Icon name="trash" size={14} />
+                    <span className="btn-label">Delete</span>
+                  </button>
+                ) : (
+                  <button
+                    className="btn btn-danger"
+                    onClick={handleBulkTrash}
+                    title="Move selected to trash"
+                  >
+                    <Icon name="trash" size={14} />
+                    <span className="btn-label">Trash</span>
+                  </button>
+                )}
               </div>
             </div>
           )}
