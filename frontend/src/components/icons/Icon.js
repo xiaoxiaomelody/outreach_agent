@@ -45,6 +45,17 @@ const Icon = ({ name, size = 18, className = "", ...props }) => {
           <path d="M20 6L9 17l-5-5" />
         </svg>
       );
+    case "undo":
+      return (
+        <svg {...common} viewBox="0 0 24 24">
+          <g transform="translate(1.2,1.2) scale(0.84)">
+            <path
+              d="M7 19V17H14.1C15.15 17 16.0625 16.6667 16.8375 16C17.6125 15.3333 18 14.5 18 13.5C18 12.5 17.6125 11.6667 16.8375 11C16.0625 10.3333 15.15 10 14.1 10H7.8L10.4 12.6L9 14L4 9L9 4L10.4 5.4L7.8 8H14.1C15.7167 8 17.1042 8.525 18.2625 9.575C19.4208 10.625 20 11.9333 20 13.5C20 15.0667 19.4208 16.375 18.2625 17.425C17.1042 18.475 15.7167 19 14.1 19H7Z"
+              fill="currentColor"
+            />
+          </g>
+        </svg>
+      );
     case "warning":
       return (
         <svg {...common}>
@@ -138,6 +149,26 @@ const Icon = ({ name, size = 18, className = "", ...props }) => {
       return (
         <svg {...common}>
           <path d="M12 5v14M5 12h14" />
+        </svg>
+      );
+    case "trash":
+      return (
+        <svg {...common} viewBox="0 0 24 24">
+          <path
+            d="M3 6H5M5 6H21M5 6V20C5 20.5304 5.21071 21.0391 5.58579 21.4142C5.96086 21.7893 6.46957 22 7 22H17C17.5304 22 18.0391 21.7893 18.4142 21.4142C18.7893 21.0391 19 20.5304 19 20V6M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M10 11V17M14 11V17"
+            stroke="currentColor"
+            strokeWidth={2.5}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+          />
+        </svg>
+      );
+    case "close":
+      return (
+        <svg {...common} viewBox="0 0 24 24">
+          <path d="M18 6L6 18" />
+          <path d="M6 6l12 12" />
         </svg>
       );
     case "thumbs-up":

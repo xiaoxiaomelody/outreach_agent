@@ -4,6 +4,7 @@ import NavBar from "../components/layout/NavBar";
 import { getCurrentUser } from "../config/authUtils";
 import ListTable from "../components/list/ListTable";
 import EmailPreview from "../components/list/EmailPreview";
+import Icon from "../components/icons/Icon";
 import "../styles/MyListPage.css";
 
 /**
@@ -14,8 +15,9 @@ const MyListPage = () => {
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("shortlist");
   const [selectedContact, setSelectedContact] = useState(null);
+  const [selectionView, setSelectionView] = useState(false);
+  const [selectedEmails, setSelectedEmails] = useState([]);
   const [showPreview, setShowPreview] = useState(false);
-  const [pendingRemoval, setPendingRemoval] = useState(null);
   const [contacts, setContacts] = useState({
     shortlist: [],
     sent: [],
@@ -44,98 +46,351 @@ const MyListPage = () => {
   };
 
   const handleContactSelect = (contact) => {
+    // In selection view, toggle selection instead of opening preview
+    const email = contact?.value || contact?.email;
+    if (selectionView) {
+      setSelectedEmails((s) =>
+        s.includes(email) ? s.filter((e) => e !== email) : [...s, email]
+      );
+      return;
+    }
     setSelectedContact(contact);
     setShowPreview(true);
   };
 
-  // Legacy immediate removal (keeps prior behavior)
   const handleRemoveContact = (contact) => {
-    const tab = activeTab;
-    const updatedTab = (contacts[tab] || []).filter(
-      (c) => (c.value || c.email) !== (contact.value || contact.email)
-    );
-    const updated = { ...contacts, [tab]: updatedTab };
-    setContacts(updated);
-    localStorage.setItem("myContacts", JSON.stringify(updated));
-    if (
-      selectedContact &&
-      (selectedContact.value || selectedContact.email) ===
-        (contact.value || contact.email)
-    ) {
-      setSelectedContact(null);
-      setShowPreview(false);
-    }
-  };
+    const fullName =
+      `${contact.first_name || ""} ${contact.last_name || ""}`.trim() ||
+      contact.name ||
+      contact.value ||
+      contact.email ||
+      "this contact";
 
-  // Request a removal with confirmation — opens a confirm dialog
-  const handleRequestRemoveContact = (contact) => {
-    setPendingRemoval(contact);
-  };
+    const isTrash = activeTab === "trash";
+    const message = isTrash
+      ? `Delete ${fullName} permanently?`
+      : `Delete ${fullName} from ${activeTab}?`;
 
-  const handleCancelRemove = () => setPendingRemoval(null);
-
-  const handleConfirmRemove = () => {
-    if (!pendingRemoval) return;
-    const contact = pendingRemoval;
-    const tab = activeTab;
-
-    // snapshot for undo
-    const previous = JSON.parse(JSON.stringify(contacts));
-
-    const updatedTab = (contacts[tab] || []).filter(
-      (c) => (c.value || c.email) !== (contact.value || contact.email)
-    );
-    const updated = { ...contacts, [tab]: updatedTab };
-
-    // if removing from shortlist, move to trash instead of permanent delete
-    if (tab === "shortlist") {
-      const existsInTrash = updated.trash.some(
-        (c) => (c.value || c.email) === (contact.value || contact.email)
-      );
-      if (!existsInTrash) {
-        updated.trash = [...(updated.trash || []), contact];
-      }
-    }
-
-    setContacts(updated);
-    localStorage.setItem("myContacts", JSON.stringify(updated));
-
-    if (
-      selectedContact &&
-      (selectedContact.value || selectedContact.email) ===
-        (contact.value || contact.email)
-    ) {
-      setSelectedContact(null);
-      setShowPreview(false);
-    }
-
-    setPendingRemoval(null);
-
-    // show undo toast
+    // Dispatch a confirmation toast — user must click the action to confirm
     try {
-      const undo = () => {
-        try {
-          setContacts(previous);
-          localStorage.setItem("myContacts", JSON.stringify(previous));
-        } catch (err) {
-          /* swallow */
-        }
-      };
-
       window.dispatchEvent(
         new CustomEvent("app-toast", {
           detail: {
-            message: `Removed ${
-              contact.first_name || contact.name || contact.email
-            } from ${tab}`,
-            type: "info",
-            actionLabel: "Undo",
-            onAction: undo,
-            duration: 5000,
+            message,
+            type: "warning",
+            actionLabel: "Delete",
+            duration: 6000,
+            onAction: () => performRemoveContact(contact),
           },
         })
       );
-    } catch (e) {}
+    } catch (err) {
+      // fallback: perform immediately
+      performRemoveContact(contact);
+    }
+  };
+
+  const performRemoveContact = (contact) => {
+    const tab = activeTab;
+    const updatedTab = (contacts[tab] || []).filter(
+      (c) => (c.value || c.email) !== (contact.value || contact.email)
+    );
+    const updated = { ...contacts, [tab]: updatedTab };
+    setContacts(updated);
+    localStorage.setItem("myContacts", JSON.stringify(updated));
+    if (
+      selectedContact &&
+      (selectedContact.value || selectedContact.email) ===
+        (contact.value || contact.email)
+    ) {
+      setSelectedContact(null);
+      setShowPreview(false);
+    }
+
+    // If we permanently deleted from Trash, offer undo to restore into Trash
+    if (tab === "trash") {
+      try {
+        window.dispatchEvent(
+          new CustomEvent("app-toast", {
+            detail: {
+              message: `${
+                contact.first_name ||
+                contact.name ||
+                contact.value ||
+                contact.email
+              } deleted permanently`,
+              type: "warning",
+              actionLabel: "Undo",
+              duration: 6000,
+              onAction: () => {
+                setContacts((prev) => {
+                  const next = { ...prev };
+                  next.trash = next.trash || [];
+                  // avoid duplicates
+                  if (
+                    !next.trash.some(
+                      (c) =>
+                        (c.value || c.email) ===
+                        (contact.value || contact.email)
+                    )
+                  ) {
+                    next.trash = [...next.trash, contact];
+                  }
+                  localStorage.setItem("myContacts", JSON.stringify(next));
+                  return next;
+                });
+              },
+            },
+          })
+        );
+      } catch (err) {
+        // ignore
+      }
+    }
+  };
+
+  const toggleSelectionView = (enabled) => {
+    setSelectionView((prev) => {
+      const next = typeof enabled === "boolean" ? enabled : !prev;
+      if (!next) {
+        // clearing selection when exiting selection view
+        setSelectedEmails([]);
+      }
+      return next;
+    });
+  };
+
+  const handleToggleSelect = (contact) => {
+    const email = contact?.value || contact?.email;
+    setSelectedEmails((s) =>
+      s.includes(email) ? s.filter((e) => e !== email) : [...s, email]
+    );
+  };
+
+  const handleBulkSend = () => {
+    if (selectedEmails.length === 0) return;
+    const updated = { ...contacts };
+    const moved = [];
+    // remove from each tab and collect moved contacts
+    ["shortlist", "sent", "trash"].forEach((tab) => {
+      const keep = [];
+      (updated[tab] || []).forEach((c) => {
+        const e = c.value || c.email;
+        if (selectedEmails.includes(e)) {
+          if (tab !== "sent") moved.push(c);
+        } else {
+          keep.push(c);
+        }
+      });
+      updated[tab] = keep;
+    });
+    updated.sent = [...(updated.sent || []), ...moved];
+    setContacts(updated);
+    localStorage.setItem("myContacts", JSON.stringify(updated));
+    setSelectedEmails([]);
+    setSelectionView(false);
+  };
+
+  const handleBulkRestore = () => {
+    if (selectedEmails.length === 0) return;
+
+    const updated = { ...contacts };
+    const moved = [];
+
+    // Only move from trash back to shortlist
+    (updated.trash || []).forEach((c) => {
+      const e = c.value || c.email;
+      if (selectedEmails.includes(e)) moved.push(c);
+    });
+
+    if (moved.length === 0) return;
+
+    // remove moved from trash
+    updated.trash = (updated.trash || []).filter(
+      (c) => !selectedEmails.includes(c.value || c.email)
+    );
+
+    // avoid duplicates when restoring
+    const existingShortlist = updated.shortlist || [];
+    const toAdd = moved.filter(
+      (m) =>
+        !existingShortlist.some(
+          (s) => (s.value || s.email) === (m.value || m.email)
+        )
+    );
+    updated.shortlist = [...existingShortlist, ...toAdd];
+
+    setContacts(updated);
+    localStorage.setItem("myContacts", JSON.stringify(updated));
+    setSelectedEmails([]);
+    setSelectionView(false);
+  };
+
+  const handleBulkTrash = () => {
+    if (selectedEmails.length === 0) return;
+
+    const emailsToMove = [...selectedEmails];
+
+    try {
+      window.dispatchEvent(
+        new CustomEvent("app-toast", {
+          detail: {
+            message: `Move ${emailsToMove.length} selected contact(s) to Trash?`,
+            type: "warning",
+            actionLabel: "Move",
+            duration: 6000,
+            onAction: () => performBulkTrash(emailsToMove),
+          },
+        })
+      );
+    } catch (err) {
+      performBulkTrash(emailsToMove);
+    }
+  };
+
+  const performBulkTrash = (emailsToMove) => {
+    const updated = { ...contacts };
+    // collect moved items with source tab so we can undo
+    const movedEntries = [];
+    ["shortlist", "sent", "trash"].forEach((tab) => {
+      const keep = [];
+      (updated[tab] || []).forEach((c) => {
+        const e = c.value || c.email;
+        if (emailsToMove.includes(e)) {
+          // avoid duplicates in trash
+          if (!updated.trash.some((t) => (t.value || t.email) === e)) {
+            movedEntries.push({ contact: c, from: tab });
+          }
+        } else {
+          keep.push(c);
+        }
+      });
+      updated[tab] = keep;
+    });
+    updated.trash = [
+      ...(updated.trash || []),
+      ...movedEntries.map((m) => m.contact),
+    ];
+    setContacts(updated);
+    localStorage.setItem("myContacts", JSON.stringify(updated));
+    setSelectedEmails((s) => s.filter((e) => !emailsToMove.includes(e)));
+    setSelectionView(false);
+
+    // show undo toast
+    if (movedEntries.length > 0) {
+      try {
+        window.dispatchEvent(
+          new CustomEvent("app-toast", {
+            detail: {
+              message: `Moved ${movedEntries.length} contact(s) to Trash`,
+              type: "info",
+              actionLabel: "Undo",
+              duration: 6000,
+              onAction: () => {
+                // restore moved entries back to their original tabs
+                setContacts((prev) => {
+                  const next = { ...prev };
+                  // remove moved entries from trash
+                  next.trash = (next.trash || []).filter(
+                    (c) => !emailsToMove.includes(c.value || c.email)
+                  );
+                  movedEntries.forEach(({ contact, from }) => {
+                    next[from] = next[from] || [];
+                    // avoid duplicates
+                    if (
+                      !next[from].some(
+                        (s) =>
+                          (s.value || s.email) ===
+                          (contact.value || contact.email)
+                      )
+                    ) {
+                      next[from] = [...next[from], contact];
+                    }
+                  });
+                  localStorage.setItem("myContacts", JSON.stringify(next));
+                  return next;
+                });
+              },
+            },
+          })
+        );
+      } catch (err) {
+        // ignore
+      }
+    }
+  };
+
+  // Permanently delete selected items from Trash
+  const handleBulkDeletePermanent = () => {
+    if (selectedEmails.length === 0) return;
+
+    const emailsToDelete = [...selectedEmails];
+
+    try {
+      window.dispatchEvent(
+        new CustomEvent("app-toast", {
+          detail: {
+            message: `Delete ${emailsToDelete.length} selected contact(s) permanently?`,
+            type: "warning",
+            actionLabel: "Delete",
+            duration: 6000,
+            onAction: () => performBulkDelete(emailsToDelete),
+          },
+        })
+      );
+    } catch (err) {
+      performBulkDelete(emailsToDelete);
+    }
+  };
+
+  const performBulkDelete = (emailsToDelete) => {
+    const updated = { ...contacts };
+    // capture full objects being deleted so Undo can restore them
+    const deletedObjects = (updated.trash || []).filter((c) =>
+      emailsToDelete.includes(c.value || c.email)
+    );
+
+    // Only remove from trash
+    updated.trash = (updated.trash || []).filter(
+      (c) => !emailsToDelete.includes(c.value || c.email)
+    );
+    setContacts(updated);
+    localStorage.setItem("myContacts", JSON.stringify(updated));
+    setSelectedEmails((s) => s.filter((e) => !emailsToDelete.includes(e)));
+    setSelectionView(false);
+
+    // Offer undo to restore permanently deleted items back into trash with full objects
+    try {
+      window.dispatchEvent(
+        new CustomEvent("app-toast", {
+          detail: {
+            message: `Deleted ${deletedObjects.length} contact(s) permanently`,
+            type: "warning",
+            actionLabel: "Undo",
+            duration: 6000,
+            onAction: () => {
+              setContacts((prev) => {
+                const next = { ...prev };
+                next.trash = next.trash || [];
+                deletedObjects.forEach((obj) => {
+                  if (
+                    !next.trash.some(
+                      (c) => (c.value || c.email) === (obj.value || obj.email)
+                    )
+                  ) {
+                    next.trash = [...next.trash, obj];
+                  }
+                });
+                localStorage.setItem("myContacts", JSON.stringify(next));
+                return next;
+              });
+            },
+          },
+        })
+      );
+    } catch (err) {
+      // ignore
+    }
   };
 
   const handleCopyContact = (contact) => {
@@ -143,6 +398,24 @@ const MyListPage = () => {
     if (navigator.clipboard && email) {
       navigator.clipboard.writeText(email).catch(() => {});
     }
+  };
+
+  const handleRestoreContact = (contact) => {
+    // Move a single contact from trash back to shortlist immediately
+    if (!contact) return;
+    const e = contact.value || contact.email;
+    const updated = { ...contacts };
+    // remove from trash
+    updated.trash = (updated.trash || []).filter(
+      (c) => (c.value || c.email) !== e
+    );
+    // add to shortlist if not already present
+    updated.shortlist = updated.shortlist || [];
+    if (!updated.shortlist.some((s) => (s.value || s.email) === e)) {
+      updated.shortlist = [...updated.shortlist, contact];
+    }
+    setContacts(updated);
+    localStorage.setItem("myContacts", JSON.stringify(updated));
   };
 
   const handleSendEmail = async (contact, emailData) => {
@@ -204,8 +477,12 @@ const MyListPage = () => {
               onContactSelect={handleContactSelect}
               selectedContact={selectedContact}
               onRemoveContact={handleRemoveContact}
-              onRequestRemoveContact={handleRequestRemoveContact}
+              onRestoreContact={(contact) => handleRestoreContact(contact)}
               onCopyContact={handleCopyContact}
+              selectionView={selectionView}
+              toggleSelectionView={toggleSelectionView}
+              selectedEmails={selectedEmails}
+              onToggleSelect={handleToggleSelect}
             />
           </div>
           {showPreview && selectedContact && (
@@ -218,30 +495,68 @@ const MyListPage = () => {
               onSend={handleSendEmail}
             />
           )}
-          {pendingRemoval && (
-            <div className="confirm-overlay" onClick={handleCancelRemove}>
-              <div
-                className="confirm-dialog"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <h3>Confirm removal</h3>
-                <p>
-                  Are you sure you want to remove{" "}
-                  <strong>
-                    {pendingRemoval.first_name ||
-                      pendingRemoval.name ||
-                      pendingRemoval.email}
-                  </strong>{" "}
-                  from <strong>{activeTab}</strong>?
-                </p>
-                <div className="confirm-actions">
-                  <button className="btn-cancel" onClick={handleCancelRemove}>
-                    Cancel
-                  </button>
-                  <button className="btn-danger" onClick={handleConfirmRemove}>
-                    Remove
-                  </button>
-                </div>
+          {/* Bulk action footer shown when there are selected items */}
+          {selectionView && selectedEmails.length > 0 && (
+            <div className="bulk-action-footer">
+              <div className="bulk-action-count">
+                {selectedEmails.length} selected
+              </div>
+              <div className="bulk-action-buttons">
+                <button
+                  className="btn btn-ghost"
+                  onClick={() => {
+                    setSelectedEmails([]);
+                    setSelectionView(false);
+                  }}
+                  title="Cancel selection"
+                >
+                  <Icon name="close" size={14} />
+                  <span className="btn-label">Cancel</span>
+                </button>
+                <button
+                  className="btn btn-primary"
+                  onClick={
+                    activeTab === "trash" ? handleBulkRestore : handleBulkSend
+                  }
+                  title={
+                    activeTab === "trash"
+                      ? "Restore selected"
+                      : "Send to selected"
+                  }
+                >
+                  {activeTab !== "sent" && (
+                    <button
+                      className="btn btn-primary"
+                      onClick={
+                        activeTab === "trash"
+                          ? handleBulkRestore
+                          : handleBulkSend
+                      }
+                      title={
+                        activeTab === "trash"
+                          ? "Restore selected"
+                          : "Send to selected"
+                      }
+                    >
+                      <Icon
+                        name={activeTab === "trash" ? "undo" : "paper-plane"}
+                        size={14}
+                      />
+                      <span className="btn-label">
+                        {activeTab === "trash" ? "Restore" : "Send"}
+                      </span>
+                    </button>
+                  )}
+                  } title=
+                  {activeTab === "trash"
+                    ? "Delete permanently"
+                    : "Move selected to trash"}
+                  >
+                  <Icon name="trash" size={14} />
+                  <span className="btn-label">
+                    {activeTab === "trash" ? "Delete" : "Trash"}
+                  </span>
+                </button>
               </div>
             </div>
           )}

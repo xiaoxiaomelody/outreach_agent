@@ -12,8 +12,13 @@ const ListTable = ({
   onContactSelect,
   selectedContact,
   onRemoveContact,
-  onRequestRemoveContact,
   onCopyContact,
+  onRestoreContact,
+  // selection props
+  selectionView = false,
+  toggleSelectionView = () => {},
+  selectedEmails = [],
+  onToggleSelect = () => {},
 }) => {
   const getTemplateName = (contact) => {
     // Determine template based on industry or use default
@@ -31,27 +36,36 @@ const ListTable = ({
     return "Tech"; // Default
   };
 
+  const showSendCol = activeTab !== "sent";
+  const colCount = 6 + (selectionView ? 1 : 0) + (showSendCol ? 1 : 0); // name, industry, company, title, template, actions-header
+
   return (
     <div className="list-table">
       <table>
         <thead>
           <tr>
+            {selectionView && <th className="select-col"> </th>}
             <th>Name</th>
             <th>Industry</th>
             <th>Company</th>
             <th>Title</th>
             <th>Template</th>
-            <th>Send?</th>
+            {showSendCol && (
+              <th>{activeTab === "trash" ? "Restore?" : "Send?"}</th>
+            )}
             <th className="actions-header">
               {/* header menu to the right of Send? */}
-              <HeaderMenu />
+              <HeaderMenu
+                selectionView={selectionView}
+                toggleSelectionView={toggleSelectionView}
+              />
             </th>
           </tr>
         </thead>
         <tbody>
           {contacts.length === 0 ? (
             <tr>
-              <td colSpan="7" className="empty-message">
+              <td colSpan={colCount} className="empty-message">
                 No contacts in {activeTab}
               </td>
             </tr>
@@ -72,8 +86,31 @@ const ListTable = ({
                 <tr
                   key={email || index}
                   className={isSelected ? "selected" : ""}
-                  onClick={() => onContactSelect(contact)}
+                  onClick={() =>
+                    selectionView
+                      ? onToggleSelect(contact)
+                      : onContactSelect(contact)
+                  }
                 >
+                  {selectionView && (
+                    <td
+                      className="select-col"
+                      onClick={(e) => e.stopPropagation()}
+                      onMouseDown={(e) => e.stopPropagation()}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedEmails.includes(email)}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          onToggleSelect(contact);
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        onMouseDown={(e) => e.stopPropagation()}
+                        aria-label={`Select ${fullName}`}
+                      />
+                    </td>
+                  )}
                   <td>{fullName}</td>
                   <td>{contact.industry || contact.department || "N/A"}</td>
                   <td>{contact.company || contact.organization || "N/A"}</td>
@@ -83,31 +120,34 @@ const ListTable = ({
                       {getTemplateName(contact)}
                     </span>
                   </td>
-                  <td className="actions-cell">
-                    <button
-                      className="send-icon"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onContactSelect(contact);
-                      }}
-                      title="Send email"
-                    >
-                      <Icon name="paper-plane" size={18} />
-                    </button>
-                    {activeTab === "shortlist" && onRequestRemoveContact && (
-                      <button
-                        className="remove-icon"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onRequestRemoveContact(contact);
-                        }}
-                        title="Remove from shortlist"
-                      >
-                        Remove
-                      </button>
-                    )}
-                    {/* per-row actions removed */}
-                  </td>
+                  {showSendCol && (
+                    <td className="actions-cell">
+                      {activeTab === "trash" ? (
+                        <button
+                          className="send-icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onRestoreContact && onRestoreContact(contact);
+                          }}
+                          title="Restore"
+                        >
+                          <Icon name="undo" size={18} />
+                        </button>
+                      ) : (
+                        <button
+                          className="send-icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onContactSelect(contact);
+                          }}
+                          title="Send email"
+                        >
+                          <Icon name="paper-plane" size={18} />
+                        </button>
+                      )}
+                      {/* per-row actions removed */}
+                    </td>
+                  )}
                   {/* spacer cell to match header actions column so hover fills full width */}
                   <td className="actions-header-cell" aria-hidden="true"></td>
                 </tr>
@@ -123,9 +163,11 @@ const ListTable = ({
 export default ListTable;
 
 // Header menu component placed in the table header to the right of Send
-const HeaderMenu = () => {
+const HeaderMenu = ({
+  selectionView = false,
+  toggleSelectionView = () => {},
+}) => {
   const [open, setOpen] = React.useState(false);
-  const [selectionView, setSelectionView] = React.useState(false);
   const ref = React.useRef(null);
 
   React.useEffect(() => {
@@ -151,7 +193,7 @@ const HeaderMenu = () => {
             className={`table-menu-item toggle-selection ${
               selectionView ? "active" : ""
             }`}
-            onClick={() => setSelectionView((s) => !s)}
+            onClick={() => toggleSelectionView(!selectionView)}
           >
             Toggle Selection View
           </button>
