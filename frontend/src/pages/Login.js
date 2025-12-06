@@ -75,23 +75,6 @@ const Login = () => {
         // If this was a sign-up flow, require profile setup first
         if (isSignUp) {
           sessionStorage.setItem("isNewSignup", "true");
-          // Clear any app-local data so new accounts start fresh
-          try {
-            localStorage.setItem(
-              "myContacts",
-              JSON.stringify({ shortlist: [], sent: [], trash: [] })
-            );
-            const initialProfile = {
-              name: "",
-              email: result.user?.email || email,
-              school: "",
-              industries: [],
-              bio: "",
-            };
-            localStorage.setItem("userProfile", JSON.stringify(initialProfile));
-          } catch (err) {
-            // ignore storage errors
-          }
           navigate("/profile");
         } else {
           // existing users continue to Gmail connection

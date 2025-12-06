@@ -27,23 +27,6 @@ const GoogleSignInButton = () => {
         const created = meta.creationTime;
         const last = meta.lastSignInTime;
         if (created && last && created === last) {
-          // New Google account: ensure no leftover local data is present
-          try {
-            localStorage.setItem(
-              "myContacts",
-              JSON.stringify({ shortlist: [], sent: [], trash: [] })
-            );
-            const initialProfile = {
-              name: "",
-              email: user.email || "",
-              school: "",
-              industries: [],
-              bio: "",
-            };
-            localStorage.setItem("userProfile", JSON.stringify(initialProfile));
-          } catch (err) {
-            // ignore
-          }
           navigate("/profile");
         } else {
           // otherwise continue to gmail connection flow
