@@ -24,64 +24,182 @@ const ContactCard = ({ contact }) => {
     contact?.summary ||
     `${fullName} works as ${position} at ${company}`;
 
-  const handleLike = () => {
-    if (!liked) {
-      handleAdd(); // Add to shortlist
-    } else {
-      // Remove from shortlist
+  // Helper: add contact to shortlist. Options: { silent }
+  const addToShortlist = ({ silent = false } = {}) => {
+    try {
       const shortlist = JSON.parse(
         localStorage.getItem("myContacts") ||
           '{"shortlist":[],"sent":[],"trash":[]}'
       );
-      const email = contact?.value || contact?.email;
-      shortlist.shortlist = shortlist.shortlist.filter(
-        (c) => (c.value || c.email) !== email
+      const emailKey = contact?.value || contact?.email;
+      const exists = shortlist.shortlist.some(
+        (c) => (c.value || c.email) === emailKey
       );
+      if (exists) {
+        if (!silent) {
+          try {
+            window.dispatchEvent(
+              new CustomEvent("app-toast", {
+                detail: {
+                  message: `${fullName} is already in your shortlist`,
+                  type: "info",
+                  duration: 2500,
+                },
+              })
+            );
+          } catch (e) {}
+        }
+        return false;
+      }
+
+      shortlist.shortlist.push(contact);
       localStorage.setItem("myContacts", JSON.stringify(shortlist));
+      setLiked(true);
+      setDisliked(false);
+
+      if (!silent) {
+        // show toast with Undo
+        try {
+          const undo = () => {
+            try {
+              const s = JSON.parse(
+                localStorage.getItem("myContacts") ||
+                  '{"shortlist":[],"sent":[],"trash":[]}'
+              );
+              s.shortlist = s.shortlist.filter(
+                (c) => (c.value || c.email) !== emailKey
+              );
+              localStorage.setItem("myContacts", JSON.stringify(s));
+              try {
+                setLiked(false);
+              } catch (er) {}
+              try {
+                window.dispatchEvent(
+                  new CustomEvent("app-toast", {
+                    detail: {
+                      message: `Removed ${fullName} from shortlist`,
+                      type: "info",
+                    },
+                  })
+                );
+              } catch (ee) {}
+            } catch (err) {
+              /* swallow */
+            }
+          };
+
+          window.dispatchEvent(
+            new CustomEvent("app-toast", {
+              detail: {
+                message: `Added ${fullName} to shortlist`,
+                type: "success",
+                actionLabel: "Undo",
+                onAction: undo,
+                duration: 5000,
+              },
+            })
+          );
+        } catch (e) {}
+      }
+      return true;
+    } catch (err) {
+      return false;
+    }
+  };
+
+  const handleLike = () => {
+    if (!liked) {
+      // Only mark liked in UI. Do NOT add to shortlist here.
+      setLiked(true);
+      setDisliked(false);
+      try {
+        window.dispatchEvent(
+          new CustomEvent("app-toast", {
+            detail: {
+              message: `Liked ${fullName}`,
+              type: "success",
+              duration: 2000,
+            },
+          })
+        );
+      } catch (e) {}
+    } else {
+      // Unlike: just update UI state, don't touch shortlist
       setLiked(false);
+      try {
+        window.dispatchEvent(
+          new CustomEvent("app-toast", {
+            detail: {
+              message: `Unliked ${fullName}`,
+              type: "info",
+              duration: 2000,
+            },
+          })
+        );
+      } catch (e) {}
     }
     setDisliked(false);
   };
 
   const handleDislike = () => {
-    // Remove from shortlist and add to trash
-    const shortlist = JSON.parse(
-      localStorage.getItem("myContacts") ||
-        '{"shortlist":[],"sent":[],"trash":[]}'
-    );
-    const email = contact?.value || contact?.email;
-    shortlist.shortlist = shortlist.shortlist.filter(
-      (c) => (c.value || c.email) !== email
-    );
-    const existsInTrash = shortlist.trash.some(
-      (c) => (c.value || c.email) === email
-    );
-    if (!existsInTrash) {
-      shortlist.trash.push(contact);
+    try {
+      const shortlist = JSON.parse(
+        localStorage.getItem("myContacts") ||
+          '{"shortlist":[],"sent":[],"trash":[]}'
+      );
+      const emailKey = contact?.value || contact?.email;
+
+      if (!disliked) {
+        // Mark as disliked: remove from shortlist and add to trash
+        shortlist.shortlist = shortlist.shortlist.filter(
+          (c) => (c.value || c.email) !== emailKey
+        );
+        const existsInTrash = shortlist.trash.some(
+          (c) => (c.value || c.email) === emailKey
+        );
+        if (!existsInTrash) {
+          shortlist.trash.push(contact);
+        }
+        localStorage.setItem("myContacts", JSON.stringify(shortlist));
+        setDisliked(true);
+        setLiked(false);
+        try {
+          window.dispatchEvent(
+            new CustomEvent("app-toast", {
+              detail: {
+                message: `Disliked ${fullName}`,
+                type: "info",
+                duration: 2500,
+              },
+            })
+          );
+        } catch (e) {}
+      } else {
+        // Undo dislike: remove from trash
+        shortlist.trash = shortlist.trash.filter(
+          (c) => (c.value || c.email) !== emailKey
+        );
+        localStorage.setItem("myContacts", JSON.stringify(shortlist));
+        setDisliked(false);
+        try {
+          window.dispatchEvent(
+            new CustomEvent("app-toast", {
+              detail: {
+                message: `Removed dislike for ${fullName}`,
+                type: "info",
+                duration: 2000,
+              },
+            })
+          );
+        } catch (e) {}
+      }
+    } catch (e) {
+      // swallow errors
     }
-    localStorage.setItem("myContacts", JSON.stringify(shortlist));
-    setDisliked(true);
-    setLiked(false);
   };
 
   const handleAdd = () => {
-    // Add to shortlist in localStorage
-    const shortlist = JSON.parse(
-      localStorage.getItem("myContacts") ||
-        '{"shortlist":[],"sent":[],"trash":[]}'
-    );
-    const email = contact?.value || contact?.email;
-
-    // Check if already in shortlist
-    const exists = shortlist.shortlist.some(
-      (c) => (c.value || c.email) === email
-    );
-    if (!exists) {
-      shortlist.shortlist.push(contact);
-      localStorage.setItem("myContacts", JSON.stringify(shortlist));
-      setLiked(true);
-      setDisliked(false);
-    }
+    addToShortlist({ silent: false });
   };
 
   return (
@@ -123,23 +241,30 @@ const ContactCard = ({ contact }) => {
       </div>
       <div className="contact-actions">
         <button
-          className={`contact-action-btn ${liked ? "liked" : ""}`}
+          className={`contact-action-btn like-btn ${liked ? "liked" : ""}`}
           onClick={handleLike}
           title="Like"
+          aria-label={liked ? "Liked" : "Like"}
+          aria-pressed={liked}
         >
-          <Icon name="check" />
+          <Icon name="thumbs-up" size={16} />
         </button>
         <button
-          className={`contact-action-btn ${disliked ? "disliked" : ""}`}
+          className={`contact-action-btn dislike-btn ${
+            disliked ? "disliked" : ""
+          }`}
           onClick={handleDislike}
           title="Dislike"
+          aria-label={disliked ? "Disliked" : "Dislike"}
+          aria-pressed={disliked}
         >
-          <Icon name="error" />
+          <Icon name="thumbs-down" size={16} />
         </button>
         <button
           className="contact-action-btn add-btn"
           onClick={handleAdd}
           title="Add to list"
+          aria-label="Add to list"
         >
           <Icon name="plus" />
         </button>

@@ -54,6 +54,27 @@ const NavBar = () => {
           >
             My List
           </button>
+          {/* Temporary mock links - marked with data-temp for easy removal */}
+          <button
+            className={`navbar-link temp-mock-link ${
+              isActive("/mock-search") ? "active" : ""
+            }`}
+            onClick={() => navigate("/mock-search")}
+            data-temp="mock-search"
+            title="Mock Search (temporary)"
+          >
+            Mock Search
+          </button>
+          <button
+            className={`navbar-link temp-mock-link ${
+              isActive("/mock-results") ? "active" : ""
+            }`}
+            onClick={() => navigate("/mock-results")}
+            data-temp="mock-results"
+            title="Mock Results (temporary)"
+          >
+            Mock Results
+          </button>
           <button
             className={`navbar-link ${
               isActive("/search") || isActive("/dashboard") ? "active" : ""
