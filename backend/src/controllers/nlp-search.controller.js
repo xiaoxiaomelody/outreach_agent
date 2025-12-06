@@ -48,7 +48,8 @@ const nlpSearch = async (req, res) => {
       searchResult = await hunterWithSummariesService.getContactsByDepartmentWithSummaries(
         company,
         department,
-        count
+        count,
+        { query }
       );
     } else if (seniority) {
       // Seniority-specific search
@@ -56,14 +57,16 @@ const nlpSearch = async (req, res) => {
       searchResult = await hunterWithSummariesService.getContactsBySeniorityWithSummaries(
         company,
         seniority,
-        count
+        count,
+        { query }
       );
     } else {
       // General company search
       console.log(`🔍 Searching company: ${company}`);
       searchResult = await hunterWithSummariesService.getCompanyContactsWithSummaries(
         company,
-        count
+        count,
+        { query }
       );
     }
 

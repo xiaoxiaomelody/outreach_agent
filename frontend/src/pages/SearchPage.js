@@ -153,6 +153,7 @@ const SearchPage = () => {
                                     <ContactCard
                                         key={contact.value || contact.email || index}
                                         contact={contact}
+                                        query={searchQuery}
                                     />
                                 ))}
                             </div>

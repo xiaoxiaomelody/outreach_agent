@@ -221,6 +221,11 @@ const getUserTokens = async (userId) => {
     }
 
     const db = getFirestore();
+    if (!db) {
+      console.error('❌ Firestore not initialized. Check Firebase configuration.');
+      return null;
+    }
+
     const userDoc = await db.collection('users').doc(userId).get();
     
     if (!userDoc.exists || !userDoc.data().gmailTokens) {
@@ -229,7 +234,15 @@ const getUserTokens = async (userId) => {
 
     return userDoc.data().gmailTokens;
   } catch (error) {
-    console.error('Get user tokens error:', error);
+    console.error('❌ Get user tokens error:', error.message);
+    if (error.code === 16 || error.message.includes('UNAUTHENTICATED')) {
+      console.error('💡 Firestore authentication error. Possible causes:');
+      console.error('   1. Firestore is not enabled in your Firebase project');
+      console.error('   2. Service account lacks Firestore permissions');
+      console.error('   3. Service account credentials are invalid');
+      console.error('   → Go to Firebase Console > Firestore Database and enable it');
+      console.error('   → Ensure service account has "Cloud Datastore User" role');
+    }
     return null;
   }
 };
@@ -601,9 +614,19 @@ const getGmailStatus = async (userId) => {
     };
   } catch (error) {
     console.error('❌ [STATUS SERVICE] Get Gmail status error:', error);
+    // Provide helpful error messages for common issues
+    let errorMessage = error.message;
+    if (error.code === 16 || error.message.includes('UNAUTHENTICATED')) {
+      errorMessage = 'Firestore authentication failed. Please check:\n' +
+        '1. Firestore is enabled in Firebase Console\n' +
+        '2. Service account has "Cloud Datastore User" role\n' +
+        '3. Service account credentials are valid';
+      console.error('💡 [STATUS SERVICE] Firestore authentication error. Check Firebase Console settings.');
+    }
+    
     return {
       success: false,
-      error: error.message,
+      error: errorMessage,
       connected: false,
       email: null
     };

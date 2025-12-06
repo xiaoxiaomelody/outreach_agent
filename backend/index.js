@@ -49,6 +49,8 @@ const authRoutes = require('./src/routes/auth.routes');
 const emailRoutes = require('./src/routes/email.routes');
 const nlpSearchRoutes = require('./src/routes/nlp-search.routes');
 const chatRoutes = require('./src/routes/chat.routes');
+const rankingRoutes = require('./src/routes/ranking.routes');
+
 
 // Register Gmail callback route (NO authentication - called by Google)
 const authController = require('./src/controllers/auth.controller');
@@ -60,6 +62,7 @@ app.use('/api/auth', authenticateUser, authRoutes);
 app.use('/api/emails', authenticateUser, emailRoutes);
 app.use('/api/search', authenticateUser, nlpSearchRoutes);
 app.use('/api/chat', authenticateUser, chatRoutes);
+app.use('/api/ranking', authenticateUser, rankingRoutes);
 
 // Get current user profile
 app.get('/api/user/profile', authenticateUser, async (req, res) => {
