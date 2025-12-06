@@ -478,6 +478,18 @@ const MyListPage = () => {
               selectedContact={selectedContact}
               onRemoveContact={handleRemoveContact}
               onRestoreContact={(contact) => handleRestoreContact(contact)}
+              onChangeTemplate={(contact, template) => {
+                // update template for a contact in shortlist
+                const e = contact.value || contact.email;
+                setContacts((prev) => {
+                  const next = { ...prev };
+                  next.shortlist = (next.shortlist || []).map((c) =>
+                    (c.value || c.email) === e ? { ...c, template } : c
+                  );
+                  localStorage.setItem("myContacts", JSON.stringify(next));
+                  return next;
+                });
+              }}
               onCopyContact={handleCopyContact}
               selectionView={selectionView}
               toggleSelectionView={toggleSelectionView}

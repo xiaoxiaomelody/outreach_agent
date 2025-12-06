@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./ListTable.css";
 import Icon from "../icons/Icon";
+import { loadEmailTemplates } from "../../config/templates";
 
 /**
  * List Table Component
@@ -14,6 +15,7 @@ const ListTable = ({
   onRemoveContact,
   onCopyContact,
   onRestoreContact,
+  onChangeTemplate,
   // selection props
   selectionView = false,
   toggleSelectionView = () => {},
@@ -116,9 +118,39 @@ const ListTable = ({
                   <td>{contact.company || contact.organization || "N/A"}</td>
                   <td>{contact.position || "N/A"}</td>
                   <td>
-                    <span className="template-badge">
-                      {getTemplateName(contact)}
-                    </span>
+                    {activeTab === "shortlist" &&
+                    typeof onChangeTemplate === "function" ? (
+                      (() => {
+                        const templates = loadEmailTemplates();
+                        return (
+                          <select
+                            className="template-select"
+                            value={contact.template || getTemplateName(contact)}
+                            onChange={(e) => {
+                              e.stopPropagation();
+                              onChangeTemplate &&
+                                onChangeTemplate(contact, e.target.value);
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                            aria-label={`Template for ${
+                              contact.first_name ||
+                              contact.name ||
+                              contact.email
+                            }`}
+                          >
+                            {templates.map((t) => (
+                              <option key={t.id ?? t.name} value={t.name}>
+                                {t.name}
+                              </option>
+                            ))}
+                          </select>
+                        );
+                      })()
+                    ) : (
+                      <span className="template-badge">
+                        {getTemplateName(contact)}
+                      </span>
+                    )}
                   </td>
                   {showSendCol && (
                     <td className="actions-cell">

@@ -62,6 +62,19 @@
   color: #666;
 }
 
+.template-select {
+  padding: 0.35rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  font-size: 0.9rem;
+  color: #111827;
+}
+.template-select:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
 .send-icon {
   background: none;
   border: none;
