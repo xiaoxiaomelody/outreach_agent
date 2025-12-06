@@ -15,6 +15,7 @@ const MyListPage = () => {
   const [activeTab, setActiveTab] = useState("shortlist");
   const [selectedContact, setSelectedContact] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [pendingRemoval, setPendingRemoval] = useState(null);
   const [contacts, setContacts] = useState({
     shortlist: [],
     sent: [],
@@ -47,6 +48,7 @@ const MyListPage = () => {
     setShowPreview(true);
   };
 
+  // Legacy immediate removal (keeps prior behavior)
   const handleRemoveContact = (contact) => {
     const tab = activeTab;
     const updatedTab = (contacts[tab] || []).filter(
@@ -63,6 +65,77 @@ const MyListPage = () => {
       setSelectedContact(null);
       setShowPreview(false);
     }
+  };
+
+  // Request a removal with confirmation — opens a confirm dialog
+  const handleRequestRemoveContact = (contact) => {
+    setPendingRemoval(contact);
+  };
+
+  const handleCancelRemove = () => setPendingRemoval(null);
+
+  const handleConfirmRemove = () => {
+    if (!pendingRemoval) return;
+    const contact = pendingRemoval;
+    const tab = activeTab;
+
+    // snapshot for undo
+    const previous = JSON.parse(JSON.stringify(contacts));
+
+    const updatedTab = (contacts[tab] || []).filter(
+      (c) => (c.value || c.email) !== (contact.value || contact.email)
+    );
+    const updated = { ...contacts, [tab]: updatedTab };
+
+    // if removing from shortlist, move to trash instead of permanent delete
+    if (tab === "shortlist") {
+      const existsInTrash = updated.trash.some(
+        (c) => (c.value || c.email) === (contact.value || contact.email)
+      );
+      if (!existsInTrash) {
+        updated.trash = [...(updated.trash || []), contact];
+      }
+    }
+
+    setContacts(updated);
+    localStorage.setItem("myContacts", JSON.stringify(updated));
+
+    if (
+      selectedContact &&
+      (selectedContact.value || selectedContact.email) ===
+        (contact.value || contact.email)
+    ) {
+      setSelectedContact(null);
+      setShowPreview(false);
+    }
+
+    setPendingRemoval(null);
+
+    // show undo toast
+    try {
+      const undo = () => {
+        try {
+          setContacts(previous);
+          localStorage.setItem("myContacts", JSON.stringify(previous));
+        } catch (err) {
+          /* swallow */
+        }
+      };
+
+      window.dispatchEvent(
+        new CustomEvent("app-toast", {
+          detail: {
+            message: `Removed ${
+              contact.first_name || contact.name || contact.email
+            } from ${tab}`,
+            type: "info",
+            actionLabel: "Undo",
+            onAction: undo,
+            duration: 5000,
+          },
+        })
+      );
+    } catch (e) {}
   };
 
   const handleCopyContact = (contact) => {
@@ -131,6 +204,7 @@ const MyListPage = () => {
               onContactSelect={handleContactSelect}
               selectedContact={selectedContact}
               onRemoveContact={handleRemoveContact}
+              onRequestRemoveContact={handleRequestRemoveContact}
               onCopyContact={handleCopyContact}
             />
           </div>
@@ -143,6 +217,33 @@ const MyListPage = () => {
               }}
               onSend={handleSendEmail}
             />
+          )}
+          {pendingRemoval && (
+            <div className="confirm-overlay" onClick={handleCancelRemove}>
+              <div
+                className="confirm-dialog"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h3>Confirm removal</h3>
+                <p>
+                  Are you sure you want to remove{" "}
+                  <strong>
+                    {pendingRemoval.first_name ||
+                      pendingRemoval.name ||
+                      pendingRemoval.email}
+                  </strong>{" "}
+                  from <strong>{activeTab}</strong>?
+                </p>
+                <div className="confirm-actions">
+                  <button className="btn-cancel" onClick={handleCancelRemove}>
+                    Cancel
+                  </button>
+                  <button className="btn-danger" onClick={handleConfirmRemove}>
+                    Remove
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>

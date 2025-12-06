@@ -12,6 +12,7 @@ const ListTable = ({
   onContactSelect,
   selectedContact,
   onRemoveContact,
+  onRequestRemoveContact,
   onCopyContact,
 }) => {
   const getTemplateName = (contact) => {
@@ -93,6 +94,18 @@ const ListTable = ({
                     >
                       <Icon name="paper-plane" size={18} />
                     </button>
+                    {activeTab === "shortlist" && onRequestRemoveContact && (
+                      <button
+                        className="remove-icon"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onRequestRemoveContact(contact);
+                        }}
+                        title="Remove from shortlist"
+                      >
+                        Remove
+                      </button>
+                    )}
                     {/* per-row actions removed */}
                   </td>
                   {/* spacer cell to match header actions column so hover fills full width */}
