@@ -3,8 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import SearchPage from "./pages/SearchPage";
-import MockSearchPage from "./pages/MockSearchPage";
-import MockResultsPage from "./pages/MockResultsPage";
 import TemplatesPage from "./pages/TemplatesPage";
 import MyListPage from "./pages/MyListPage";
 import GmailConnection from "./pages/GmailConnection";
@@ -42,22 +40,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/mock-search"
-            element={
-              <ProtectedRoute>
-                <MockSearchPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/mock-results"
-            element={
-              <ProtectedRoute>
-                <MockResultsPage />
-              </ProtectedRoute>
-            }
-          />
+          {/* Mock pages removed - use real Search/Results pages */}
           <Route
             path="/templates"
             element={
