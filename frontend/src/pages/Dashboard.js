@@ -200,7 +200,7 @@ const Dashboard = () => {
             contact.summary ||
             `${fullName} works as ${contact.position} at ${contact.company}`,
           template: emailTemplate,
-          senderName: user?.displayName || user?.email || "Outreach Agent",
+          senderName: user?.displayName || user?.email || "Recruitly",
         });
 
         if (result.success) {
