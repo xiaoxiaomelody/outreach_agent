@@ -1,13 +1,27 @@
 import React, { useState } from "react";
 import "../styles/ProfilePage.css";
+import GmailConnectButton from "../components/email/GmailConnectButton";
 
 const AccountSettings = () => {
+  const [gmailConnected, setGmailConnected] = useState(false);
+
   return (
     <div className="profile-pane">
       <h2>Account Settings</h2>
       <p className="muted">
         Manage your account settings such as changing your password.
       </p>
+
+      <section style={{ marginTop: 12 }}>
+        <h3>Email</h3>
+        <p className="muted">
+          Connect or disconnect your Gmail account used to send emails.
+        </p>
+        <GmailConnectButton onStatusChange={setGmailConnected} />
+      </section>
+
+      <hr style={{ margin: "20px 0" }} />
+
       <ChangePasswordForm />
     </div>
   );
