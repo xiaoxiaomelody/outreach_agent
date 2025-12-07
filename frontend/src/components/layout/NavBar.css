@@ -49,6 +49,14 @@
   color: #333;
 }
 
+/* Temporary mock link styling - easy to spot and remove */
+.navbar-link.temp-mock-link {
+  color: #8b5cf6;
+}
+.navbar-link.temp-mock-link:hover {
+  color: #6246f6;
+}
+
 .navbar-link.active {
   color: #333;
   font-weight: 500;

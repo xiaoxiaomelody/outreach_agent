@@ -54,6 +54,7 @@ const NavBar = () => {
           >
             My List
           </button>
+          {/* Mock links removed */}
           <button
             className={`navbar-link ${
               isActive("/search") || isActive("/dashboard") ? "active" : ""
@@ -77,6 +78,16 @@ const NavBar = () => {
 
             {menuOpen && (
               <div className="user-menu" role="menu">
+                <button
+                  className="user-menu-item"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    navigate("/profile");
+                  }}
+                  role="menuitem"
+                >
+                  My Profile
+                </button>
                 <button
                   className="user-menu-item"
                   onClick={() => {

@@ -5,8 +5,12 @@ import Dashboard from "./pages/Dashboard";
 import SearchPage from "./pages/SearchPage";
 import TemplatesPage from "./pages/TemplatesPage";
 import MyListPage from "./pages/MyListPage";
+import ProfileLayout from "./pages/ProfileLayout";
+import ProfileInfo from "./pages/ProfileInfo";
+import AccountSettings from "./pages/AccountSettings";
 import GmailConnection from "./pages/GmailConnection";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ToastContainer from "./components/ui/ToastContainer";
 import "./styles/App.css";
 
 /**
@@ -14,62 +18,75 @@ import "./styles/App.css";
  * Configures routing for the application
  */
 function App() {
-    return (
-        <Router>
-            <div className="App">
-                <Routes>
-                    {/* Public Route - Login */}
-                    <Route path="/" element={<Login />} />
+  return (
+    <Router>
+      <div className="App">
+        <ToastContainer />
+        <Routes>
+          {/* Public Route - Login */}
+          <Route path="/" element={<Login />} />
 
-                    {/* Protected Routes */}
-                    <Route
-                        path="/gmail-connection"
-                        element={
-                            <ProtectedRoute>
-                                <GmailConnection />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/search"
-                        element={
-                            <ProtectedRoute>
-                                <SearchPage />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/templates"
-                        element={
-                            <ProtectedRoute>
-                                <TemplatesPage />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/my-list"
-                        element={
-                            <ProtectedRoute>
-                                <MyListPage />
-                            </ProtectedRoute>
-                        }
-                    />
-                    {/* Legacy Dashboard route - redirect to search */}
-                    <Route
-                        path="/dashboard"
-                        element={
-                            <ProtectedRoute>
-                                <SearchPage />
-                            </ProtectedRoute>
-                        }
-                    />
+          {/* Protected Routes */}
+          <Route
+            path="/gmail-connection"
+            element={
+              <ProtectedRoute>
+                <GmailConnection />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/search"
+            element={
+              <ProtectedRoute>
+                <SearchPage />
+              </ProtectedRoute>
+            }
+          />
+          {/* Mock pages removed - use real Search/Results pages */}
+          <Route
+            path="/templates"
+            element={
+              <ProtectedRoute>
+                <TemplatesPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-list"
+            element={
+              <ProtectedRoute>
+                <MyListPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile/*"
+            element={
+              <ProtectedRoute>
+                <ProfileLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<ProfileInfo />} />
+            <Route path="settings" element={<AccountSettings />} />
+          </Route>
+          {/* Legacy Dashboard route - redirect to search */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <SearchPage />
+              </ProtectedRoute>
+            }
+          />
 
-                    {/* Fallback Route - Redirect to Login */}
-                    <Route path="*" element={<Login />} />
-                </Routes>
-            </div>
-        </Router>
-    );
+          {/* Fallback Route - Redirect to Login */}
+          <Route path="*" element={<Login />} />
+        </Routes>
+      </div>
+    </Router>
+  );
 }
 
 export default App;

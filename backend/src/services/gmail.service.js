@@ -324,7 +324,7 @@ const createEmailMessage = ({ to, subject, body, fromName }) => {
   // Note: Gmail API automatically sets the "From" field to the authenticated user's email
   // We can optionally include a display name, but Gmail will use the authenticated account
   // The From header here is mainly for display purposes in the email client
-  const fromField = fromName || 'Outreach Agent';
+  const fromField = fromName || 'Recruitly';
 
   // Clean up the body - remove any subject line that might be included
   // and ensure proper HTML formatting

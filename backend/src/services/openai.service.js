@@ -216,9 +216,10 @@ Your response (JSON only):`;
  * @returns {Promise<Object>} Drafted email
  */
 const generatePersonalizedEmail = async (params) => {
-  const systemPrompt = `You are a professional email writer. Personalize email templates based on recipient information. Keep the tone professional but warm. Make specific references to the recipient's role and background. 
+  const systemPrompt = `You are a professional email writer. Personalize email templates by only changing the [Name] and [name] variables based on recipient information. Keep the tone professional but warm. Make specific references to the recipient's role and background. 
 
 IMPORTANT: 
+- Do not change the template content other than the [Name] and [name] variables.
 - Return ONLY the email body content (no subject line)
 - Do NOT include "Subject:" in your response
 - Format the email body as clean HTML or plain text
