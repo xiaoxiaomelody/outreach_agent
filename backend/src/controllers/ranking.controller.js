@@ -1,4 +1,6 @@
 const { getFirestore } = require('../config/firebase');
+const fs = require('fs');
+const path = require('path');
 
 /**
  * Record a ranking interaction event

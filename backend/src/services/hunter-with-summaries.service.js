@@ -6,6 +6,25 @@
 const hunterDirect = require('./hunter-direct.service');
 const openaiService = require('./openai.service');
 const { getFirestore } = require('../config/firebase');
+const fs = require('fs');
+const path = require('path');
+
+/**
+ * Load trained model weights if available, otherwise use defaults
+ */
+function loadTrainedWeights() {
+  try {
+    const weightsPath = path.join(__dirname, '..', '..', 'models', 'trained-weights.json');
+    if (fs.existsSync(weightsPath)) {
+      const data = JSON.parse(fs.readFileSync(weightsPath, 'utf8'));
+      console.log('✓ Loaded trained weights from', weightsPath);
+      return data.weights;
+    }
+  } catch (error) {
+    console.warn('Could not load trained weights:', error.message);
+  }
+  return null;
+}
 
 /**
  * Domain search with AI-generated summaries for each contact
@@ -74,7 +93,7 @@ const domainSearchWithSummaries = async (domain, options = {}) => {
 /**
  * Simple deterministic re-ranker
  * Combines normalized signals into a single relevance score and sorts contacts.
- * Very small, interpretable linear blend; weights are configurable.
+ * Uses trained weights from ML model if available, otherwise uses defaults.
  * Operates in O(n) time.
  */
 const reRankContacts = (contacts = [], opts = {}) => {
@@ -83,13 +102,16 @@ const reRankContacts = (contacts = [], opts = {}) => {
   const seniorityGoal = opts.seniority ? String(opts.seniority).toLowerCase() : null;
   const limit = opts.limit || contacts.length;
 
-  // Default weights (sum to 1)
-  const weights = Object.assign({
+  // Load trained weights if available, otherwise use defaults
+  const trainedWeights = loadTrainedWeights();
+  const defaultWeights = {
     confidence: 0.4,
-    verification: 0.25,
-    title: 0.2,
-    semantic: 0.15
-  }, opts.weights || {});
+    verified: 0.25,
+    titleMatch: 0.2,
+    deptMatch: 0.1,
+    seniorMatch: 0.05
+  };
+  const weights = trainedWeights || Object.assign(defaultWeights, opts.weights || {});
 
   // Helper: normalize confidence (Hunter gives 0-100 sometimes)
   const normalizeConfidence = (c) => {
@@ -141,14 +163,13 @@ const reRankContacts = (contacts = [], opts = {}) => {
     const semanticSource = contact.summary || contact.snippet || contact.position || contact.name || '';
     const semanticScore = jaccard(query, semanticSource);
 
-    // Compose final score using weights; include small contributions from dept/seniority
+    // Compose final score using learned weights
     const score = (
       weights.confidence * conf +
-      weights.verification * verified +
-      weights.title * titleScore +
-      weights.semantic * semanticScore +
-      0.05 * deptMatch +
-      0.05 * seniorMatch
+      weights.verified * verified +
+      weights.titleMatch * titleScore +
+      weights.deptMatch * deptMatch +
+      weights.seniorMatch * seniorMatch
     );
 
     return Object.assign({}, contact, { _relevanceScore: score });
