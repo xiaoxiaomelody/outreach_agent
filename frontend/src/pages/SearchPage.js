@@ -131,78 +131,20 @@ const SearchPage = () => {
     return <div className="loading">Loading...</div>;
   }
 
-    return (
-        <div className="search-page">
-            <NavBar />
-            <div className="search-page-content">
-                {!hasSearched ? (
-                    <>
-                        <div className="search-greeting">
-                            <h1>
-                                {greeting()}, {user.displayName || user.email?.split("@")[0] || "User"}! 
-                                What do you want to look for today?
-                            </h1>
-                        </div>
-                        <form className="search-bar-container" onSubmit={handleSearch}>
-                            <div className="search-bar">
-                                <button type="button" className="search-menu-icon">☰</button>
-                                <input
-                                    type="text"
-                                    placeholder="Search for companies, industries, or job titles"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="search-input"
-                                />
-                                <button type="submit" className="search-icon">🔍</button>
-                            </div>
-                        </form>
-                        {!gmailConnected && (
-                            <div className="gmail-connect-prompt">
-                                <GmailConnectButton onStatusChange={setGmailConnected} />
-                            </div>
-                        )}
-                        <div className="recommended-section">
-                            <h3>Recommended for you</h3>
-                            <p className="recommended-subtitle">Based on your previous searches</p>
-                            <div className="recommended-placeholder">
-                                <p>Start searching to see recommendations</p>
-                            </div>
-                        </div>
-                    </>
-                ) : (
-                    <>
-                        <form className="search-bar-container" onSubmit={handleSearch}>
-                            <div className="search-bar">
-                                <button type="button" className="search-menu-icon">☰</button>
-                                <input
-                                    type="text"
-                                    placeholder="Search for companies, industries, or job titles"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="search-input"
-                                />
-                                <button type="submit" className="search-icon">🔍</button>
-                            </div>
-                        </form>
-                        <div className="search-results-header">
-                            <h2>Here's what we found for '{searchQuery}'</h2>
-                        </div>
-                        {loading && <div className="loading">Searching...</div>}
-                        {error && <div className="error-message">⚠️ {error}</div>}
-                        {contacts.length > 0 && (
-                            <div className="contacts-grid">
-                                {contacts.map((contact, index) => (
-                                    <ContactCard
-                                        key={contact.value || contact.email || index}
-                                        contact={contact}
-                                        query={searchQuery}
-                                    />
-                                ))}
-                            </div>
-                        )}
-                    </>
-                )}
+  return (
+    <div className="search-page">
+      <NavBar />
+      <div className="search-page-content">
+        {!hasSearched ? (
+          <>
+            <div className="search-greeting">
+              <h1>
+                {greeting()},{" "}
+                {user.displayName || user.email?.split("@")[0] || "User"}! What
+                do you want to look for today?
+              </h1>
             </div>
+
             <form className="search-bar-container" onSubmit={handleSearch}>
               <div className="search-bar">
                 <button type="button" className="search-menu-icon">
@@ -215,30 +157,22 @@ const SearchPage = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="search-input"
                 />
-                <button type="submit" className="search-icon">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <circle cx="11" cy="11" r="8" />
-                    <path d="m21 21-4.35-4.35" />
-                  </svg>
+                <button
+                  type="submit"
+                  className="search-icon"
+                  aria-label="Search"
+                >
+                  <Icon name="search" />
                 </button>
               </div>
             </form>
+
             {!gmailConnected && (
               <div className="gmail-connect-prompt">
                 <GmailConnectButton onStatusChange={setGmailConnected} />
               </div>
             )}
+
             <div className="recommended-section">
               <h3>Recommended for you</h3>
               <p className="recommended-subtitle">
@@ -282,22 +216,27 @@ const SearchPage = () => {
                 </button>
               </div>
             </form>
+
             <div className="search-results-header">
               <h2>Here's what we found for '{searchQuery}'</h2>
             </div>
+
             {loading && <div className="loading">Searching...</div>}
+
             {error && (
               <div className="error-message">
                 <Icon name="warning" style={{ marginRight: 8 }} />
                 {error}
               </div>
             )}
+
             {contacts.length > 0 && (
               <div className="contacts-grid">
                 {contacts.map((contact, index) => (
                   <ContactCard
                     key={contact.value || contact.email || index}
                     contact={contact}
+                    query={searchQuery}
                   />
                 ))}
               </div>
