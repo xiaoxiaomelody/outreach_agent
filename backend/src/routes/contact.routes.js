@@ -38,4 +38,24 @@ router.post('/search-by-seniority', contactController.searchBySeniority);
  */
 router.post('/natural-search', contactController.naturalLanguageSearch);
 
+/**
+ * POST /api/contacts/accept
+ * Persist a selected contact as accepted for the authenticated user
+ * Body: { contact: { ...fields }, sessionId?: string }
+ */
+router.post('/accept', contactController.acceptContact);
+
+/**
+ * POST /api/contacts/reject
+ * Persist a selected contact as rejected
+ * Body: { contact: { ...fields }, sessionId?: string }
+ */
+router.post('/reject', contactController.rejectContact);
+
+/**
+ * GET /api/contacts/mock
+ * Return a mock contact for demo/testing the ContactCard UI
+ */
+router.get('/mock', contactController.getMockContact);
+
 module.exports = router;

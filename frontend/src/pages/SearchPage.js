@@ -131,18 +131,77 @@ const SearchPage = () => {
     return <div className="loading">Loading...</div>;
   }
 
-  return (
-    <div className="search-page">
-      <NavBar />
-      <div className="search-page-content">
-        {!hasSearched ? (
-          <>
-            <div className="search-greeting">
-              <h1>
-                {greeting()},{" "}
-                {user.displayName || user.email?.split("@")[0] || "User"}! What
-                do you want to look for today?
-              </h1>
+    return (
+        <div className="search-page">
+            <NavBar />
+            <div className="search-page-content">
+                {!hasSearched ? (
+                    <>
+                        <div className="search-greeting">
+                            <h1>
+                                {greeting()}, {user.displayName || user.email?.split("@")[0] || "User"}! 
+                                What do you want to look for today?
+                            </h1>
+                        </div>
+                        <form className="search-bar-container" onSubmit={handleSearch}>
+                            <div className="search-bar">
+                                <button type="button" className="search-menu-icon">☰</button>
+                                <input
+                                    type="text"
+                                    placeholder="Search for companies, industries, or job titles"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="search-input"
+                                />
+                                <button type="submit" className="search-icon">🔍</button>
+                            </div>
+                        </form>
+                        {!gmailConnected && (
+                            <div className="gmail-connect-prompt">
+                                <GmailConnectButton onStatusChange={setGmailConnected} />
+                            </div>
+                        )}
+                        <div className="recommended-section">
+                            <h3>Recommended for you</h3>
+                            <p className="recommended-subtitle">Based on your previous searches</p>
+                            <div className="recommended-placeholder">
+                                <p>Start searching to see recommendations</p>
+                            </div>
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <form className="search-bar-container" onSubmit={handleSearch}>
+                            <div className="search-bar">
+                                <button type="button" className="search-menu-icon">☰</button>
+                                <input
+                                    type="text"
+                                    placeholder="Search for companies, industries, or job titles"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="search-input"
+                                />
+                                <button type="submit" className="search-icon">🔍</button>
+                            </div>
+                        </form>
+                        <div className="search-results-header">
+                            <h2>Here's what we found for '{searchQuery}'</h2>
+                        </div>
+                        {loading && <div className="loading">Searching...</div>}
+                        {error && <div className="error-message">⚠️ {error}</div>}
+                        {contacts.length > 0 && (
+                            <div className="contacts-grid">
+                                {contacts.map((contact, index) => (
+                                    <ContactCard
+                                        key={contact.value || contact.email || index}
+                                        contact={contact}
+                                        query={searchQuery}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                    </>
+                )}
             </div>
             <form className="search-bar-container" onSubmit={handleSearch}>
               <div className="search-bar">
