@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import NavBar from "../components/layout/NavBar";
 import { getCurrentUser } from "../config/authUtils";
 import ListTable from "../components/list/ListTable";
-import EmailPreview from "../components/list/EmailPreview";
 import Icon from "../components/icons/Icon";
 import "../styles/MyListPage.css";
 
@@ -14,10 +13,10 @@ import "../styles/MyListPage.css";
 const MyListPage = () => {
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("shortlist");
-  const [selectedContact, setSelectedContact] = useState(null);
+
   const [selectionView, setSelectionView] = useState(false);
   const [selectedEmails, setSelectedEmails] = useState([]);
-  const [showPreview, setShowPreview] = useState(false);
+
   const [contacts, setContacts] = useState({
     shortlist: [],
     sent: [],
@@ -41,8 +40,8 @@ const MyListPage = () => {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
-    setSelectedContact(null);
-    setShowPreview(false);
+    // clear any selection when changing tabs
+    setSelectedEmails([]);
   };
 
   const handleContactSelect = (contact) => {
@@ -54,8 +53,8 @@ const MyListPage = () => {
       );
       return;
     }
-    setSelectedContact(contact);
-    setShowPreview(true);
+    // Preview feature removed: clicking a row in normal view does nothing.
+    return;
   };
 
   const handleRemoveContact = (contact) => {
@@ -98,14 +97,7 @@ const MyListPage = () => {
     const updated = { ...contacts, [tab]: updatedTab };
     setContacts(updated);
     localStorage.setItem("myContacts", JSON.stringify(updated));
-    if (
-      selectedContact &&
-      (selectedContact.value || selectedContact.email) ===
-        (contact.value || contact.email)
-    ) {
-      setSelectedContact(null);
-      setShowPreview(false);
-    }
+    // clear selection if the removed contact was selected (selectionView handles checkboxes)
 
     // If we permanently deleted from Trash, offer undo to restore into Trash
     if (tab === "trash") {
@@ -458,24 +450,14 @@ const MyListPage = () => {
           >
             Trash
           </button>
-          <button
-            className={`list-tab ${activeTab === "preview" ? "active" : ""}`}
-            onClick={() => handleTabChange("preview")}
-          >
-            Preview
-          </button>
+          {/* Preview tab removed */}
         </div>
         <div className="list-content">
-          <div
-            className={`list-table-container ${
-              showPreview ? "with-preview" : ""
-            }`}
-          >
+          <div className={`list-table-container`}>
             <ListTable
               contacts={getCurrentContacts()}
               activeTab={activeTab}
               onContactSelect={handleContactSelect}
-              selectedContact={selectedContact}
               onRemoveContact={handleRemoveContact}
               onRestoreContact={(contact) => handleRestoreContact(contact)}
               onChangeTemplate={(contact, template) => {
@@ -497,16 +479,7 @@ const MyListPage = () => {
               onToggleSelect={handleToggleSelect}
             />
           </div>
-          {showPreview && selectedContact && (
-            <EmailPreview
-              contact={selectedContact}
-              onClose={() => {
-                setShowPreview(false);
-                setSelectedContact(null);
-              }}
-              onSend={handleSendEmail}
-            />
-          )}
+          {/* Preview pane removed */}
           {/* Bulk action footer shown when there are selected items */}
           {selectionView && selectedEmails.length > 0 && (
             <div className="bulk-action-footer">
