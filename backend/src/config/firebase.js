@@ -85,6 +85,7 @@ function getFirestore() {
   if (process.env.DEV_MODE === 'true') {
     return null;
   }
+  initializeFirebase();
   return admin.firestore();
 }
 

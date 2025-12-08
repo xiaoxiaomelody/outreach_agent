@@ -61,20 +61,17 @@ function extractFeatures(interactions) {
       continue;
     }
 
-    // Normalize confidence to 0-1
-    let confidence = rawContact.confidence || rawContact.confidence_score || 0;
-    if (confidence > 1) confidence = Math.min(100, confidence) / 100;
-    confidence = Math.max(0, Math.min(1, confidence));
-
-    // Verification flag
-    const verified = rawContact.verified === true || 
-                     rawContact.verification?.status === 'valid' ? 1 : 0;
-
     // Title match (simplified - check if query words appear in title)
     const query = (interaction.query || '').toLowerCase();
     const title = (contact.position || '').toLowerCase();
     const titleMatch = query && title && query.split(/\s+/).some(word => 
       word.length > 2 && title.includes(word)
+    ) ? 1 : 0;
+
+    // Semantic match (check query against summary/position/name)
+    const semanticSource = (contact.summary || contact.position || contact.name || '').toLowerCase();
+    const semanticMatch = query && semanticSource && query.split(/\s+/).some(word => 
+      word.length > 2 && semanticSource.includes(word)
     ) ? 1 : 0;
 
     // Department match
@@ -97,9 +94,8 @@ function extractFeatures(interactions) {
     }
 
     features.push({
-      confidence,
-      verified,
       titleMatch,
+      semanticScore: semanticMatch,
       deptMatch,
       seniorMatch,
       label,
@@ -126,7 +122,7 @@ function trainSimpleModel(features) {
   }
 
   // Extract feature matrix and labels
-  const featureNames = ['confidence', 'verified', 'titleMatch', 'deptMatch', 'seniorMatch'];
+  const featureNames = ['titleMatch', 'semanticScore', 'deptMatch', 'seniorMatch'];
   const X = features.map(f => 
     featureNames.map(name => f[name])
   );
@@ -202,11 +198,10 @@ function trainSimpleModel(features) {
  */
 function getDefaultWeights() {
   return {
-    confidence: 0.4,
-    verified: 0.25,
-    titleMatch: 0.2,
+    titleMatch: 0.4,
+    semanticScore: 0.4,
     deptMatch: 0.1,
-    seniorMatch: 0.05
+    seniorMatch: 0.1
   };
 }
 

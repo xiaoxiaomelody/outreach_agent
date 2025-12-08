@@ -105,11 +105,10 @@ const reRankContacts = (contacts = [], opts = {}) => {
   // Load trained weights if available, otherwise use defaults
   const trainedWeights = loadTrainedWeights();
   const defaultWeights = {
-    confidence: 0.4,
-    verified: 0.25,
-    titleMatch: 0.2,
+    titleMatch: 0.4,
+    semanticScore: 0.4,
     deptMatch: 0.1,
-    seniorMatch: 0.05
+    seniorMatch: 0.1
   };
   const weights = trainedWeights || Object.assign(defaultWeights, opts.weights || {});
 
@@ -139,12 +138,6 @@ const reRankContacts = (contacts = [], opts = {}) => {
 
   // Score each contact
   const scored = contacts.map(contact => {
-    // Hunter confidence
-    const conf = normalizeConfidence(contact.confidence || contact.confidence_score || contact.confidenceScore || 0);
-
-    // Verification flag (boolean)
-    const verified = contact.verified === true || contact.verification?.status === 'valid' ? 1 : 0;
-
     // Title match score: how much query overlaps with position/title
     const titleText = (contact.position || contact.role || contact.title || contact.position_raw || '').toString();
     const titleScore = Math.max(jaccard(query, titleText), jaccard(query, (contact.name || '')));
@@ -163,11 +156,10 @@ const reRankContacts = (contacts = [], opts = {}) => {
     const semanticSource = contact.summary || contact.snippet || contact.position || contact.name || '';
     const semanticScore = jaccard(query, semanticSource);
 
-    // Compose final score using learned weights
+    // Compose final score using learned weights (no Hunter.io confidence/verification)
     const score = (
-      weights.confidence * conf +
-      weights.verified * verified +
       weights.titleMatch * titleScore +
+      weights.semanticScore * semanticScore +
       weights.deptMatch * deptMatch +
       weights.seniorMatch * seniorMatch
     );
