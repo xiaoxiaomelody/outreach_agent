@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import NavBar from "../components/layout/NavBar";
 import { getCurrentUser } from "../config/authUtils";
 import ListTable from "../components/list/ListTable";
+import EmailPreview from "../components/list/EmailPreview";
 import Icon from "../components/icons/Icon";
 import "../styles/MyListPage.css";
 
@@ -13,7 +14,8 @@ import "../styles/MyListPage.css";
 const MyListPage = () => {
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("shortlist");
-
+  const [selectedContact, setSelectedContact] = useState(null);
+  const [showPreview, setShowPreview] = useState(false);
   const [selectionView, setSelectionView] = useState(false);
   const [selectedEmails, setSelectedEmails] = useState([]);
 
@@ -40,6 +42,8 @@ const MyListPage = () => {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
+    setSelectedContact(null);
+    setShowPreview(false);
     // clear any selection when changing tabs
     setSelectedEmails([]);
   };
@@ -53,8 +57,9 @@ const MyListPage = () => {
       );
       return;
     }
-    // Preview feature removed: clicking a row in normal view does nothing.
-    return;
+    // Open preview when paper airplane is clicked
+    setSelectedContact(contact);
+    setShowPreview(true);
   };
 
   const handleRemoveContact = (contact) => {
@@ -453,11 +458,16 @@ const MyListPage = () => {
           {/* Preview tab removed */}
         </div>
         <div className="list-content">
-          <div className={`list-table-container`}>
+          <div
+            className={`list-table-container ${
+              showPreview ? "with-preview" : ""
+            }`}
+          >
             <ListTable
               contacts={getCurrentContacts()}
               activeTab={activeTab}
               onContactSelect={handleContactSelect}
+              selectedContact={selectedContact}
               onRemoveContact={handleRemoveContact}
               onRestoreContact={(contact) => handleRestoreContact(contact)}
               onChangeTemplate={(contact, template) => {
@@ -479,7 +489,16 @@ const MyListPage = () => {
               onToggleSelect={handleToggleSelect}
             />
           </div>
-          {/* Preview pane removed */}
+          {showPreview && selectedContact && (
+            <EmailPreview
+              contact={selectedContact}
+              onClose={() => {
+                setShowPreview(false);
+                setSelectedContact(null);
+              }}
+              onSend={handleSendEmail}
+            />
+          )}
           {/* Bulk action footer shown when there are selected items */}
           {selectionView && selectedEmails.length > 0 && (
             <div className="bulk-action-footer">
