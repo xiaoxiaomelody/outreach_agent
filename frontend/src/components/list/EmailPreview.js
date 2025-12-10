@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import gmailApi from "../../api/gmail";
 import "./EmailPreview.css";
 import Icon from "../icons/Icon";
+import { getCurrentUser } from "../../config/authUtils";
+import { getUserTemplates } from "../../services/firestore.service";
+import { moveContactToSent } from "../../services/firestore.service";
 
 /**
  * Email Preview Component
@@ -18,14 +21,56 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
     return (c && (c.value || c.email || c.id || c.name)) || "unknown";
   };
 
+  // Get stable contact identifier (email)
+  const contactEmail = contact?.value || contact?.email || "";
+  const [hasUserEdits, setHasUserEdits] = useState(false);
+  const [lastContactEmail, setLastContactEmail] = useState("");
+
   useEffect(() => {
+    // Only regenerate email if:
+    // 1. This is a different contact (email changed), OR
+    // 2. User hasn't made any edits yet
+    const isDifferentContact = contactEmail !== lastContactEmail;
+    const shouldRegenerate = isDifferentContact || !hasUserEdits;
+
+    if (!shouldRegenerate) {
+      return; // Don't overwrite user edits for the same contact
+    }
+
+    // Update last contact email if it changed
+    if (isDifferentContact) {
+      setLastContactEmail(contactEmail);
+      setHasUserEdits(false); // Reset edit flag for new contact
+    }
+
     // Load template and generate email
     const loadTemplate = async () => {
       // Get template based on industry
       const templateName = getTemplateName(contact);
-      const templates = JSON.parse(
-        localStorage.getItem("emailTemplates") || "[]"
-      );
+      
+      // Try to load templates from Firestore first
+      let templates = [];
+      const user = getCurrentUser();
+      if (user?.uid) {
+        try {
+          templates = await getUserTemplates(user.uid);
+        } catch (error) {
+          console.error("Error loading templates from Firestore:", error);
+        }
+      }
+      
+      // Fallback to localStorage if Firestore is empty
+      if (!templates || templates.length === 0) {
+        try {
+          const localTemplates = JSON.parse(
+            localStorage.getItem("emailTemplates") || "[]"
+          );
+          templates = localTemplates;
+        } catch (err) {
+          console.error("Error loading templates from localStorage:", err);
+        }
+      }
+      
       const template =
         templates.find((t) => t.name === templateName) || templates[0];
 
@@ -140,22 +185,54 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
       });
 
       if (result.success) {
-        // Move from shortlist to sent
-        const contacts = JSON.parse(
-          localStorage.getItem("myContacts") ||
-            '{"shortlist":[],"sent":[],"trash":[]}'
-        );
-        const email = contact.value || contact.email;
-        contacts.shortlist = contacts.shortlist.filter(
-          (c) => (c.value || c.email) !== email
-        );
-        const existsInSent = contacts.sent.some(
-          (c) => (c.value || c.email) === email
-        );
-        if (!existsInSent) {
-          contacts.sent.push(contact);
+        // Move contact from shortlist to sent in Firestore
+        const user = getCurrentUser();
+        if (user?.uid) {
+          try {
+            await moveContactToSent(user.uid, contact);
+            console.log("✅ Contact moved to sent in Firestore");
+          } catch (error) {
+            console.error("Error moving contact to sent in Firestore:", error);
+            // Fallback to localStorage
+            const contacts = JSON.parse(
+              localStorage.getItem("myContacts") ||
+                '{"shortlist":[],"sent":[],"trash":[]}'
+            );
+            const email = contact.value || contact.email;
+            contacts.shortlist = contacts.shortlist.filter(
+              (c) => (c.value || c.email) !== email
+            );
+            const existsInSent = contacts.sent.some(
+              (c) => (c.value || c.email) === email
+            );
+            if (!existsInSent) {
+              contacts.sent.push(contact);
+            }
+            localStorage.setItem("myContacts", JSON.stringify(contacts));
+          }
+        } else {
+          // Fallback to localStorage if not authenticated
+          const contacts = JSON.parse(
+            localStorage.getItem("myContacts") ||
+              '{"shortlist":[],"sent":[],"trash":[]}'
+          );
+          const email = contact.value || contact.email;
+          contacts.shortlist = contacts.shortlist.filter(
+            (c) => (c.value || c.email) !== email
+          );
+          const existsInSent = contacts.sent.some(
+            (c) => (c.value || c.email) === email
+          );
+          if (!existsInSent) {
+            contacts.sent.push(contact);
+          }
+          localStorage.setItem("myContacts", JSON.stringify(contacts));
         }
-        localStorage.setItem("myContacts", JSON.stringify(contacts));
+
+        // Call onSend callback if provided (to update parent state)
+        if (onSend) {
+          await onSend(contact, { subject, body });
+        }
 
         alert("Email sent successfully!");
         onClose();
@@ -208,7 +285,10 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
               <input
                 type="text"
                 value={subject}
-                onChange={(e) => setSubject(e.target.value)}
+                onChange={(e) => {
+                  setSubject(e.target.value);
+                  setHasUserEdits(true); // Mark that user has made edits
+                }}
                 className="preview-input"
               />
             ) : (
@@ -222,7 +302,10 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
             {isEditing ? (
               <textarea
                 value={body}
-                onChange={(e) => setBody(e.target.value)}
+                onChange={(e) => {
+                  setBody(e.target.value);
+                  setHasUserEdits(true); // Mark that user has made edits
+                }}
                 className="preview-textarea"
                 rows={10}
               />

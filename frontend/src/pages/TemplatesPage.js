@@ -4,6 +4,10 @@ import NavBar from "../components/layout/NavBar";
 import { getCurrentUser } from "../config/authUtils";
 import TemplateCard from "../components/templates/TemplateCard";
 import TemplateEditor from "../components/templates/TemplateEditor";
+import {
+  getUserTemplates,
+  updateUserTemplates,
+} from "../services/firestore.service";
 import "../styles/TemplatesPage.css";
 
 /**
@@ -39,15 +43,37 @@ const TemplatesPage = () => {
     const currentUser = getCurrentUser();
     if (currentUser) {
       setUser(currentUser);
-      // Load templates from localStorage or API
-      const savedTemplates = localStorage.getItem("emailTemplates");
-      if (savedTemplates) {
-        setTemplates(JSON.parse(savedTemplates));
-      }
+      // Load templates from Firestore
+      loadTemplatesFromFirestore(currentUser.uid);
     } else {
       navigate("/");
     }
   }, [navigate]);
+
+  const loadTemplatesFromFirestore = async (userId) => {
+    try {
+      const firestoreTemplates = await getUserTemplates(userId);
+      if (firestoreTemplates && firestoreTemplates.length > 0) {
+        setTemplates(firestoreTemplates);
+      } else {
+        // Fallback to localStorage if Firestore is empty
+        const savedTemplates = localStorage.getItem("emailTemplates");
+        if (savedTemplates) {
+          const parsed = JSON.parse(savedTemplates);
+          setTemplates(parsed);
+          // Migrate to Firestore
+          await updateUserTemplates(userId, parsed);
+        }
+      }
+    } catch (error) {
+      console.error("Error loading templates from Firestore:", error);
+      // Fallback to localStorage
+      const savedTemplates = localStorage.getItem("emailTemplates");
+      if (savedTemplates) {
+        setTemplates(JSON.parse(savedTemplates));
+      }
+    }
+  };
 
   const handleSelectTemplate = (template) => {
     setSelectedTemplate(template);
@@ -65,12 +91,23 @@ const TemplatesPage = () => {
     setIsEditing(true);
   };
 
-  const handleSaveTemplate = (updatedTemplate) => {
+  const handleSaveTemplate = async (updatedTemplate) => {
+    if (!user?.uid) return;
+    
     const updated = templates.map((t) =>
       t.id === updatedTemplate.id ? updatedTemplate : t
     );
     setTemplates(updated);
-    localStorage.setItem("emailTemplates", JSON.stringify(updated));
+    
+    // Update Firestore
+    try {
+      await updateUserTemplates(user.uid, updated);
+    } catch (error) {
+      console.error("Error updating templates in Firestore:", error);
+      // Fallback to localStorage
+      localStorage.setItem("emailTemplates", JSON.stringify(updated));
+    }
+    
     // Ensure the selected template reference is updated so the UI shows saved changes
     setSelectedTemplate(updatedTemplate);
     setIsEditing(false);
@@ -94,9 +131,18 @@ const TemplatesPage = () => {
     }
 
     // Start undo timer (5s)
-    const timeoutId = setTimeout(() => {
+    const timeoutId = setTimeout(async () => {
       // finalize deletion: persist changes
-      localStorage.setItem("emailTemplates", JSON.stringify(updated));
+      if (user?.uid) {
+        try {
+          await updateUserTemplates(user.uid, updated);
+        } catch (error) {
+          console.error("Error updating templates in Firestore:", error);
+          localStorage.setItem("emailTemplates", JSON.stringify(updated));
+        }
+      } else {
+        localStorage.setItem("emailTemplates", JSON.stringify(updated));
+      }
       setPendingDelete(null);
     }, 5000);
 

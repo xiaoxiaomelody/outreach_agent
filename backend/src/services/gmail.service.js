@@ -155,7 +155,14 @@ const handleOAuthCallback = async (code, userId) => {
       
       console.log(`📧 [OAUTH CALLBACK] Storing tokens in Firestore for userId: ${userId}`);
       
+      // Get existing user data to preserve other fields
+      const userRef = db.collection('users').doc(userId);
+      const existingDoc = await userRef.get();
+      const existingData = existingDoc.exists ? existingDoc.data() : {};
+      
+      // Only update Gmail-related fields, preserve everything else
       const userData = {
+        ...existingData, // Preserve all existing fields
         gmailConnected: true,
         gmailEmail: gmailEmail || profile?.data?.emailAddress,
         gmailTokens: {
@@ -163,10 +170,37 @@ const handleOAuthCallback = async (code, userId) => {
           refreshToken: tokens.refresh_token,
           expiryDate: tokens.expiry_date,
           updatedAt: new Date()
-        }
+        },
+        updatedAt: new Date()
       };
       
-      await db.collection('users').doc(userId).set(userData, { merge: true });
+      // Initialize missing fields if this is a new document
+      if (!existingDoc.exists) {
+        userData.email = userData.email || '';
+        userData.displayName = userData.displayName || '';
+        userData.contacts = userData.contacts || {
+          shortlist: [],
+          sent: [],
+          trash: []
+        };
+        userData.templates = userData.templates || [];
+        userData.profile = userData.profile || {
+          name: '',
+          email: userData.gmailEmail || '',
+          school: '',
+          industries: [],
+          bio: ''
+        };
+        userData.behavior = userData.behavior || {
+          searchHistory: [],
+          acceptedContacts: [],
+          rejectedContacts: [],
+          lastActivity: null
+        };
+        userData.createdAt = userData.createdAt || new Date();
+      }
+      
+      await userRef.set(userData, { merge: true });
       console.log(`✅ [OAUTH CALLBACK] Gmail tokens stored in Firestore for user ${userId}`);
       console.log(`📧 [OAUTH CALLBACK] Connected Gmail: ${profile.data.emailAddress}`);
       

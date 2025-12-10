@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 import "./ContactCard.css";
 import Icon from "../icons/Icon";
+import { getCurrentUser } from "../../config/authUtils";
+import {
+  addContactToShortlist,
+  removeContactFromShortlist,
+  moveContactToTrash,
+  getUserContacts,
+} from "../../services/firestore.service";
 
 /**
  * Contact Card Component
@@ -25,14 +32,45 @@ const ContactCard = ({ contact }) => {
     `${fullName} works as ${position} at ${company}`;
 
   // Helper: add contact to shortlist. Options: { silent }
-  const addToShortlist = ({ silent = false } = {}) => {
+  const addToShortlist = async ({ silent = false } = {}) => {
     try {
-      const shortlist = JSON.parse(
-        localStorage.getItem("myContacts") ||
-          '{"shortlist":[],"sent":[],"trash":[]}'
-      );
+      const user = getCurrentUser();
+      if (!user?.uid) {
+        // Fallback to localStorage if not authenticated
+        const shortlist = JSON.parse(
+          localStorage.getItem("myContacts") ||
+            '{"shortlist":[],"sent":[],"trash":[]}'
+        );
+        const emailKey = contact?.value || contact?.email;
+        const exists = shortlist.shortlist.some(
+          (c) => (c.value || c.email) === emailKey
+        );
+        if (exists) {
+          if (!silent) {
+            try {
+              window.dispatchEvent(
+                new CustomEvent("app-toast", {
+                  detail: {
+                    message: `${fullName} is already in your shortlist`,
+                    type: "info",
+                    duration: 2500,
+                  },
+                })
+              );
+            } catch (e) {}
+          }
+          return false;
+        }
+        shortlist.shortlist.push(contact);
+        localStorage.setItem("myContacts", JSON.stringify(shortlist));
+        setDisliked(false);
+        return true;
+      }
+
+      // Use Firestore
       const emailKey = contact?.value || contact?.email;
-      const exists = shortlist.shortlist.some(
+      const contacts = await getUserContacts(user.uid);
+      const exists = contacts.shortlist.some(
         (c) => (c.value || c.email) === emailKey
       );
       if (exists) {
@@ -52,56 +90,64 @@ const ContactCard = ({ contact }) => {
         return false;
       }
 
-      shortlist.shortlist.push(contact);
-      localStorage.setItem("myContacts", JSON.stringify(shortlist));
-      // Do not auto-like when adding to shortlist; only update disliked state
-      setDisliked(false);
+      console.log('📋 Attempting to add contact to shortlist via Firestore...');
+      const success = await addContactToShortlist(user.uid, contact);
+      console.log('📋 Add contact result:', success);
+      
+      if (success) {
+        setDisliked(false);
 
-      if (!silent) {
-        // show toast with Undo
-        try {
-          const undo = () => {
-            try {
-              const s = JSON.parse(
-                localStorage.getItem("myContacts") ||
-                  '{"shortlist":[],"sent":[],"trash":[]}'
-              );
-              s.shortlist = s.shortlist.filter(
-                (c) => (c.value || c.email) !== emailKey
-              );
-              localStorage.setItem("myContacts", JSON.stringify(s));
+        if (!silent) {
+          // show toast with Undo
+          try {
+            const undo = async () => {
               try {
-                setLiked(false);
-              } catch (er) {}
-              try {
-                window.dispatchEvent(
-                  new CustomEvent("app-toast", {
-                    detail: {
-                      message: `Removed ${fullName} from shortlist`,
-                      type: "info",
-                    },
-                  })
-                );
-              } catch (ee) {}
-            } catch (err) {
-              /* swallow */
-            }
-          };
+                if (user?.uid) {
+                  await removeContactFromShortlist(user.uid, emailKey);
+                } else {
+                  const s = JSON.parse(
+                    localStorage.getItem("myContacts") ||
+                      '{"shortlist":[],"sent":[],"trash":[]}'
+                  );
+                  s.shortlist = s.shortlist.filter(
+                    (c) => (c.value || c.email) !== emailKey
+                  );
+                  localStorage.setItem("myContacts", JSON.stringify(s));
+                }
+                try {
+                  setLiked(false);
+                } catch (er) {}
+                try {
+                  window.dispatchEvent(
+                    new CustomEvent("app-toast", {
+                      detail: {
+                        message: `Removed ${fullName} from shortlist`,
+                        type: "info",
+                      },
+                    })
+                  );
+                } catch (ee) {}
+              } catch (err) {
+                /* swallow */
+              }
+            };
 
-          window.dispatchEvent(
-            new CustomEvent("app-toast", {
-              detail: {
-                message: `Added ${fullName} to shortlist`,
-                type: "success",
-                actionLabel: "Undo",
-                onAction: undo,
-                duration: 5000,
-              },
-            })
-          );
-        } catch (e) {}
+            window.dispatchEvent(
+              new CustomEvent("app-toast", {
+                detail: {
+                  message: `Added ${fullName} to shortlist`,
+                  type: "success",
+                  actionLabel: "Undo",
+                  onAction: undo,
+                  duration: 5000,
+                },
+              })
+            );
+          } catch (e) {}
+        }
+        return true;
       }
-      return true;
+      return false;
     } catch (err) {
       return false;
     }
@@ -141,26 +187,32 @@ const ContactCard = ({ contact }) => {
     setDisliked(false);
   };
 
-  const handleDislike = () => {
+  const handleDislike = async () => {
     try {
-      const shortlist = JSON.parse(
-        localStorage.getItem("myContacts") ||
-          '{"shortlist":[],"sent":[],"trash":[]}'
-      );
+      const user = getCurrentUser();
       const emailKey = contact?.value || contact?.email;
 
       if (!disliked) {
-        // Mark as disliked: remove from shortlist and add to trash
-        shortlist.shortlist = shortlist.shortlist.filter(
-          (c) => (c.value || c.email) !== emailKey
-        );
-        const existsInTrash = shortlist.trash.some(
-          (c) => (c.value || c.email) === emailKey
-        );
-        if (!existsInTrash) {
-          shortlist.trash.push(contact);
+        if (user?.uid) {
+          // Use Firestore
+          await moveContactToTrash(user.uid, contact);
+        } else {
+          // Fallback to localStorage
+          const shortlist = JSON.parse(
+            localStorage.getItem("myContacts") ||
+              '{"shortlist":[],"sent":[],"trash":[]}'
+          );
+          shortlist.shortlist = shortlist.shortlist.filter(
+            (c) => (c.value || c.email) !== emailKey
+          );
+          const existsInTrash = shortlist.trash.some(
+            (c) => (c.value || c.email) === emailKey
+          );
+          if (!existsInTrash) {
+            shortlist.trash.push(contact);
+          }
+          localStorage.setItem("myContacts", JSON.stringify(shortlist));
         }
-        localStorage.setItem("myContacts", JSON.stringify(shortlist));
         setDisliked(true);
         setLiked(false);
         try {
@@ -176,10 +228,25 @@ const ContactCard = ({ contact }) => {
         } catch (e) {}
       } else {
         // Undo dislike: remove from trash
-        shortlist.trash = shortlist.trash.filter(
-          (c) => (c.value || c.email) !== emailKey
-        );
-        localStorage.setItem("myContacts", JSON.stringify(shortlist));
+        if (user?.uid) {
+          // Use Firestore - need to get contacts and update
+          const contacts = await getUserContacts(user.uid);
+          contacts.trash = contacts.trash.filter(
+            (c) => (c.value || c.email) !== emailKey
+          );
+          const { updateUserContacts } = await import("../../services/firestore.service");
+          await updateUserContacts(user.uid, contacts);
+        } else {
+          // Fallback to localStorage
+          const shortlist = JSON.parse(
+            localStorage.getItem("myContacts") ||
+              '{"shortlist":[],"sent":[],"trash":[]}'
+          );
+          shortlist.trash = shortlist.trash.filter(
+            (c) => (c.value || c.email) !== emailKey
+          );
+          localStorage.setItem("myContacts", JSON.stringify(shortlist));
+        }
         setDisliked(false);
         try {
           window.dispatchEvent(

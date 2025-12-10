@@ -10,6 +10,7 @@ import {
     signInWithPopup,
 } from "firebase/auth";
 import { auth } from "./firebase";
+import { createOrUpdateUserProfile, migrateLocalStorageToFirestore } from "../services/firestore.service";
 
 /**
  * Sign up a new user with email and password
@@ -24,6 +25,19 @@ export const signUpWithEmail = async (email, password) => {
             email,
             password
         );
+        
+        // Create user profile in Firestore
+        try {
+            await createOrUpdateUserProfile(userCredential.user.uid, {
+                email: userCredential.user.email,
+                displayName: userCredential.user.displayName,
+                emailVerified: userCredential.user.emailVerified,
+            });
+        } catch (firestoreError) {
+            console.error('Error creating user profile in Firestore:', firestoreError);
+            // Don't fail signup if Firestore fails
+        }
+        
         return { success: true, user: userCredential.user };
     } catch (error) {
         return { success: false, error: error.message };
@@ -43,6 +57,22 @@ export const signInWithEmail = async (email, password) => {
             email,
             password
         );
+        
+        // Update user profile in Firestore (in case it changed)
+        try {
+            await createOrUpdateUserProfile(userCredential.user.uid, {
+                email: userCredential.user.email,
+                displayName: userCredential.user.displayName,
+                emailVerified: userCredential.user.emailVerified,
+            });
+            
+            // Migrate localStorage data if needed
+            await migrateLocalStorageToFirestore(userCredential.user.uid);
+        } catch (firestoreError) {
+            console.error('Error updating user profile in Firestore:', firestoreError);
+            // Don't fail signin if Firestore fails
+        }
+        
         return { success: true, user: userCredential.user };
     } catch (error) {
         return { success: false, error: error.message };
@@ -61,6 +91,23 @@ export const signInWithGoogle = async () => {
         provider.addScope('https://www.googleapis.com/auth/userinfo.profile');
         
         const userCredential = await signInWithPopup(auth, provider);
+        
+        // Create/update user profile in Firestore
+        try {
+            await createOrUpdateUserProfile(userCredential.user.uid, {
+                email: userCredential.user.email,
+                displayName: userCredential.user.displayName,
+                photoURL: userCredential.user.photoURL,
+                emailVerified: userCredential.user.emailVerified,
+            });
+            
+            // Migrate localStorage data if needed
+            await migrateLocalStorageToFirestore(userCredential.user.uid);
+        } catch (firestoreError) {
+            console.error('Error creating user profile in Firestore:', firestoreError);
+            // Don't fail signin if Firestore fails
+        }
+        
         return { success: true, user: userCredential.user };
     } catch (error) {
         console.error('Google sign-in error:', error);

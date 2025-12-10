@@ -3,7 +3,16 @@ import { useNavigate } from "react-router-dom";
 import NavBar from "../components/layout/NavBar";
 import { getCurrentUser } from "../config/authUtils";
 import ListTable from "../components/list/ListTable";
+import EmailPreview from "../components/list/EmailPreview";
 import Icon from "../components/icons/Icon";
+import {
+  getUserContacts,
+  updateUserContacts,
+  removeContactFromShortlist,
+  moveContactToTrash,
+  moveContactToSent,
+  restoreContactFromTrash,
+} from "../services/firestore.service";
 import "../styles/MyListPage.css";
 
 /**
@@ -22,21 +31,90 @@ const MyListPage = () => {
     sent: [],
     trash: [],
   });
+  const [selectedContact, setSelectedContact] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const currentUser = getCurrentUser();
     if (currentUser) {
       setUser(currentUser);
-      // Load contacts from localStorage or API
-      const savedContacts = localStorage.getItem("myContacts");
-      if (savedContacts) {
-        setContacts(JSON.parse(savedContacts));
-      }
+      // Load contacts from Firestore
+      loadContactsFromFirestore(currentUser.uid);
+      
+      // Set up a listener for storage events (when ContactCard updates Firestore)
+      const handleStorageChange = () => {
+        console.log("📋 Storage event detected, reloading contacts...");
+        loadContactsFromFirestore(currentUser.uid);
+      };
+      
+      // Listen for custom events from ContactCard
+      window.addEventListener('contacts-updated', handleStorageChange);
+      
+      // Also poll periodically to catch Firestore updates (fallback)
+      const pollInterval = setInterval(() => {
+        loadContactsFromFirestore(currentUser.uid);
+      }, 3000); // Poll every 3 seconds
+      
+      return () => {
+        window.removeEventListener('contacts-updated', handleStorageChange);
+        clearInterval(pollInterval);
+      };
     } else {
       navigate("/");
     }
   }, [navigate]);
+
+  const loadContactsFromFirestore = async (userId) => {
+    try {
+      console.log("📋 Loading contacts from Firestore for user:", userId);
+      const firestoreContacts = await getUserContacts(userId);
+      console.log("📋 Loaded contacts from Firestore:", firestoreContacts);
+      
+      // Check if we got actual data or empty arrays
+      const hasData = firestoreContacts.shortlist?.length > 0 || 
+                     firestoreContacts.sent?.length > 0 || 
+                     firestoreContacts.trash?.length > 0;
+      
+      if (hasData) {
+        console.log("✅ Found data in Firestore, using it");
+        setContacts(firestoreContacts);
+      } else {
+        console.log("📋 No data in Firestore, checking localStorage...");
+        // Fallback to localStorage if Firestore is empty
+        const savedContacts = localStorage.getItem("myContacts");
+        if (savedContacts) {
+          const localContacts = JSON.parse(savedContacts);
+          const hasLocalData = localContacts.shortlist?.length > 0 || 
+                             localContacts.sent?.length > 0 || 
+                             localContacts.trash?.length > 0;
+          if (hasLocalData) {
+            console.log("📋 Found data in localStorage, using it and migrating to Firestore");
+            setContacts(localContacts);
+            // Try to migrate to Firestore
+            try {
+              await updateUserContacts(userId, localContacts);
+              console.log("✅ Migrated localStorage data to Firestore");
+            } catch (migrateError) {
+              console.error("❌ Failed to migrate to Firestore:", migrateError);
+            }
+          } else {
+            console.log("📋 No data in localStorage either, using empty arrays");
+            setContacts(firestoreContacts);
+          }
+        } else {
+          setContacts(firestoreContacts);
+        }
+      }
+    } catch (error) {
+      console.error("❌ Error loading contacts from Firestore:", error);
+      // Fallback to localStorage if Firestore fails
+      const savedContacts = localStorage.getItem("myContacts");
+      if (savedContacts) {
+        console.log("📋 Falling back to localStorage due to error");
+        setContacts(JSON.parse(savedContacts));
+      }
+    }
+  };
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -53,8 +131,8 @@ const MyListPage = () => {
       );
       return;
     }
-    // Preview feature removed: clicking a row in normal view does nothing.
-    return;
+    // Open EmailPreview for sending
+    setSelectedContact(contact);
   };
 
   const handleRemoveContact = (contact) => {
@@ -89,14 +167,24 @@ const MyListPage = () => {
     }
   };
 
-  const performRemoveContact = (contact) => {
+  const performRemoveContact = async (contact) => {
+    if (!user?.uid) return;
+    
     const tab = activeTab;
     const updatedTab = (contacts[tab] || []).filter(
       (c) => (c.value || c.email) !== (contact.value || contact.email)
     );
     const updated = { ...contacts, [tab]: updatedTab };
     setContacts(updated);
-    localStorage.setItem("myContacts", JSON.stringify(updated));
+    
+    // Update Firestore
+    try {
+      await updateUserContacts(user.uid, updated);
+    } catch (error) {
+      console.error("Error updating contacts in Firestore:", error);
+      // Fallback to localStorage
+      localStorage.setItem("myContacts", JSON.stringify(updated));
+    }
     // clear selection if the removed contact was selected (selectionView handles checkboxes)
 
     // If we permanently deleted from Trash, offer undo to restore into Trash
@@ -128,7 +216,15 @@ const MyListPage = () => {
                   ) {
                     next.trash = [...next.trash, contact];
                   }
-                  localStorage.setItem("myContacts", JSON.stringify(next));
+                  // Update Firestore
+                  if (user?.uid) {
+                    updateUserContacts(user.uid, next).catch((error) => {
+                      console.error("Error updating contacts in Firestore:", error);
+                      localStorage.setItem("myContacts", JSON.stringify(next));
+                    });
+                  } else {
+                    localStorage.setItem("myContacts", JSON.stringify(next));
+                  }
                   return next;
                 });
               },
@@ -159,8 +255,9 @@ const MyListPage = () => {
     );
   };
 
-  const handleBulkSend = () => {
-    if (selectedEmails.length === 0) return;
+  const handleBulkSend = async () => {
+    if (selectedEmails.length === 0 || !user?.uid) return;
+    
     const updated = { ...contacts };
     const moved = [];
     // remove from each tab and collect moved contacts
@@ -178,13 +275,21 @@ const MyListPage = () => {
     });
     updated.sent = [...(updated.sent || []), ...moved];
     setContacts(updated);
-    localStorage.setItem("myContacts", JSON.stringify(updated));
+    
+    // Update Firestore
+    try {
+      await updateUserContacts(user.uid, updated);
+    } catch (error) {
+      console.error("Error updating contacts in Firestore:", error);
+      localStorage.setItem("myContacts", JSON.stringify(updated));
+    }
+    
     setSelectedEmails([]);
     setSelectionView(false);
   };
 
-  const handleBulkRestore = () => {
-    if (selectedEmails.length === 0) return;
+  const handleBulkRestore = async () => {
+    if (selectedEmails.length === 0 || !user?.uid) return;
 
     const updated = { ...contacts };
     const moved = [];
@@ -213,7 +318,15 @@ const MyListPage = () => {
     updated.shortlist = [...existingShortlist, ...toAdd];
 
     setContacts(updated);
-    localStorage.setItem("myContacts", JSON.stringify(updated));
+    
+    // Update Firestore
+    try {
+      await updateUserContacts(user.uid, updated);
+    } catch (error) {
+      console.error("Error updating contacts in Firestore:", error);
+      localStorage.setItem("myContacts", JSON.stringify(updated));
+    }
+    
     setSelectedEmails([]);
     setSelectionView(false);
   };
@@ -240,7 +353,9 @@ const MyListPage = () => {
     }
   };
 
-  const performBulkTrash = (emailsToMove) => {
+  const performBulkTrash = async (emailsToMove) => {
+    if (!user?.uid) return;
+    
     const updated = { ...contacts };
     // collect moved items with source tab so we can undo
     const movedEntries = [];
@@ -264,7 +379,15 @@ const MyListPage = () => {
       ...movedEntries.map((m) => m.contact),
     ];
     setContacts(updated);
-    localStorage.setItem("myContacts", JSON.stringify(updated));
+    
+    // Update Firestore
+    try {
+      await updateUserContacts(user.uid, updated);
+    } catch (error) {
+      console.error("Error updating contacts in Firestore:", error);
+      localStorage.setItem("myContacts", JSON.stringify(updated));
+    }
+    
     setSelectedEmails((s) => s.filter((e) => !emailsToMove.includes(e)));
     setSelectionView(false);
 
@@ -335,7 +458,9 @@ const MyListPage = () => {
     }
   };
 
-  const performBulkDelete = (emailsToDelete) => {
+  const performBulkDelete = async (emailsToDelete) => {
+    if (!user?.uid) return;
+    
     const updated = { ...contacts };
     // capture full objects being deleted so Undo can restore them
     const deletedObjects = (updated.trash || []).filter((c) =>
@@ -347,7 +472,15 @@ const MyListPage = () => {
       (c) => !emailsToDelete.includes(c.value || c.email)
     );
     setContacts(updated);
-    localStorage.setItem("myContacts", JSON.stringify(updated));
+    
+    // Update Firestore
+    try {
+      await updateUserContacts(user.uid, updated);
+    } catch (error) {
+      console.error("Error updating contacts in Firestore:", error);
+      localStorage.setItem("myContacts", JSON.stringify(updated));
+    }
+    
     setSelectedEmails((s) => s.filter((e) => !emailsToDelete.includes(e)));
     setSelectionView(false);
 
@@ -392,30 +525,41 @@ const MyListPage = () => {
     }
   };
 
-  const handleRestoreContact = (contact) => {
+  const handleRestoreContact = async (contact) => {
     // Move a single contact from trash back to shortlist immediately
-    if (!contact) return;
-    const e = contact.value || contact.email;
-    const updated = { ...contacts };
-    // remove from trash
-    updated.trash = (updated.trash || []).filter(
-      (c) => (c.value || c.email) !== e
-    );
-    // add to shortlist if not already present
-    updated.shortlist = updated.shortlist || [];
-    if (!updated.shortlist.some((s) => (s.value || s.email) === e)) {
-      updated.shortlist = [...updated.shortlist, contact];
+    if (!contact || !user?.uid) return;
+    
+    try {
+      await restoreContactFromTrash(user.uid, contact);
+      // Reload contacts from Firestore
+      await loadContactsFromFirestore(user.uid);
+    } catch (error) {
+      console.error("Error restoring contact:", error);
+      // Fallback to local update
+      const e = contact.value || contact.email;
+      const updated = { ...contacts };
+      updated.trash = (updated.trash || []).filter(
+        (c) => (c.value || c.email) !== e
+      );
+      updated.shortlist = updated.shortlist || [];
+      if (!updated.shortlist.some((s) => (s.value || s.email) === e)) {
+        updated.shortlist = [...updated.shortlist, contact];
+      }
+      setContacts(updated);
+      localStorage.setItem("myContacts", JSON.stringify(updated));
     }
-    setContacts(updated);
-    localStorage.setItem("myContacts", JSON.stringify(updated));
   };
 
   const handleSendEmail = async (contact, emailData) => {
-    // This is handled in EmailPreview component
-    // Just update the contacts state
-    const savedContacts = localStorage.getItem("myContacts");
-    if (savedContacts) {
-      setContacts(JSON.parse(savedContacts));
+    // Reload contacts from Firestore to reflect the sent status
+    if (user?.uid) {
+      try {
+        await loadContactsFromFirestore(user.uid);
+        // Also dispatch event to trigger refresh
+        window.dispatchEvent(new CustomEvent('contacts-updated'));
+      } catch (error) {
+        console.error("Error reloading contacts after send:", error);
+      }
     }
   };
 
@@ -460,17 +604,24 @@ const MyListPage = () => {
               onContactSelect={handleContactSelect}
               onRemoveContact={handleRemoveContact}
               onRestoreContact={(contact) => handleRestoreContact(contact)}
-              onChangeTemplate={(contact, template) => {
+              onChangeTemplate={async (contact, template) => {
                 // update template for a contact in shortlist
+                if (!user?.uid) return;
+                
                 const e = contact.value || contact.email;
-                setContacts((prev) => {
-                  const next = { ...prev };
-                  next.shortlist = (next.shortlist || []).map((c) =>
-                    (c.value || c.email) === e ? { ...c, template } : c
-                  );
+                const next = { ...contacts };
+                next.shortlist = (next.shortlist || []).map((c) =>
+                  (c.value || c.email) === e ? { ...c, template } : c
+                );
+                setContacts(next);
+                
+                // Update Firestore
+                try {
+                  await updateUserContacts(user.uid, next);
+                } catch (error) {
+                  console.error("Error updating contacts in Firestore:", error);
                   localStorage.setItem("myContacts", JSON.stringify(next));
-                  return next;
-                });
+                }
               }}
               onCopyContact={handleCopyContact}
               selectionView={selectionView}
@@ -479,7 +630,14 @@ const MyListPage = () => {
               onToggleSelect={handleToggleSelect}
             />
           </div>
-          {/* Preview pane removed */}
+          {/* Email Preview Modal */}
+          {selectedContact && (
+            <EmailPreview
+              contact={selectedContact}
+              onClose={() => setSelectedContact(null)}
+              onSend={handleSendEmail}
+            />
+          )}
           {/* Bulk action footer shown when there are selected items */}
           {selectionView && selectedEmails.length > 0 && (
             <div className="bulk-action-footer">
