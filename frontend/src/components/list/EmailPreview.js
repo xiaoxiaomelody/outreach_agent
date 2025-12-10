@@ -104,10 +104,26 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
         // to avoid showing a different template briefly while async personalization runs.
         const initialBody = template.content
           .replace(/\[Name\]/g, fullName)
-          .replace(/\[name\]/g, fullName);
-        const initialSubject = `Outreach: ${fullName} at ${
+          .replace(/\[name\]/g, fullName)
+          .replace(
+            /\[Company\]/g,
+            contact.company || contact.organization || "Company"
+          );
+
+        // Prefer template.subject if provided, otherwise fall back to a generated subject.
+        let initialSubject = `Outreach: ${fullName} at ${
           contact.company || contact.organization || "Company"
         }`;
+        if (template.subject && template.subject.trim() !== "") {
+          initialSubject = template.subject
+            .replace(/\[Name\]/g, fullName)
+            .replace(/\[name\]/g, fullName)
+            .replace(
+              /\[Company\]/g,
+              contact.company || contact.organization || "Company"
+            );
+        }
+
         setBody(initialBody);
         setSubject(initialSubject);
 
