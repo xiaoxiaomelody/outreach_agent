@@ -13,7 +13,7 @@ import "../styles/Dashboard.css";
 
 /**
  * Dashboard Component
- * Outreach Agent - Contact sourcing, email drafting, and sending
+ * Recruitly - Contact sourcing, email drafting, and sending
  */
 const Dashboard = () => {
   const [user, setUser] = useState(null);
@@ -249,7 +249,7 @@ const Dashboard = () => {
         to: draftedEmail.to,
         subject: draftedEmail.subject,
         body: draftedEmail.body,
-        fromName: user?.displayName || user?.email || "Outreach Agent",
+        fromName: user?.displayName || user?.email || "Recruitly",
       });
 
       console.log("📧 [FRONTEND] Send email result:", result);
@@ -301,7 +301,7 @@ const Dashboard = () => {
         to: draft.to,
         subject: draft.subject,
         body: draft.body,
-        fromName: user?.displayName || user?.email || "Outreach Agent",
+        fromName: user?.displayName || user?.email || "Recruitly",
       }));
 
       const result = await gmailApi.batchSendEmails(emails);
@@ -338,7 +338,7 @@ const Dashboard = () => {
       <div className="dashboard-header">
         <div className="header-content">
           <h1>
-            <Icon name="robot" style={{ marginRight: 8 }} /> Outreach Agent
+            <Icon name="robot" style={{ marginRight: 8 }} /> Recruitly
           </h1>
           <div className="header-right">
             <span className="user-email">{user.email}</span>

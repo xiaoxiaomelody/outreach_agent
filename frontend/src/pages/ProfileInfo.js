@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../styles/ProfilePage.css";
+import { getCurrentUser } from "../config/authUtils";
+import { createOrUpdateUserProfile } from "../services/firestore.service";
 
 const defaultProfile = {
   name: "",
@@ -15,6 +17,7 @@ const industryOptions = [
   "Medicine",
   "Education",
   "Design",
+  "Consulting",
   "Other",
 ];
 
@@ -60,6 +63,29 @@ const ProfileInfo = () => {
           detail: { message: "Profile saved", type: "info", duration: 3000 },
         })
       );
+      // Also push profile to backend (Firestore) if user is signed in
+      try {
+        const u = getCurrentUser();
+        if (u && u.uid) {
+          // Provide profile data in a backend-friendly shape
+          const userData = {
+            email: profile.email || u.email || "",
+            displayName: profile.name || u.displayName || "",
+            profile: {
+              name: profile.name || "",
+              email: profile.email || "",
+              school: profile.school || "",
+              industries: profile.industries || [],
+              bio: profile.bio || "",
+            },
+          };
+          createOrUpdateUserProfile(u.uid, userData).catch((err) => {
+            console.error("Failed to sync profile to backend:", err);
+          });
+        }
+      } catch (err) {
+        console.warn("Profile sync skipped - no authenticated user", err);
+      }
     } catch (err) {}
   };
 

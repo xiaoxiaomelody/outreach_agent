@@ -55,7 +55,7 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
           console.error("Error loading templates from Firestore:", error);
         }
       }
-      
+
       // Fallback to localStorage if Firestore is empty
       if (!templates || templates.length === 0) {
         try {
@@ -124,7 +124,7 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
                 contact.company || contact.organization
               }`,
             template: template.content,
-            senderName: "Outreach Agent",
+            senderName: "Recruitly",
           });
 
           if (result.success && result.data) {
@@ -186,7 +186,7 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
         to: contact.value || contact.email,
         subject: subject,
         body: body,
-        fromName: "Outreach Agent",
+        fromName: "Recruitly",
       });
 
       if (result.success) {
