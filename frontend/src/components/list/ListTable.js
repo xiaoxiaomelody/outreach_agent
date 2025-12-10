@@ -11,7 +11,7 @@ const ListTable = ({
   contacts,
   activeTab,
   onContactSelect,
-  selectedContact,
+  selectedContact = null,
   onRemoveContact,
   onCopyContact,
   onRestoreContact,

@@ -22,7 +22,8 @@ import "../styles/MyListPage.css";
 const MyListPage = () => {
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("shortlist");
-
+  const [selectedContact, setSelectedContact] = useState(null);
+  const [showPreview, setShowPreview] = useState(false);
   const [selectionView, setSelectionView] = useState(false);
   const [selectedEmails, setSelectedEmails] = useState([]);
 
@@ -31,7 +32,6 @@ const MyListPage = () => {
     sent: [],
     trash: [],
   });
-  const [selectedContact, setSelectedContact] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -118,6 +118,8 @@ const MyListPage = () => {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
+    setSelectedContact(null);
+    setShowPreview(false);
     // clear any selection when changing tabs
     setSelectedEmails([]);
   };
@@ -131,8 +133,9 @@ const MyListPage = () => {
       );
       return;
     }
-    // Open EmailPreview for sending
+    // Open preview when paper airplane is clicked
     setSelectedContact(contact);
+    setShowPreview(true);
   };
 
   const handleRemoveContact = (contact) => {
@@ -597,11 +600,16 @@ const MyListPage = () => {
           {/* Preview tab removed */}
         </div>
         <div className="list-content">
-          <div className={`list-table-container`}>
+          <div
+            className={`list-table-container ${
+              showPreview ? "with-preview" : ""
+            }`}
+          >
             <ListTable
               contacts={getCurrentContacts()}
               activeTab={activeTab}
               onContactSelect={handleContactSelect}
+              selectedContact={selectedContact}
               onRemoveContact={handleRemoveContact}
               onRestoreContact={(contact) => handleRestoreContact(contact)}
               onChangeTemplate={async (contact, template) => {
@@ -630,11 +638,13 @@ const MyListPage = () => {
               onToggleSelect={handleToggleSelect}
             />
           </div>
-          {/* Email Preview Modal */}
-          {selectedContact && (
+          {showPreview && selectedContact && (
             <EmailPreview
               contact={selectedContact}
-              onClose={() => setSelectedContact(null)}
+              onClose={() => {
+                setShowPreview(false);
+                setSelectedContact(null);
+              }}
               onSend={handleSendEmail}
             />
           )}

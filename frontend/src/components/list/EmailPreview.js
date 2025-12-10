@@ -45,9 +45,6 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
 
     // Load template and generate email
     const loadTemplate = async () => {
-      // Get template based on industry
-      const templateName = getTemplateName(contact);
-      
       // Try to load templates from Firestore first
       let templates = [];
       const user = getCurrentUser();
@@ -70,18 +67,51 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
           console.error("Error loading templates from localStorage:", err);
         }
       }
-      
-      const template =
-        templates.find((t) => t.name === templateName) || templates[0];
+
+      // Determine desired template name or id from contact (support either string name or id)
+      const requestedTemplateKey =
+        contact?.template ||
+        contact?.templateId ||
+        contact?.template_name ||
+        null;
+
+      const defaultTemplateName = getTemplateName(contact);
+
+      let template = null;
+      if (templates && templates.length > 0) {
+        if (requestedTemplateKey) {
+          template =
+            templates.find(
+              (t) =>
+                t.name === requestedTemplateKey || t.id === requestedTemplateKey
+            ) || null;
+        }
+        // if no requested template found, fall back to template by industry/name
+        if (!template) {
+          template =
+            templates.find((t) => t.name === defaultTemplateName) ||
+            templates[0];
+        }
+      }
 
       if (template) {
-        // Generate personalized email using OpenAI if available
         const fullName =
           `${contact.first_name || ""} ${contact.last_name || ""}`.trim() ||
           contact.name ||
           "Unknown";
 
-        // Try to use OpenAI to personalize, fallback to simple replacement
+        // Immediately set a synchronized fallback subject/body based on the selected template
+        // to avoid showing a different template briefly while async personalization runs.
+        const initialBody = template.content
+          .replace(/\[Name\]/g, fullName)
+          .replace(/\[name\]/g, fullName);
+        const initialSubject = `Outreach: ${fullName} at ${
+          contact.company || contact.organization || "Company"
+        }`;
+        setBody(initialBody);
+        setSubject(initialSubject);
+
+        // Try to use OpenAI to personalize, override the initial values if successful
         try {
           const result = await gmailApi.draftEmail({
             recipientName: fullName,
@@ -98,36 +128,11 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
           });
 
           if (result.success && result.data) {
-            setBody(result.data.body);
-            setSubject(
-              result.data.subject ||
-                `Outreach: ${fullName} at ${
-                  contact.company || contact.organization || "Company"
-                }`
-            );
-          } else {
-            // Fallback to simple replacement
-            const personalizedBody = template.content
-              .replace(/\[Name\]/g, fullName)
-              .replace(/\[name\]/g, fullName);
-            setBody(personalizedBody);
-            setSubject(
-              `Outreach: ${fullName} at ${
-                contact.company || contact.organization || "Company"
-              }`
-            );
+            if (result.data.body) setBody(result.data.body);
+            if (result.data.subject) setSubject(result.data.subject);
           }
         } catch (error) {
-          // Fallback to simple replacement
-          const personalizedBody = template.content
-            .replace(/\[Name\]/g, fullName)
-            .replace(/\[name\]/g, fullName);
-          setBody(personalizedBody);
-          setSubject(
-            `Outreach: ${fullName} at ${
-              contact.company || contact.organization || "Company"
-            }`
-          );
+          // ignore and keep initialBody/initialSubject
         }
       }
 
