@@ -7,11 +7,13 @@ import "./TemplateEditor.css";
  */
 const TemplateEditor = ({ template, isEditing, onEdit, onSave, onCancel }) => {
   const [editedName, setEditedName] = useState(template.name || "");
+  const [editedSubject, setEditedSubject] = useState(template.subject || "");
   const [editedContent, setEditedContent] = useState(template.content || "");
   const [error, setError] = useState("");
 
   useEffect(() => {
     setEditedName(template.name || "");
+    setEditedSubject(template.subject || "");
     setEditedContent(template.content || "");
     setError("");
   }, [template]);
@@ -26,6 +28,7 @@ const TemplateEditor = ({ template, isEditing, onEdit, onSave, onCancel }) => {
     onSave({
       ...template,
       name: editedName.trim(),
+      subject: editedSubject,
       content: editedContent,
     });
   };
@@ -60,6 +63,17 @@ const TemplateEditor = ({ template, isEditing, onEdit, onSave, onCancel }) => {
               {error && <div className="field-error">{error}</div>}
             </div>
             <div className="editor-field">
+              <label>Subject</label>
+              <input
+                type="text"
+                value={editedSubject}
+                onChange={(e) => setEditedSubject(e.target.value)}
+                className="editor-input"
+                placeholder="Subject line (e.g. Intro — [Name])"
+                aria-label="Template subject"
+              />
+            </div>
+            <div className="editor-field">
               <label>Email Content</label>
               <textarea
                 value={editedContent}
@@ -82,6 +96,9 @@ const TemplateEditor = ({ template, isEditing, onEdit, onSave, onCancel }) => {
         ) : (
           <div className="template-preview">
             <div className="preview-content">
+              {template.subject && (
+                <div className="template-subject">{template.subject}</div>
+              )}
               <pre className="preview-text">{template.content}</pre>
             </div>
           </div>

@@ -1,9 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/ProfilePage.css";
 import GmailConnectButton from "../components/email/GmailConnectButton";
+import { getCurrentUser } from "../config/authUtils";
 
 const AccountSettings = () => {
   const [gmailConnected, setGmailConnected] = useState(false);
+  const [isGoogleOnly, setIsGoogleOnly] = useState(false);
+
+  useEffect(() => {
+    const u = getCurrentUser();
+    if (u && u.providerData && Array.isArray(u.providerData)) {
+      const providerIds = u.providerData.map((p) => p.providerId);
+      // If the user has no 'password' provider, but has 'google.com', treat as Google-only
+      const hasPassword = providerIds.includes("password");
+      const hasGoogle = providerIds.includes("google.com");
+      setIsGoogleOnly(hasGoogle && !hasPassword);
+    }
+  }, []);
 
   return (
     <div className="profile-pane">
@@ -22,12 +35,12 @@ const AccountSettings = () => {
 
       <hr style={{ margin: "20px 0" }} />
 
-      <ChangePasswordForm />
+      <ChangePasswordForm isDisabled={isGoogleOnly} />
     </div>
   );
 };
 
-const ChangePasswordForm = () => {
+const ChangePasswordForm = ({ isDisabled = false }) => {
   const [currentPwd, setCurrentPwd] = useState("");
   const [newPwd, setNewPwd] = useState("");
   const [confirmPwd, setConfirmPwd] = useState("");
@@ -50,6 +63,13 @@ const ChangePasswordForm = () => {
 
   const handleChangePassword = (e) => {
     e.preventDefault();
+    if (isDisabled) {
+      showToast(
+        "Password changes are disabled for Google sign-in users",
+        "warning"
+      );
+      return;
+    }
     if (!currentPwd || !newPwd || !confirmPwd) {
       showToast("Please fill all password fields", "warning");
       return;
@@ -75,6 +95,7 @@ const ChangePasswordForm = () => {
             type="password"
             value={currentPwd}
             onChange={(e) => setCurrentPwd(e.target.value)}
+            disabled={isDisabled}
           />
         </label>
         <label>
@@ -83,6 +104,7 @@ const ChangePasswordForm = () => {
             type="password"
             value={newPwd}
             onChange={(e) => setNewPwd(e.target.value)}
+            disabled={isDisabled}
           />
         </label>
         <label>
@@ -91,14 +113,30 @@ const ChangePasswordForm = () => {
             type="password"
             value={confirmPwd}
             onChange={(e) => setConfirmPwd(e.target.value)}
+            disabled={isDisabled}
           />
         </label>
       </div>
+      {isDisabled && (
+        <div className="muted" style={{ marginBottom: 12 }}>
+          You signed in with Google-only authentication. Password management is
+          disabled.
+        </div>
+      )}
       <div className="settings-actions">
-        <button type="submit" className="btn btn-primary" disabled={submitting}>
+        <button
+          type="submit"
+          className="btn btn-primary"
+          disabled={submitting || isDisabled}
+        >
           {submitting ? "Saving..." : "Change password"}
         </button>
-        <button type="button" className="btn" onClick={reset}>
+        <button
+          type="button"
+          className="btn"
+          onClick={reset}
+          disabled={isDisabled}
+        >
           Reset
         </button>
       </div>

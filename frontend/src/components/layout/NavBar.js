@@ -39,7 +39,13 @@ const NavBar = () => {
     <nav className="navbar">
       <div className="navbar-content">
         <div className="navbar-left">
-          <h1 className="navbar-logo">Outreach Agent</h1>
+          <button
+            className="navbar-logo"
+            onClick={() => navigate("/my-list")}
+            aria-label="Go to My List"
+          >
+            Recruitly
+          </button>
         </div>
         <div className="navbar-right">
           <button

@@ -20,12 +20,14 @@ const TemplatesPage = () => {
     {
       id: 1,
       name: "Finance",
+      subject: "Intro — [Name] at [Company]",
       content:
         "Hello [Name],\n\nThis is an email template that I can use to reach out to other people in my target industry. I am super interested in this particular industry because of XYZ.\n\nPlease hire me.\n\nYours desperately,\nSiddharth",
     },
     {
       id: 2,
       name: "Tech",
+      subject: "Intro — [Name]",
       content:
         "Hello [Name],\n\nI'm reaching out because I'm interested in opportunities in the tech industry...\n\nBest regards,\nSiddharth",
     },
@@ -72,6 +74,7 @@ const TemplatesPage = () => {
     const newTemplate = {
       id: Date.now(),
       name: "",
+      subject: "",
       content: "",
     };
     setTemplates([...templates, newTemplate]);
@@ -81,12 +84,12 @@ const TemplatesPage = () => {
 
   const handleSaveTemplate = async (updatedTemplate) => {
     if (!user?.uid) return;
-    
+
     const updated = templates.map((t) =>
       t.id === updatedTemplate.id ? updatedTemplate : t
     );
     setTemplates(updated);
-    
+
     // Update Firestore
     try {
       await updateUserTemplates(user.uid, updated);
@@ -95,7 +98,7 @@ const TemplatesPage = () => {
       // // Fallback to localStorage
       // localStorage.setItem("emailTemplates", JSON.stringify(updated));
     }
-    
+
     // Ensure the selected template reference is updated so the UI shows saved changes
     setSelectedTemplate(updatedTemplate);
     setIsEditing(false);

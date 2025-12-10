@@ -55,7 +55,7 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
           console.error("Error loading templates from Firestore:", error);
         }
       }
-      
+
       // Fallback to localStorage if Firestore is empty
       if (!templates || templates.length === 0) {
         try {
@@ -104,10 +104,26 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
         // to avoid showing a different template briefly while async personalization runs.
         const initialBody = template.content
           .replace(/\[Name\]/g, fullName)
-          .replace(/\[name\]/g, fullName);
-        const initialSubject = `Outreach: ${fullName} at ${
+          .replace(/\[name\]/g, fullName)
+          .replace(
+            /\[Company\]/g,
+            contact.company || contact.organization || "Company"
+          );
+
+        // Prefer template.subject if provided, otherwise fall back to a generated subject.
+        let initialSubject = `Outreach: ${fullName} at ${
           contact.company || contact.organization || "Company"
         }`;
+        if (template.subject && template.subject.trim() !== "") {
+          initialSubject = template.subject
+            .replace(/\[Name\]/g, fullName)
+            .replace(/\[name\]/g, fullName)
+            .replace(
+              /\[Company\]/g,
+              contact.company || contact.organization || "Company"
+            );
+        }
+
         setBody(initialBody);
         setSubject(initialSubject);
 
@@ -124,7 +140,7 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
                 contact.company || contact.organization
               }`,
             template: template.content,
-            senderName: "Outreach Agent",
+            senderName: "Recruitly",
           });
 
           if (result.success && result.data) {
@@ -186,7 +202,7 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
         to: contact.value || contact.email,
         subject: subject,
         body: body,
-        fromName: "Outreach Agent",
+        fromName: "Recruitly",
       });
 
       if (result.success) {

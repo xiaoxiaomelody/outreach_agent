@@ -40,23 +40,23 @@ const MyListPage = () => {
       setUser(currentUser);
       // Load contacts from Firestore
       loadContactsFromFirestore(currentUser.uid);
-      
+
       // Set up a listener for storage events (when ContactCard updates Firestore)
       const handleStorageChange = () => {
         console.log("📋 Storage event detected, reloading contacts...");
         loadContactsFromFirestore(currentUser.uid);
       };
-      
+
       // Listen for custom events from ContactCard
-      window.addEventListener('contacts-updated', handleStorageChange);
-      
+      window.addEventListener("contacts-updated", handleStorageChange);
+
       // Also poll periodically to catch Firestore updates (fallback)
       const pollInterval = setInterval(() => {
         loadContactsFromFirestore(currentUser.uid);
       }, 3000); // Poll every 3 seconds
-      
+
       return () => {
-        window.removeEventListener('contacts-updated', handleStorageChange);
+        window.removeEventListener("contacts-updated", handleStorageChange);
         clearInterval(pollInterval);
       };
     } else {
@@ -88,6 +88,13 @@ const MyListPage = () => {
     setShowPreview(false);
     // clear any selection when changing tabs
     setSelectedEmails([]);
+  };
+
+  const greeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
   };
 
   const handleContactSelect = (contact) => {
@@ -138,14 +145,14 @@ const MyListPage = () => {
 
   const performRemoveContact = async (contact) => {
     if (!user?.uid) return;
-    
+
     const tab = activeTab;
     const updatedTab = (contacts[tab] || []).filter(
       (c) => (c.value || c.email) !== (contact.value || contact.email)
     );
     const updated = { ...contacts, [tab]: updatedTab };
     setContacts(updated);
-    
+
     // Update Firestore
     try {
       await updateUserContacts(user.uid, updated);
@@ -188,7 +195,10 @@ const MyListPage = () => {
                   // Update Firestore
                   if (user?.uid) {
                     updateUserContacts(user.uid, next).catch((error) => {
-                      console.error("Error updating contacts in Firestore:", error);
+                      console.error(
+                        "Error updating contacts in Firestore:",
+                        error
+                      );
                       localStorage.setItem("myContacts", JSON.stringify(next));
                     });
                   } else {
@@ -226,7 +236,7 @@ const MyListPage = () => {
 
   const handleBulkSend = async () => {
     if (selectedEmails.length === 0 || !user?.uid) return;
-    
+
     const updated = { ...contacts };
     const moved = [];
     // remove from each tab and collect moved contacts
@@ -244,7 +254,7 @@ const MyListPage = () => {
     });
     updated.sent = [...(updated.sent || []), ...moved];
     setContacts(updated);
-    
+
     // Update Firestore
     try {
       await updateUserContacts(user.uid, updated);
@@ -252,7 +262,7 @@ const MyListPage = () => {
       console.error("Error updating contacts in Firestore:", error);
       localStorage.setItem("myContacts", JSON.stringify(updated));
     }
-    
+
     setSelectedEmails([]);
     setSelectionView(false);
   };
@@ -287,7 +297,7 @@ const MyListPage = () => {
     updated.shortlist = [...existingShortlist, ...toAdd];
 
     setContacts(updated);
-    
+
     // Update Firestore
     try {
       await updateUserContacts(user.uid, updated);
@@ -295,7 +305,7 @@ const MyListPage = () => {
       console.error("Error updating contacts in Firestore:", error);
       localStorage.setItem("myContacts", JSON.stringify(updated));
     }
-    
+
     setSelectedEmails([]);
     setSelectionView(false);
   };
@@ -324,7 +334,7 @@ const MyListPage = () => {
 
   const performBulkTrash = async (emailsToMove) => {
     if (!user?.uid) return;
-    
+
     const updated = { ...contacts };
     // collect moved items with source tab so we can undo
     const movedEntries = [];
@@ -348,7 +358,7 @@ const MyListPage = () => {
       ...movedEntries.map((m) => m.contact),
     ];
     setContacts(updated);
-    
+
     // Update Firestore
     try {
       await updateUserContacts(user.uid, updated);
@@ -356,7 +366,7 @@ const MyListPage = () => {
       console.error("Error updating contacts in Firestore:", error);
       localStorage.setItem("myContacts", JSON.stringify(updated));
     }
-    
+
     setSelectedEmails((s) => s.filter((e) => !emailsToMove.includes(e)));
     setSelectionView(false);
 
@@ -429,7 +439,7 @@ const MyListPage = () => {
 
   const performBulkDelete = async (emailsToDelete) => {
     if (!user?.uid) return;
-    
+
     const updated = { ...contacts };
     // capture full objects being deleted so Undo can restore them
     const deletedObjects = (updated.trash || []).filter((c) =>
@@ -441,7 +451,7 @@ const MyListPage = () => {
       (c) => !emailsToDelete.includes(c.value || c.email)
     );
     setContacts(updated);
-    
+
     // Update Firestore
     try {
       await updateUserContacts(user.uid, updated);
@@ -449,7 +459,7 @@ const MyListPage = () => {
       console.error("Error updating contacts in Firestore:", error);
       localStorage.setItem("myContacts", JSON.stringify(updated));
     }
-    
+
     setSelectedEmails((s) => s.filter((e) => !emailsToDelete.includes(e)));
     setSelectionView(false);
 
@@ -497,7 +507,7 @@ const MyListPage = () => {
   const handleRestoreContact = async (contact) => {
     // Move a single contact from trash back to shortlist immediately
     if (!contact || !user?.uid) return;
-    
+
     try {
       await restoreContactFromTrash(user.uid, contact);
       // Reload contacts from Firestore
@@ -525,7 +535,7 @@ const MyListPage = () => {
       try {
         await loadContactsFromFirestore(user.uid);
         // Also dispatch event to trigger refresh
-        window.dispatchEvent(new CustomEvent('contacts-updated'));
+        window.dispatchEvent(new CustomEvent("contacts-updated"));
       } catch (error) {
         console.error("Error reloading contacts after send:", error);
       }
@@ -544,6 +554,24 @@ const MyListPage = () => {
     <div className="my-list-page">
       <NavBar />
       <div className="my-list-page-content">
+        <div className="list-greeting">
+          <div className="greeting-inner">
+            <h1>
+              {greeting()},{" "}
+              {user?.displayName || user?.email?.split("@")[0] || "User"}! Let's
+              get networking!
+            </h1>
+          </div>
+          <div className="banner-cta-wrapper">
+            <button
+              className="banner-cta"
+              onClick={() => navigate("/search")}
+              aria-label="Or, start a search"
+            >
+              Or, start a search
+            </button>
+          </div>
+        </div>
         <div className="list-tabs">
           <button
             className={`list-tab ${activeTab === "shortlist" ? "active" : ""}`}
@@ -581,14 +609,14 @@ const MyListPage = () => {
               onChangeTemplate={async (contact, template) => {
                 // update template for a contact in shortlist
                 if (!user?.uid) return;
-                
+
                 const e = contact.value || contact.email;
                 const next = { ...contacts };
                 next.shortlist = (next.shortlist || []).map((c) =>
                   (c.value || c.email) === e ? { ...c, template } : c
                 );
                 setContacts(next);
-                
+
                 // Update Firestore
                 try {
                   await updateUserContacts(user.uid, next);
