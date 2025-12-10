@@ -220,6 +220,12 @@ const Icon = ({ name, size = 18, className = "", ...props }) => {
           <circle cx="12" cy="7" r="4" />
         </svg>
       );
+    case "menu":
+      return (
+        <svg {...common}>
+          <path d="M3 12h18M3 6h18M3 18h18" />
+        </svg>
+      );
     default:
       return null;
   }

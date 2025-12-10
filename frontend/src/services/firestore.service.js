@@ -98,6 +98,8 @@ export const createOrUpdateUserProfile = async (userId, userData) => {
         rejectedContacts: [],
         lastActivity: null,
       },
+      // Initialize searchHistory field for new users
+      searchHistory: existingData?.searchHistory || [],
     };
 
     console.log('📋 Writing user profile to Firestore...');
@@ -609,6 +611,185 @@ export const recordUserBehavior = async (userId, type, data) => {
   } catch (error) {
     console.error('Error recording user behavior:', error);
     // Don't throw - behavior tracking is non-critical
+  }
+};
+
+/**
+ * Save search history entry with query and contacts
+ * @param {string} userId - User ID
+ * @param {string} query - Search query
+ * @param {Array} contacts - Array of contact objects
+ * @returns {Promise<void>}
+ */
+export const saveSearchHistory = async (userId, query, contacts) => {
+  if (!db || !userId || !query) {
+    console.warn('⚠️ Firestore not initialized or missing parameters', {
+      db: !!db,
+      userId: !!userId,
+      query: !!query
+    });
+    return;
+  }
+
+  try {
+    console.log('📋 Saving search history:', { userId, query: query.trim(), contactCount: contacts?.length || 0 });
+    
+    const userRef = doc(db, 'users', userId);
+    let userSnap = await getDoc(userRef);
+    let wasNewDocument = false;
+    
+    // Ensure user document exists before updating
+    if (!userSnap.exists()) {
+      console.log('📋 User document does not exist, creating it first...');
+      wasNewDocument = true;
+      await setDoc(userRef, {
+        email: '',
+        displayName: '',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        contacts: {
+          shortlist: [],
+          sent: [],
+          trash: [],
+        },
+        templates: [],
+        profile: {
+          name: '',
+          email: '',
+          school: '',
+          industries: [],
+          bio: '',
+        },
+        behavior: {
+          searchHistory: [],
+          acceptedContacts: [],
+          rejectedContacts: [],
+          lastActivity: null,
+        },
+        searchHistory: [], // Initialize search history
+      }, { merge: true });
+      console.log('✅ User document created for search history');
+      // Re-fetch the document after creating it
+      userSnap = await getDoc(userRef);
+    }
+    
+    // Get existing search history
+    // If we just created the document, searchHistory will be empty array
+    // Otherwise, get it from the document data
+    const userData = userSnap.exists() ? userSnap.data() : null;
+    const searchHistory = userData?.searchHistory || [];
+    
+    console.log('📋 Current search history length:', searchHistory.length);
+    
+    // Create new history entry
+    const historyEntry = {
+      id: Date.now().toString() + Math.random().toString(36).substr(2, 9), // More unique ID
+      query: query.trim(),
+      contacts: contacts || [],
+      resultCount: contacts?.length || 0,
+      timestamp: new Date().toISOString(),
+      createdAt: new Date().toISOString(), // Use ISO string instead of serverTimestamp()
+    };
+    
+    // Add to beginning of history (most recent first)
+    // Keep only last 50 entries
+    const updatedHistory = [historyEntry, ...searchHistory].slice(0, 50);
+    
+    console.log('📋 Updating Firestore with new history entry...');
+    await updateDoc(userRef, {
+      searchHistory: updatedHistory,
+      updatedAt: serverTimestamp(),
+    });
+    
+    console.log('✅ Search history saved to Firestore:', {
+      userId,
+      query: query.trim(),
+      resultCount: contacts?.length || 0,
+      totalHistoryEntries: updatedHistory.length,
+      wasNewDocument
+    });
+    
+    // Verify the save by reading it back
+    const verifySnap = await getDoc(userRef);
+    if (verifySnap.exists()) {
+      const verifyData = verifySnap.data();
+      console.log('✅ Verified: Search history in Firestore:', {
+        historyLength: verifyData?.searchHistory?.length || 0,
+        latestQuery: verifyData?.searchHistory?.[0]?.query || 'none'
+      });
+    }
+  } catch (error) {
+    console.error('❌ Error saving search history:', error);
+    console.error('❌ Error details:', {
+      message: error.message,
+      code: error.code,
+      stack: error.stack?.substring(0, 300)
+    });
+    // Don't throw - history tracking is non-critical
+  }
+};
+
+/**
+ * Get user search history
+ * @param {string} userId - User ID
+ * @returns {Promise<Array>} Array of search history entries
+ */
+export const getSearchHistory = async (userId) => {
+  if (!db || !userId) {
+    console.warn('⚠️ Firestore not initialized or userId missing', { db: !!db, userId });
+    return [];
+  }
+
+  try {
+    console.log('📋 Getting search history for user:', userId);
+    const userData = await getUserData(userId);
+    const history = userData?.searchHistory || [];
+    console.log('📋 Retrieved search history from Firestore:', {
+      hasUserData: !!userData,
+      hasSearchHistory: !!userData?.searchHistory,
+      historyLength: history.length,
+      historyType: Array.isArray(history) ? 'array' : typeof history
+    });
+    return history;
+  } catch (error) {
+    console.error('❌ Error getting search history:', error);
+    console.error('❌ Error details:', {
+      message: error.message,
+      code: error.code
+    });
+    return [];
+  }
+};
+
+/**
+ * Delete a search history entry
+ * @param {string} userId - User ID
+ * @param {string} historyId - History entry ID
+ * @returns {Promise<void>}
+ */
+export const deleteSearchHistoryEntry = async (userId, historyId) => {
+  if (!db || !userId || !historyId) {
+    console.warn('Firestore not initialized or missing parameters');
+    return;
+  }
+
+  try {
+    const userRef = doc(db, 'users', userId);
+    const userData = await getUserData(userId);
+    const searchHistory = userData?.searchHistory || [];
+    
+    // Remove the entry with matching ID
+    const updatedHistory = searchHistory.filter(entry => entry.id !== historyId);
+    
+    await updateDoc(userRef, {
+      searchHistory: updatedHistory,
+      updatedAt: serverTimestamp(),
+    });
+    
+    console.log('✅ Search history entry deleted');
+  } catch (error) {
+    console.error('Error deleting search history entry:', error);
+    throw error;
   }
 };
 

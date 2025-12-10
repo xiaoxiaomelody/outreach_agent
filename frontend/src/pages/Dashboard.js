@@ -338,7 +338,7 @@ const Dashboard = () => {
       <div className="dashboard-header">
         <div className="header-content">
           <h1>
-            <Icon name="robot" style={{ marginRight: 8 }} /> Outreach Agent
+            <Icon name="robot" style={{ marginRight: 8 }} /> Recruitly
           </h1>
           <div className="header-right">
             <span className="user-email">{user.email}</span>

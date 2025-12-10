@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../components/layout/NavBar";
 import { getCurrentUser } from "../config/authUtils";
@@ -7,6 +7,11 @@ import gmailApi from "../api/gmail";
 import ContactCard from "../components/contacts/ContactCard";
 import GmailConnectButton from "../components/email/GmailConnectButton";
 import Icon from "../components/icons/Icon";
+import {
+  saveSearchHistory,
+  getSearchHistory,
+  deleteSearchHistoryEntry,
+} from "../services/firestore.service";
 import "../styles/SearchPage.css";
 
 /**
@@ -21,6 +26,9 @@ const SearchPage = () => {
   const [error, setError] = useState(null);
   const [hasSearched, setHasSearched] = useState(false);
   const [gmailConnected, setGmailConnected] = useState(false);
+  const [showHistoryMenu, setShowHistoryMenu] = useState(false);
+  const [searchHistory, setSearchHistory] = useState([]);
+  const historyMenuRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -29,10 +37,32 @@ const SearchPage = () => {
       setUser(currentUser);
       // Check Gmail connection status
       checkGmailStatus();
+      // Load search history
+      loadSearchHistory(currentUser.uid);
     } else {
       navigate("/");
     }
   }, [navigate]);
+
+  // Close history menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        historyMenuRef.current &&
+        !historyMenuRef.current.contains(event.target)
+      ) {
+        setShowHistoryMenu(false);
+      }
+    };
+
+    if (showHistoryMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showHistoryMenu]);
 
   const checkGmailStatus = async () => {
     try {
@@ -42,6 +72,23 @@ const SearchPage = () => {
       }
     } catch (error) {
       console.error("Check Gmail status error:", error);
+    }
+  };
+
+  const loadSearchHistory = async (userId) => {
+    try {
+      console.log("📋 Loading search history for user:", userId);
+      const history = await getSearchHistory(userId);
+      console.log("📋 Loaded search history:", history);
+      console.log("📋 History length:", history?.length || 0);
+      if (history && history.length > 0) {
+        console.log("📋 First history entry:", history[0]);
+      }
+      setSearchHistory(history || []);
+      console.log("✅ Search history state updated");
+    } catch (error) {
+      console.error("❌ Error loading search history:", error);
+      setSearchHistory([]);
     }
   };
 
@@ -95,7 +142,19 @@ const SearchPage = () => {
           };
         };
 
-        setContacts(validContacts.map(normalize));
+        const normalizedContacts = validContacts.map(normalize);
+        setContacts(normalizedContacts);
+
+        // Save search history to Firestore (even if no results)
+        if (user?.uid) {
+          try {
+            await saveSearchHistory(user.uid, searchQuery, normalizedContacts);
+            // Reload history to update the menu
+            await loadSearchHistory(user.uid);
+          } catch (error) {
+            console.error("Error saving search history:", error);
+          }
+        }
 
         if (validContacts.length === 0) {
           setError(
@@ -127,6 +186,42 @@ const SearchPage = () => {
     return "Good evening";
   };
 
+  const handleHistoryClick = (historyEntry) => {
+    setSearchQuery(historyEntry.query);
+    setContacts(historyEntry.contacts || []);
+    setHasSearched(true);
+    setShowHistoryMenu(false);
+    setError(null);
+  };
+
+  const handleDeleteHistory = async (e, historyId) => {
+    e.stopPropagation();
+    if (!user?.uid) return;
+
+    try {
+      await deleteSearchHistoryEntry(user.uid, historyId);
+      await loadSearchHistory(user.uid);
+    } catch (error) {
+      console.error("Error deleting history entry:", error);
+    }
+  };
+
+  const formatHistoryDate = (timestamp) => {
+    if (!timestamp) return "";
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return "Just now";
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return date.toLocaleDateString();
+  };
+
   if (!user) {
     return <div className="loading">Loading...</div>;
   }
@@ -147,9 +242,69 @@ const SearchPage = () => {
 
             <form className="search-bar-container" onSubmit={handleSearch}>
               <div className="search-bar">
-                <button type="button" className="search-menu-icon">
-                  ☰
+                <div className="search-menu-wrapper" ref={historyMenuRef}>
+                  <button
+                    type="button"
+                    className="search-menu-icon"
+                    onClick={() => {
+                      console.log("📋 History menu clicked (initial view), current state:", {
+                        showHistoryMenu,
+                        searchHistoryLength: searchHistory.length,
+                        searchHistory: searchHistory
+                      });
+                      setShowHistoryMenu(!showHistoryMenu);
+                      // Reload history when opening menu
+                      if (!showHistoryMenu && user?.uid) {
+                        loadSearchHistory(user.uid);
+                      }
+                    }}
+                    aria-label="Search history"
+                  >
+                    <Icon name="menu" size={20} />
+                  </button>
+                  {showHistoryMenu && (
+                    <div className="history-menu">
+                      <div className="history-menu-header">
+                        <h3>Search History</h3>
+                        {searchHistory.length === 0 && (
+                          <p className="history-empty">No search history yet</p>
+                        )}
+                      </div>
+                      {searchHistory.length > 0 && (
+                        <div className="history-list">
+                          {searchHistory.map((entry) => (
+                            <div
+                              key={entry.id}
+                              className="history-item"
+                              onClick={() => handleHistoryClick(entry)}
+                            >
+                              <div className="history-item-content">
+                                <div className="history-query">
+                                  {entry.query}
+                                </div>
+                                <div className="history-meta">
+                                  <span className="history-count">
+                                    {entry.resultCount || entry.contacts?.length || 0} contacts
+                                  </span>
+                                  <span className="history-time">
+                                    {formatHistoryDate(entry.timestamp)}
+                                  </span>
+                                </div>
+                              </div>
+                              <button
+                                className="history-delete"
+                                onClick={(e) => handleDeleteHistory(e, entry.id)}
+                                aria-label="Delete history entry"
+                              >
+                                <Icon name="close" size={14} />
                 </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
                 <input
                   type="text"
                   placeholder="Search for companies, industries, or job titles"
@@ -187,9 +342,69 @@ const SearchPage = () => {
           <>
             <form className="search-bar-container" onSubmit={handleSearch}>
               <div className="search-bar">
-                <button type="button" className="search-menu-icon">
-                  ☰
+                <div className="search-menu-wrapper" ref={historyMenuRef}>
+                  <button
+                    type="button"
+                    className="search-menu-icon"
+                    onClick={() => {
+                      console.log("📋 History menu clicked (results view), current state:", {
+                        showHistoryMenu,
+                        searchHistoryLength: searchHistory.length,
+                        searchHistory: searchHistory
+                      });
+                      setShowHistoryMenu(!showHistoryMenu);
+                      // Reload history when opening menu
+                      if (!showHistoryMenu && user?.uid) {
+                        loadSearchHistory(user.uid);
+                      }
+                    }}
+                    aria-label="Search history"
+                  >
+                    <Icon name="menu" size={20} />
+                  </button>
+                  {showHistoryMenu && (
+                    <div className="history-menu">
+                      <div className="history-menu-header">
+                        <h3>Search History</h3>
+                        {searchHistory.length === 0 && (
+                          <p className="history-empty">No search history yet</p>
+                        )}
+                      </div>
+                      {searchHistory.length > 0 && (
+                        <div className="history-list">
+                          {searchHistory.map((entry) => (
+                            <div
+                              key={entry.id}
+                              className="history-item"
+                              onClick={() => handleHistoryClick(entry)}
+                            >
+                              <div className="history-item-content">
+                                <div className="history-query">
+                                  {entry.query}
+                                </div>
+                                <div className="history-meta">
+                                  <span className="history-count">
+                                    {entry.resultCount || entry.contacts?.length || 0} contacts
+                                  </span>
+                                  <span className="history-time">
+                                    {formatHistoryDate(entry.timestamp)}
+                                  </span>
+                                </div>
+                              </div>
+                              <button
+                                className="history-delete"
+                                onClick={(e) => handleDeleteHistory(e, entry.id)}
+                                aria-label="Delete history entry"
+                              >
+                                <Icon name="close" size={14} />
                 </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
                 <input
                   type="text"
                   placeholder="Search for companies, industries, or job titles"
@@ -198,21 +413,7 @@ const SearchPage = () => {
                   className="search-input"
                 />
                 <button type="submit" className="search-icon">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <circle cx="11" cy="11" r="8" />
-                    <path d="m21 21-4.35-4.35" />
-                  </svg>
+                  <Icon name="search" />
                 </button>
               </div>
             </form>

@@ -55,24 +55,12 @@ const TemplatesPage = () => {
       const firestoreTemplates = await getUserTemplates(userId);
       if (firestoreTemplates && firestoreTemplates.length > 0) {
         setTemplates(firestoreTemplates);
-      } else {
-        // Fallback to localStorage if Firestore is empty
-        const savedTemplates = localStorage.getItem("emailTemplates");
-        if (savedTemplates) {
-          const parsed = JSON.parse(savedTemplates);
-          setTemplates(parsed);
-          // Migrate to Firestore
-          await updateUserTemplates(userId, parsed);
-        }
-      }
-    } catch (error) {
+        console.log("✅ Using Firestore templates (user-specific data)");
+      } 
+    }catch (error) {
       console.error("Error loading templates from Firestore:", error);
-      // Fallback to localStorage
-      const savedTemplates = localStorage.getItem("emailTemplates");
-      if (savedTemplates) {
-        setTemplates(JSON.parse(savedTemplates));
+        setTemplates([]);
       }
-    }
   };
 
   const handleSelectTemplate = (template) => {
@@ -104,8 +92,8 @@ const TemplatesPage = () => {
       await updateUserTemplates(user.uid, updated);
     } catch (error) {
       console.error("Error updating templates in Firestore:", error);
-      // Fallback to localStorage
-      localStorage.setItem("emailTemplates", JSON.stringify(updated));
+      // // Fallback to localStorage
+      // localStorage.setItem("emailTemplates", JSON.stringify(updated));
     }
     
     // Ensure the selected template reference is updated so the UI shows saved changes
@@ -138,11 +126,9 @@ const TemplatesPage = () => {
           await updateUserTemplates(user.uid, updated);
         } catch (error) {
           console.error("Error updating templates in Firestore:", error);
-          localStorage.setItem("emailTemplates", JSON.stringify(updated));
+          // localStorage.setItem("emailTemplates", JSON.stringify(updated));
         }
-      } else {
-        localStorage.setItem("emailTemplates", JSON.stringify(updated));
-      }
+      } 
       setPendingDelete(null);
     }, 5000);
 

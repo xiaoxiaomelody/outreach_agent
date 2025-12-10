@@ -70,49 +70,15 @@ const MyListPage = () => {
       const firestoreContacts = await getUserContacts(userId);
       console.log("📋 Loaded contacts from Firestore:", firestoreContacts);
       
-      // Check if we got actual data or empty arrays
-      const hasData = firestoreContacts.shortlist?.length > 0 || 
-                     firestoreContacts.sent?.length > 0 || 
-                     firestoreContacts.trash?.length > 0;
-      
-      if (hasData) {
-        console.log("✅ Found data in Firestore, using it");
-        setContacts(firestoreContacts);
-      } else {
-        console.log("📋 No data in Firestore, checking localStorage...");
-        // Fallback to localStorage if Firestore is empty
-        const savedContacts = localStorage.getItem("myContacts");
-        if (savedContacts) {
-          const localContacts = JSON.parse(savedContacts);
-          const hasLocalData = localContacts.shortlist?.length > 0 || 
-                             localContacts.sent?.length > 0 || 
-                             localContacts.trash?.length > 0;
-          if (hasLocalData) {
-            console.log("📋 Found data in localStorage, using it and migrating to Firestore");
-            setContacts(localContacts);
-            // Try to migrate to Firestore
-            try {
-              await updateUserContacts(userId, localContacts);
-              console.log("✅ Migrated localStorage data to Firestore");
-            } catch (migrateError) {
-              console.error("❌ Failed to migrate to Firestore:", migrateError);
-            }
-          } else {
-            console.log("📋 No data in localStorage either, using empty arrays");
-            setContacts(firestoreContacts);
-          }
-        } else {
-          setContacts(firestoreContacts);
-        }
-      }
+      // Always use Firestore data for authenticated users (even if empty)
+      // This ensures each user gets their own data, not shared localStorage
+      setContacts(firestoreContacts);
+      console.log("✅ Using Firestore contacts (user-specific data)");
     } catch (error) {
       console.error("❌ Error loading contacts from Firestore:", error);
-      // Fallback to localStorage if Firestore fails
-      const savedContacts = localStorage.getItem("myContacts");
-      if (savedContacts) {
-        console.log("📋 Falling back to localStorage due to error");
-        setContacts(JSON.parse(savedContacts));
-      }
+      // On error, still use empty arrays rather than localStorage
+      // to prevent showing wrong user's data
+      setContacts({ shortlist: [], sent: [], trash: [] });
     }
   };
 
@@ -185,8 +151,8 @@ const MyListPage = () => {
       await updateUserContacts(user.uid, updated);
     } catch (error) {
       console.error("Error updating contacts in Firestore:", error);
-      // Fallback to localStorage
-      localStorage.setItem("myContacts", JSON.stringify(updated));
+      // // Fallback to localStorage
+      // localStorage.setItem("myContacts", JSON.stringify(updated));
     }
     // clear selection if the removed contact was selected (selectionView handles checkboxes)
 
