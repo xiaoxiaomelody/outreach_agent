@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import ForgotPassword from "./pages/ForgotPassword";
 import SearchPage from "./pages/SearchPage";
 import TemplatesPage from "./pages/TemplatesPage";
 import MyListPage from "./pages/MyListPage";
@@ -25,7 +26,7 @@ function App() {
         <Routes>
           {/* Public Route - Login */}
           <Route path="/" element={<Login />} />
-
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           {/* Protected Routes */}
           <Route
             path="/gmail-connection"

@@ -156,6 +156,17 @@ const Login = () => {
                 required
               />
             </div>
+            
+            {!isSignUp && (
+              <div className="forgot-password-container">
+                <span
+                  className="forgot-password-link"
+                  onClick={() => navigate("/forgot-password")}
+                >
+                  Forgot password?
+                </span>
+              </div>
+            )}
 
             {isSignUp && (
               <div className="form-group">

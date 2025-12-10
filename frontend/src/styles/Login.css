@@ -34,6 +34,23 @@
   margin-bottom: 3rem;
 }
 
+.forgot-password-container {
+  width: 100%;
+  text-align: right;
+  margin-top: -10px;
+  margin-bottom: 10px;
+}
+
+.forgot-password-link {
+  font-size: 14px;
+  color: #838484;
+  cursor: pointer;
+}
+
+.forgot-password-link:hover {
+  text-decoration: underline;
+}
+
 .action-btn {
   padding: 0.75rem 2rem;
   border: none;
