@@ -22,16 +22,8 @@ const GoogleSignInButton = () => {
       if (result && result.user) {
         const user = result.user;
         console.log("✅ Google sign-in successful:", user.email);
-        // If this is the user's first sign-in (creationTime === lastSignInTime), send them to profile setup
-        const meta = user.metadata || {};
-        const created = meta.creationTime;
-        const last = meta.lastSignInTime;
-        if (created && last && created === last) {
-          navigate("/profile");
-        } else {
-          // otherwise continue to gmail connection flow
-          navigate("/gmail-connection");
-        }
+        // Redirect all users to profile page after login
+        navigate("/profile");
       } else if (result && result.error) {
         setError(result.error);
         console.error("❌ Google sign-in error:", result.error);

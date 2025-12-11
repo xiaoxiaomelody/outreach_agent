@@ -9,7 +9,6 @@ import MyListPage from "./pages/MyListPage";
 import ProfileLayout from "./pages/ProfileLayout";
 import ProfileInfo from "./pages/ProfileInfo";
 import AccountSettings from "./pages/AccountSettings";
-import GmailConnection from "./pages/GmailConnection";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ToastContainer from "./components/ui/ToastContainer";
 import "./styles/App.css";
@@ -28,14 +27,6 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           {/* Protected Routes */}
-          <Route
-            path="/gmail-connection"
-            element={
-              <ProtectedRoute>
-                <GmailConnection />
-              </ProtectedRoute>
-            }
-          />
           <Route
             path="/search"
             element={

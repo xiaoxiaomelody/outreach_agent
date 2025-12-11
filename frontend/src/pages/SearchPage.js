@@ -3,9 +3,7 @@ import { useNavigate } from "react-router-dom";
 import NavBar from "../components/layout/NavBar";
 import { getCurrentUser } from "../config/authUtils";
 import nlpSearchApi from "../api/nlpSearch";
-import gmailApi from "../api/gmail";
 import ContactCard from "../components/contacts/ContactCard";
-import GmailConnectButton from "../components/email/GmailConnectButton";
 import Icon from "../components/icons/Icon";
 import {
   saveSearchHistory,
@@ -25,7 +23,6 @@ const SearchPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [hasSearched, setHasSearched] = useState(false);
-  const [gmailConnected, setGmailConnected] = useState(false);
   const [showHistoryMenu, setShowHistoryMenu] = useState(false);
   const [searchHistory, setSearchHistory] = useState([]);
   const historyMenuRef = useRef(null);
@@ -35,8 +32,6 @@ const SearchPage = () => {
     const currentUser = getCurrentUser();
     if (currentUser) {
       setUser(currentUser);
-      // Check Gmail connection status
-      checkGmailStatus();
       // Load search history
       loadSearchHistory(currentUser.uid);
     } else {
@@ -64,16 +59,6 @@ const SearchPage = () => {
     };
   }, [showHistoryMenu]);
 
-  const checkGmailStatus = async () => {
-    try {
-      const result = await gmailApi.getGmailStatus();
-      if (result.success) {
-        setGmailConnected(result.data.connected);
-      }
-    } catch (error) {
-      console.error("Check Gmail status error:", error);
-    }
-  };
 
   const loadSearchHistory = async (userId) => {
     try {
@@ -99,6 +84,75 @@ const SearchPage = () => {
     setLoading(true);
     setError(null);
     setHasSearched(true);
+
+    // Special case: mock123 returns predefined contacts
+    if (searchQuery.trim().toLowerCase() === "mock123") {
+      const mockContacts = [
+        {
+          name: "Yixin Wan",
+          first_name: "Yixin",
+          last_name: "Wan",
+          email: "yixin_wan@brown.edu",
+          value: "yixin_wan@brown.edu",
+          company: "Brown University",
+          position: null,
+          linkedin: null,
+          ai_summary: null,
+          verified: true,
+        },
+        {
+          name: "Akshath Mirukula",
+          first_name: "Akshath",
+          last_name: "Mirukula",
+          email: "akshath_mirukula@brown.edu",
+          value: "akshath_mirukula@brown.edu",
+          company: "Brown University",
+          position: null,
+          linkedin: null,
+          ai_summary: null,
+          verified: true,
+        },
+        {
+          name: "Lucy Chen",
+          first_name: "Lucy",
+          last_name: "Chen",
+          email: "lucychenxiaoxiao0730@gmail.com",
+          value: "lucychenxiaoxiao0730@gmail.com",
+          company: null,
+          position: null,
+          linkedin: null,
+          ai_summary: null,
+          verified: true,
+        },
+        {
+          name: "Siddharth Bhagwat",
+          first_name: "Siddharth",
+          last_name: "Bhagwat",
+          email: "siddharth_bhagwat@brown.edu",
+          value: "siddharth_bhagwat@brown.edu",
+          company: "Brown University",
+          position: null,
+          linkedin: null,
+          ai_summary: null,
+          verified: true,
+        },
+      ];
+
+      setContacts(mockContacts);
+      setLoading(false);
+
+      // Save search history
+      if (user?.uid) {
+        try {
+          await saveSearchHistory(user.uid, searchQuery, mockContacts);
+          await loadSearchHistory(user.uid);
+        } catch (error) {
+          console.error("Error saving search history:", error);
+        }
+      }
+
+      return;
+    }
 
     try {
       const result = await nlpSearchApi.nlpSearch(searchQuery);
@@ -321,12 +375,6 @@ const SearchPage = () => {
                 </button>
               </div>
             </form>
-
-            {!gmailConnected && (
-              <div className="gmail-connect-prompt">
-                <GmailConnectButton onStatusChange={setGmailConnected} />
-              </div>
-            )}
 
             <div className="recommended-section">
               <h3>Recommended for you</h3>

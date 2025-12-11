@@ -72,14 +72,8 @@ const Login = () => {
           sessionStorage.setItem("demoUser", JSON.stringify(result.user));
         }
 
-        // If this was a sign-up flow, require profile setup first
-        if (isSignUp) {
-          sessionStorage.setItem("isNewSignup", "true");
-          navigate("/profile");
-        } else {
-          // existing users continue to Gmail connection
-          navigate("/gmail-connection");
-        }
+        // Redirect all users to profile page after login
+        navigate("/profile");
       } else {
         setError(result.error);
       }

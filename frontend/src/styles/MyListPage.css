@@ -16,6 +16,45 @@
   justify-content: center;
 }
 
+.list-greeting {
+  margin-bottom: 1.25rem;
+  text-align: center;
+}
+.list-greeting h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.greeting-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.banner-cta {
+  margin-top: 0.25rem;
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: #6b7280; /* gray-500, subtle */
+  text-decoration: underline;
+  font-weight: 400; /* not bold */
+  cursor: pointer;
+}
+
+.banner-cta:hover {
+  color: #374151; /* gray-700, muted hover */
+}
+
+.banner-cta-wrapper {
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
 .list-tab {
   padding: 0.75rem 1.5rem;
   border: none;
