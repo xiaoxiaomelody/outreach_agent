@@ -4,6 +4,47 @@ import { useNavigate } from "react-router-dom";
 import "./GoogleSignInButton.css";
 
 /**
+ * Convert Firebase error messages to user-friendly messages for Google sign-in
+ * @param {string} errorMessage - The Firebase error message
+ * @returns {string} User-friendly error message
+ */
+const getUserFriendlyGoogleError = (errorMessage) => {
+  if (!errorMessage) {
+    return "Unable to sign in with Google. Please try again.";
+  }
+
+  const errorLower = errorMessage.toLowerCase();
+
+  // Popup closed by user
+  if (errorLower.includes("popup") && (errorLower.includes("closed") || errorLower.includes("cancelled"))) {
+    return "Sign-in was cancelled. Please try again if you want to continue.";
+  }
+
+  // Account exists with different credential
+  if (errorLower.includes("account-exists-with-different-credential") || errorLower.includes("already exists")) {
+    return "This email is already registered with a different sign-in method. Please use email and password to sign in.";
+  }
+
+  // Network error
+  if (errorLower.includes("network") || errorLower.includes("network-request-failed")) {
+    return "Network error. Please check your internet connection and try again.";
+  }
+
+  // Operation not allowed
+  if (errorLower.includes("operation-not-allowed")) {
+    return "Google sign-in is not enabled. Please contact support.";
+  }
+
+  // Too many requests
+  if (errorLower.includes("too-many-requests") || errorLower.includes("too many")) {
+    return "Too many sign-in attempts. Please try again later.";
+  }
+
+  // Default fallback
+  return "Unable to sign in with Google. Please try again or use email and password.";
+};
+
+/**
  * Google Sign-In Button Component
  * One-click sign in with Google OAuth
  */
@@ -25,11 +66,13 @@ const GoogleSignInButton = () => {
         // Redirect all users to profile page after login
         navigate("/profile");
       } else if (result && result.error) {
-        setError(result.error);
+        const friendlyError = getUserFriendlyGoogleError(result.error);
+        setError(friendlyError);
         console.error("❌ Google sign-in error:", result.error);
       }
     } catch (err) {
-      setError("Failed to sign in with Google. Please try again.");
+      const friendlyError = getUserFriendlyGoogleError(err.message);
+      setError(friendlyError);
       console.error("❌ Google sign-in exception:", err);
     } finally {
       setLoading(false);

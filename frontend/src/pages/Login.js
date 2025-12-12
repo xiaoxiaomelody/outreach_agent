@@ -9,6 +9,68 @@ import GoogleSignInButton from "../components/auth/GoogleSignInButton";
 import "../styles/Login.css";
 
 /**
+ * Convert Firebase error messages to user-friendly messages
+ * @param {string} errorMessage - The Firebase error message
+ * @param {boolean} isSignUp - Whether this is a sign-up attempt
+ * @returns {string} User-friendly error message
+ */
+const getUserFriendlyError = (errorMessage, isSignUp = false) => {
+  if (!errorMessage) {
+    return "An error occurred. Please try again.";
+  }
+
+  const errorLower = errorMessage.toLowerCase();
+
+  // User not found (sign in only)
+  if (errorLower.includes("user-not-found") || errorLower.includes("there is no user record")) {
+    return "You have not signed up yet. Please sign up first.";
+  }
+
+  // Wrong password
+  if (errorLower.includes("wrong-password") || errorLower.includes("invalid-credential") || errorLower.includes("password is invalid")) {
+    return "Incorrect password. Please try again.";
+  }
+
+  // Email already in use (sign up only)
+  if (errorLower.includes("email-already-in-use") || errorLower.includes("already exists")) {
+    return "This email is already registered. Please sign in instead.";
+  }
+
+  // Invalid email
+  if (errorLower.includes("invalid-email") || errorLower.includes("malformed")) {
+    return "Please enter a valid email address.";
+  }
+
+  // Weak password
+  if (errorLower.includes("weak-password") || errorLower.includes("password should be at least")) {
+    return "Password is too weak. Please use a stronger password.";
+  }
+
+  // Too many requests
+  if (errorLower.includes("too-many-requests") || errorLower.includes("too many")) {
+    return "Too many failed attempts. Please try again later.";
+  }
+
+  // Network error
+  if (errorLower.includes("network") || errorLower.includes("network-request-failed")) {
+    return "Network error. Please check your internet connection and try again.";
+  }
+
+  // User disabled
+  if (errorLower.includes("user-disabled")) {
+    return "This account has been disabled. Please contact support.";
+  }
+
+  // Operation not allowed
+  if (errorLower.includes("operation-not-allowed")) {
+    return "This sign-in method is not enabled. Please try a different method.";
+  }
+
+  // Default fallback - return a generic message
+  return "Unable to sign in. Please check your email and password and try again.";
+};
+
+/**
  * Login Component
  * Handles user authentication with email/password and Google sign-in
  */
@@ -75,10 +137,14 @@ const Login = () => {
         // Redirect all users to profile page after login
         navigate("/profile");
       } else {
-        setError(result.error);
+        // Convert Firebase error to user-friendly message
+        const friendlyError = getUserFriendlyError(result.error, isSignUp);
+        setError(friendlyError);
       }
     } catch (err) {
-      setError("An unexpected error occurred");
+      // Convert any unexpected errors to user-friendly messages
+      const friendlyError = getUserFriendlyError(err.message, isSignUp);
+      setError(friendlyError || "An unexpected error occurred. Please try again.");
       console.error(err);
     } finally {
       setLoading(false);

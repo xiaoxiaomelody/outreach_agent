@@ -4,6 +4,42 @@ import { auth } from "../config/firebase";
 import { useNavigate } from "react-router-dom";
 import "../styles/Login.css";
 
+/**
+ * Convert Firebase error messages to user-friendly messages for password reset
+ * @param {string} errorMessage - The Firebase error message
+ * @returns {string} User-friendly error message
+ */
+const getUserFriendlyPasswordResetError = (errorMessage) => {
+  if (!errorMessage) {
+    return "Unable to send password reset email. Please try again.";
+  }
+
+  const errorLower = errorMessage.toLowerCase();
+
+  // User not found
+  if (errorLower.includes("user-not-found") || errorLower.includes("there is no user record")) {
+    return "No account found with this email address. Please check your email or sign up.";
+  }
+
+  // Invalid email
+  if (errorLower.includes("invalid-email") || errorLower.includes("malformed")) {
+    return "Please enter a valid email address.";
+  }
+
+  // Network error
+  if (errorLower.includes("network") || errorLower.includes("network-request-failed")) {
+    return "Network error. Please check your internet connection and try again.";
+  }
+
+  // Too many requests
+  if (errorLower.includes("too-many-requests") || errorLower.includes("too many")) {
+    return "Too many password reset attempts. Please try again later.";
+  }
+
+  // Default fallback
+  return "Unable to send password reset email. Please check your email address and try again.";
+};
+
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
@@ -20,7 +56,8 @@ const ForgotPassword = () => {
       await sendPasswordResetEmail(auth, email);
       setMessage("A password reset link has been sent to your email.");
     } catch (err) {
-      setError(err.message);
+      const friendlyError = getUserFriendlyPasswordResetError(err.message);
+      setError(friendlyError);
     }
   };
 
