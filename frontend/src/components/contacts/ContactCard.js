@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./ContactCard.css";
 import Icon from "../icons/Icon";
 import { getCurrentUser } from "../../config/authUtils";
+import { api } from "../../api/backend";
 import {
   addContactToShortlist,
   removeContactFromShortlist,
@@ -13,7 +14,7 @@ import {
  * Contact Card Component
  * Displays a contact with like/dislike/add actions
  */
-const ContactCard = ({ contact }) => {
+const ContactCard = ({ contact, query = '', onAccept, onReject }) => {
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
 
@@ -65,6 +66,13 @@ const ContactCard = ({ contact }) => {
         localStorage.setItem("myContacts", JSON.stringify(shortlist));
         setLiked(true);
         setDisliked(false);
+        // Attempt to save interaction to backend training file (will fail silently if not authenticated)
+        try {
+          await api.saveTrainingInteraction({ contact, action: 'accept', query: query || '' });
+        } catch (e) {
+          // non-fatal — keep UX smooth
+          console.debug('Training save failed (local add):', e.message || e);
+        }
         return true;
       }
 
@@ -147,6 +155,12 @@ const ContactCard = ({ contact }) => {
             );
           } catch (e) {}
         }
+        // Save interaction to backend training set
+        try {
+          await api.saveTrainingInteraction({ contact, action: 'accept', query: query || '' });
+        } catch (e) {
+          console.debug('Training save failed (firestore add):', e.message || e);
+        }
         return true;
       }
       return false;
@@ -228,6 +242,12 @@ const ContactCard = ({ contact }) => {
             })
           );
         } catch (e) {}
+        // Save reject interaction to backend training set (best-effort)
+        try {
+          await api.saveTrainingInteraction({ contact, action: 'reject', query: query || '' });
+        } catch (e) {
+          console.debug('Training save failed (reject):', e.message || e);
+        }
       } else {
         // Undo dislike: remove from trash
         if (user?.uid) {

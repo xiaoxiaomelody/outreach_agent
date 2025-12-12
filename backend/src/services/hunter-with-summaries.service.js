@@ -6,6 +6,8 @@
 const hunterDirect = require('./hunter-direct.service');
 const openaiService = require('./openai.service');
 const { getFirestore } = require('../config/firebase');
+const fs = require('fs');
+const path = require('path');
 
 /**
  * Domain search with AI-generated summaries for each contact
@@ -91,6 +93,35 @@ const reRankContacts = (contacts = [], opts = {}) => {
     semantic: 0.15
   }, opts.weights || {});
 
+  // Try to load trained weights produced by the local trainer and map them
+  // to the title/semantic split. We keep confidence/verification as base
+  // and let the trained model distribute the remaining mass.
+  try {
+    const trainedPath = path.join(__dirname, '..', '..', 'models', 'trained-weights.json');
+    if (fs.existsSync(trainedPath)) {
+      const raw = fs.readFileSync(trainedPath, 'utf8');
+      const parsed = JSON.parse(raw);
+      const t = parsed.weights || {};
+      const titleScore = Number(t.titleMatch || t.title || 0);
+      const semanticScore = Number(t.semanticScore || t.semantic || 0);
+      const deptScore = Number(t.deptMatch || 0);
+      const seniorScore = Number(t.seniorMatch || 0);
+
+      const baseOther = (weights.confidence || 0) + (weights.verification || 0);
+      const remaining = Math.max(0, 1 - baseOther);
+      const denom = (titleScore + semanticScore) || 1;
+      weights.title = (titleScore / denom) * remaining;
+      weights.semantic = (semanticScore / denom) * remaining;
+
+      // scale dept/senior boosts by trained magnitudes (keeps previous 0.05 multiplier)
+      weights._deptBoost = 0.05 * deptScore;
+      weights._seniorBoost = 0.05 * seniorScore;
+      console.log(`Loaded trained weights from ${trainedPath}: title=${weights.title.toFixed(3)}, semantic=${weights.semantic.toFixed(3)}, deptBoost=${weights._deptBoost.toFixed(3)}, seniorBoost=${weights._seniorBoost.toFixed(3)}`);
+    }
+  } catch (e) {
+    // ignore; proceed with defaults
+  }
+
   // Helper: normalize confidence (Hunter gives 0-100 sometimes)
   const normalizeConfidence = (c) => {
     if (c === undefined || c === null) return 0;
@@ -103,13 +134,23 @@ const reRankContacts = (contacts = [], opts = {}) => {
   // Helper: simple Jaccard similarity between query and target text
   const jaccard = (a = '', b = '') => {
     if (!a || !b) return 0;
-    const tokenize = (s) => (s || '')
-      .toLowerCase()
+    const normalize = s => (s || '').toLowerCase();
+    const tokenize = (s) => normalize(s)
       .split(/\W+/)
-      .filter(t => t.length > 2);
+      .filter(t => t.length > 1); // allow 2-letter tokens
+
     const A = new Set(tokenize(a));
     const B = new Set(tokenize(b));
-    if (A.size === 0 || B.size === 0) return 0;
+
+    // If either side tokenizes to empty, fall back to substring check
+    if (A.size === 0 || B.size === 0) {
+      const na = normalize(a);
+      const nb = normalize(b);
+      if (!na || !nb) return 0;
+      if (na.includes(nb) || nb.includes(na)) return 0.5; // partial signal
+      return 0;
+    }
+
     const inter = [...A].filter(x => B.has(x)).length;
     const uni = new Set([...A, ...B]).size;
     return uni === 0 ? 0 : inter / uni;
@@ -142,13 +183,15 @@ const reRankContacts = (contacts = [], opts = {}) => {
     const semanticScore = jaccard(query, semanticSource);
 
     // Compose final score using weights; include small contributions from dept/seniority
+    const deptBoost = (weights._deptBoost !== undefined) ? weights._deptBoost : 0.05;
+    const seniorBoost = (weights._seniorBoost !== undefined) ? weights._seniorBoost : 0.05;
     const score = (
-      weights.confidence * conf +
-      weights.verification * verified +
-      weights.title * titleScore +
-      weights.semantic * semanticScore +
-      0.05 * deptMatch +
-      0.05 * seniorMatch
+      (weights.confidence || 0) * conf +
+      (weights.verification || 0) * verified +
+      (weights.title || 0) * titleScore +
+      (weights.semantic || 0) * semanticScore +
+      deptBoost * deptMatch +
+      seniorBoost * seniorMatch
     );
 
     return Object.assign({}, contact, { _relevanceScore: score });

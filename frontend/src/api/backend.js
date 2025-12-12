@@ -72,6 +72,13 @@ export const api = {
   deleteData: (collection, id) => apiCall(`/api/data/${collection}/${id}`, {
     method: 'DELETE',
   }),
+  // Training interactions (save a single interaction to backend local file)
+  saveTrainingInteraction: (payload) => apiCall('/api/training/save', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  }),
+  // Run training on the backend (triggers the training script and returns trained weights)
+  runTraining: () => apiCall('/api/training/run', { method: 'POST' }),
 };
 
 // Sign up with email/password

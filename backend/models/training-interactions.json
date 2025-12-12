@@ -1,0 +1,2253 @@
+[
+  {
+    "id": "local-1765577636351",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "name": "Melody Chen",
+      "first_name": "Melody",
+      "last_name": "Chen",
+      "email": "lucychenxiaoxiao0730@gmail.com",
+      "value": "lucychenxiaoxiao0730@gmail.com",
+      "company": "Brown University",
+      "position": null,
+      "linkedin": null,
+      "ai_summary": null,
+      "verified": true
+    },
+    "action": "accept",
+    "query": "",
+    "metadata": {
+      "rawContact": {
+        "name": "Melody Chen",
+        "first_name": "Melody",
+        "last_name": "Chen",
+        "email": "lucychenxiaoxiao0730@gmail.com",
+        "value": "lucychenxiaoxiao0730@gmail.com",
+        "company": "Brown University",
+        "position": null,
+        "linkedin": null,
+        "ai_summary": null,
+        "verified": true
+      }
+    },
+    "createdAt": "2025-12-12T22:13:56.352Z"
+  },
+  {
+    "id": "local-1765578015358",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Bill",
+      "last_name": "Bo",
+      "value": "bob@mcdonalds.com",
+      "position": "Drive-Thru Attendant",
+      "department": null,
+      "seniority": null,
+      "linkedin": "https://www.linkedin.com/in/bill-bo-6071b919b",
+      "twitter": null,
+      "confidence": 91,
+      "verification": {
+        "date": null,
+        "status": null
+      },
+      "sources": [
+        {
+          "domain": "serverfault.com",
+          "uri": "https://serverfault.com/questions/492944/postfix-doesnt-send-domain-mail-to-mx",
+          "extracted_on": "2015-07-28",
+          "last_seen_on": "2025-11-24",
+          "still_on_page": true
+        },
+        {
+          "domain": "serverfault.com",
+          "uri": "https://serverfault.com/questions/492944/postfix-not-sending-domain-mail-to-mx",
+          "extracted_on": "2014-04-23",
+          "last_seen_on": "2025-08-05",
+          "still_on_page": false
+        }
+      ],
+      "name": "Bill Bo",
+      "email": "bob@mcdonalds.com",
+      "company": "McDonald's",
+      "verified": false,
+      "summary": "Bill Bo is a dedicated Drive-Thru Attendant at McDonald's, bringing expertise in customer service and efficiency to enhance the dining experience. His role positions him as a valuable contributor to discussions on operational excellence and consumer engagement in the fast-food industry.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.36400000000000005,
+      "ai_summary": "Bill Bo is a dedicated Drive-Thru Attendant at McDonald's, bringing expertise in customer service and efficiency to enhance the dining experience. His role positions him as a valuable contributor to discussions on operational excellence and consumer engagement in the fast-food industry."
+    },
+    "action": "accept",
+    "query": "",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Bill",
+        "last_name": "Bo",
+        "value": "bob@mcdonalds.com",
+        "position": "Drive-Thru Attendant",
+        "department": null,
+        "seniority": null,
+        "linkedin": "https://www.linkedin.com/in/bill-bo-6071b919b",
+        "twitter": null,
+        "confidence": 91,
+        "verification": {
+          "date": null,
+          "status": null
+        },
+        "sources": [
+          {
+            "domain": "serverfault.com",
+            "uri": "https://serverfault.com/questions/492944/postfix-doesnt-send-domain-mail-to-mx",
+            "extracted_on": "2015-07-28",
+            "last_seen_on": "2025-11-24",
+            "still_on_page": true
+          },
+          {
+            "domain": "serverfault.com",
+            "uri": "https://serverfault.com/questions/492944/postfix-not-sending-domain-mail-to-mx",
+            "extracted_on": "2014-04-23",
+            "last_seen_on": "2025-08-05",
+            "still_on_page": false
+          }
+        ],
+        "name": "Bill Bo",
+        "email": "bob@mcdonalds.com",
+        "company": "McDonald's",
+        "verified": false,
+        "summary": "Bill Bo is a dedicated Drive-Thru Attendant at McDonald's, bringing expertise in customer service and efficiency to enhance the dining experience. His role positions him as a valuable contributor to discussions on operational excellence and consumer engagement in the fast-food industry.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.36400000000000005,
+        "ai_summary": "Bill Bo is a dedicated Drive-Thru Attendant at McDonald's, bringing expertise in customer service and efficiency to enhance the dining experience. His role positions him as a valuable contributor to discussions on operational excellence and consumer engagement in the fast-food industry."
+      }
+    },
+    "createdAt": "2025-12-12T22:20:15.358Z"
+  },
+  {
+    "id": "local-1765578113596",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Sterling",
+      "last_name": "Peters",
+      "value": "sterling.peters@wendys.com",
+      "position": "Head Waiter",
+      "department": "management",
+      "seniority": "executive",
+      "linkedin": "https://www.linkedin.com/in/sterling-peters-8a3a16308",
+      "twitter": null,
+      "confidence": 94,
+      "verification": {
+        "date": null,
+        "status": null
+      },
+      "sources": [
+        {
+          "domain": "linkedin.com",
+          "uri": "https://www.google.com/search?q=site:linkedin.com%20sterling%20peters%20wendys",
+          "extracted_on": "2025-08-03",
+          "last_seen_on": "2025-12-09",
+          "still_on_page": true
+        }
+      ],
+      "name": "Sterling Peters",
+      "email": "sterling.peters@wendys.com",
+      "company": "Wendy's",
+      "verified": false,
+      "summary": "Sterling Peters is an executive Head Waiter at Wendy's, bringing extensive management expertise and a strong focus on enhancing customer service experiences. His leadership skills and in-depth knowledge of operations make him a valuable contributor to discussions on restaurant management and service excellence.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.381,
+      "ai_summary": "Sterling Peters is an executive Head Waiter at Wendy's, bringing extensive management expertise and a strong focus on enhancing customer service experiences. His leadership skills and in-depth knowledge of operations make him a valuable contributor to discussions on restaurant management and service excellence."
+    },
+    "action": "accept",
+    "query": "",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Sterling",
+        "last_name": "Peters",
+        "value": "sterling.peters@wendys.com",
+        "position": "Head Waiter",
+        "department": "management",
+        "seniority": "executive",
+        "linkedin": "https://www.linkedin.com/in/sterling-peters-8a3a16308",
+        "twitter": null,
+        "confidence": 94,
+        "verification": {
+          "date": null,
+          "status": null
+        },
+        "sources": [
+          {
+            "domain": "linkedin.com",
+            "uri": "https://www.google.com/search?q=site:linkedin.com%20sterling%20peters%20wendys",
+            "extracted_on": "2025-08-03",
+            "last_seen_on": "2025-12-09",
+            "still_on_page": true
+          }
+        ],
+        "name": "Sterling Peters",
+        "email": "sterling.peters@wendys.com",
+        "company": "Wendy's",
+        "verified": false,
+        "summary": "Sterling Peters is an executive Head Waiter at Wendy's, bringing extensive management expertise and a strong focus on enhancing customer service experiences. His leadership skills and in-depth knowledge of operations make him a valuable contributor to discussions on restaurant management and service excellence.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.381,
+        "ai_summary": "Sterling Peters is an executive Head Waiter at Wendy's, bringing extensive management expertise and a strong focus on enhancing customer service experiences. His leadership skills and in-depth knowledge of operations make him a valuable contributor to discussions on restaurant management and service excellence."
+      }
+    },
+    "createdAt": "2025-12-12T22:21:53.596Z"
+  },
+  {
+    "id": "local-1765578117589",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Sachin",
+      "last_name": "Gamer",
+      "value": "sachin.gamer@wendys.com",
+      "position": "Chief Financial Officer",
+      "department": "finance",
+      "seniority": "executive",
+      "linkedin": "https://www.linkedin.com/in/sachin-gamer-ff-37742a245",
+      "twitter": null,
+      "confidence": 94,
+      "verification": {
+        "date": null,
+        "status": null
+      },
+      "sources": [
+        {
+          "domain": "linkedin.com",
+          "uri": "https://www.google.com/search?q=site:linkedin.com%20sachin%20gamer%20wendys",
+          "extracted_on": "2025-07-17",
+          "last_seen_on": "2025-11-28",
+          "still_on_page": true
+        }
+      ],
+      "name": "Sachin Gamer",
+      "email": "sachin.gamer@wendys.com",
+      "company": "Wendy's",
+      "verified": false,
+      "summary": "Sachin Gamer is the Chief Financial Officer at Wendy's, where he leverages his extensive expertise in financial strategy and management to drive profitability and growth. His executive experience equips him to provide valuable insights into financial operations and strategic planning within the fast-food industry.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.3805454545454545,
+      "ai_summary": "Sachin Gamer is the Chief Financial Officer at Wendy's, where he leverages his extensive expertise in financial strategy and management to drive profitability and growth. His executive experience equips him to provide valuable insights into financial operations and strategic planning within the fast-food industry."
+    },
+    "action": "accept",
+    "query": "",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Sachin",
+        "last_name": "Gamer",
+        "value": "sachin.gamer@wendys.com",
+        "position": "Chief Financial Officer",
+        "department": "finance",
+        "seniority": "executive",
+        "linkedin": "https://www.linkedin.com/in/sachin-gamer-ff-37742a245",
+        "twitter": null,
+        "confidence": 94,
+        "verification": {
+          "date": null,
+          "status": null
+        },
+        "sources": [
+          {
+            "domain": "linkedin.com",
+            "uri": "https://www.google.com/search?q=site:linkedin.com%20sachin%20gamer%20wendys",
+            "extracted_on": "2025-07-17",
+            "last_seen_on": "2025-11-28",
+            "still_on_page": true
+          }
+        ],
+        "name": "Sachin Gamer",
+        "email": "sachin.gamer@wendys.com",
+        "company": "Wendy's",
+        "verified": false,
+        "summary": "Sachin Gamer is the Chief Financial Officer at Wendy's, where he leverages his extensive expertise in financial strategy and management to drive profitability and growth. His executive experience equips him to provide valuable insights into financial operations and strategic planning within the fast-food industry.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.3805454545454545,
+        "ai_summary": "Sachin Gamer is the Chief Financial Officer at Wendy's, where he leverages his extensive expertise in financial strategy and management to drive profitability and growth. His executive experience equips him to provide valuable insights into financial operations and strategic planning within the fast-food industry."
+      }
+    },
+    "createdAt": "2025-12-12T22:21:57.589Z"
+  },
+  {
+    "id": "local-1765578121043",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Jane",
+      "last_name": "Lee",
+      "value": "jane.lee@wendys.com",
+      "position": "Head Cashier",
+      "department": "management",
+      "seniority": "executive",
+      "linkedin": "https://www.linkedin.com/in/jane-lee-19492b15a",
+      "twitter": null,
+      "confidence": 94,
+      "verification": {
+        "date": null,
+        "status": null
+      },
+      "sources": [
+        {
+          "domain": "linkedin.com",
+          "uri": "https://www.google.com/search?q=site:linkedin.com%20jane%20lee%20wendys",
+          "extracted_on": "2025-01-16",
+          "last_seen_on": "2025-11-26",
+          "still_on_page": true
+        }
+      ],
+      "name": "Jane Lee",
+      "email": "jane.lee@wendys.com",
+      "company": "Wendy's",
+      "verified": false,
+      "summary": "Jane Lee is the Head Cashier at Wendy's, where she leverages her executive management expertise to enhance operational efficiency and customer service. Her extensive experience in financial management and team leadership positions her as a valuable asset for discussions on improving retail operations and customer satisfaction strategies.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.38041176470588234,
+      "ai_summary": "Jane Lee is the Head Cashier at Wendy's, where she leverages her executive management expertise to enhance operational efficiency and customer service. Her extensive experience in financial management and team leadership positions her as a valuable asset for discussions on improving retail operations and customer satisfaction strategies."
+    },
+    "action": "accept",
+    "query": "",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Jane",
+        "last_name": "Lee",
+        "value": "jane.lee@wendys.com",
+        "position": "Head Cashier",
+        "department": "management",
+        "seniority": "executive",
+        "linkedin": "https://www.linkedin.com/in/jane-lee-19492b15a",
+        "twitter": null,
+        "confidence": 94,
+        "verification": {
+          "date": null,
+          "status": null
+        },
+        "sources": [
+          {
+            "domain": "linkedin.com",
+            "uri": "https://www.google.com/search?q=site:linkedin.com%20jane%20lee%20wendys",
+            "extracted_on": "2025-01-16",
+            "last_seen_on": "2025-11-26",
+            "still_on_page": true
+          }
+        ],
+        "name": "Jane Lee",
+        "email": "jane.lee@wendys.com",
+        "company": "Wendy's",
+        "verified": false,
+        "summary": "Jane Lee is the Head Cashier at Wendy's, where she leverages her executive management expertise to enhance operational efficiency and customer service. Her extensive experience in financial management and team leadership positions her as a valuable asset for discussions on improving retail operations and customer satisfaction strategies.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.38041176470588234,
+        "ai_summary": "Jane Lee is the Head Cashier at Wendy's, where she leverages her executive management expertise to enhance operational efficiency and customer service. Her extensive experience in financial management and team leadership positions her as a valuable asset for discussions on improving retail operations and customer satisfaction strategies."
+      }
+    },
+    "createdAt": "2025-12-12T22:22:01.043Z"
+  },
+  {
+    "id": "local-1765578121345",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Florence",
+      "last_name": "Davis",
+      "value": "florence.davis@wendys.com",
+      "position": "Human Resources Director",
+      "department": "hr",
+      "seniority": "executive",
+      "linkedin": "https://www.linkedin.com/in/florence-davis-m-a-shrm-scp-793a0348",
+      "twitter": null,
+      "confidence": 94,
+      "verification": {
+        "date": "2025-12-08",
+        "status": "accept_all"
+      },
+      "sources": [
+        {
+          "domain": "linkedin.com",
+          "uri": "https://www.google.com/search?q=site:linkedin.com%20florence%20davis%20wendys",
+          "extracted_on": "2025-08-19",
+          "last_seen_on": "2025-08-19",
+          "still_on_page": true
+        }
+      ],
+      "name": "Florence Davis",
+      "email": "florence.davis@wendys.com",
+      "company": "Wendy's",
+      "verified": false,
+      "summary": "Florence Davis is an accomplished Human Resources Director at Wendy's, bringing extensive expertise in strategic HR management and organizational development. With her executive experience and strong commitment to fostering a positive workplace culture, she can provide valuable insights on talent acquisition and employee engagement strategies.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.3802857142857143,
+      "ai_summary": "Florence Davis is an accomplished Human Resources Director at Wendy's, bringing extensive expertise in strategic HR management and organizational development. With her executive experience and strong commitment to fostering a positive workplace culture, she can provide valuable insights on talent acquisition and employee engagement strategies."
+    },
+    "action": "accept",
+    "query": "",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Florence",
+        "last_name": "Davis",
+        "value": "florence.davis@wendys.com",
+        "position": "Human Resources Director",
+        "department": "hr",
+        "seniority": "executive",
+        "linkedin": "https://www.linkedin.com/in/florence-davis-m-a-shrm-scp-793a0348",
+        "twitter": null,
+        "confidence": 94,
+        "verification": {
+          "date": "2025-12-08",
+          "status": "accept_all"
+        },
+        "sources": [
+          {
+            "domain": "linkedin.com",
+            "uri": "https://www.google.com/search?q=site:linkedin.com%20florence%20davis%20wendys",
+            "extracted_on": "2025-08-19",
+            "last_seen_on": "2025-08-19",
+            "still_on_page": true
+          }
+        ],
+        "name": "Florence Davis",
+        "email": "florence.davis@wendys.com",
+        "company": "Wendy's",
+        "verified": false,
+        "summary": "Florence Davis is an accomplished Human Resources Director at Wendy's, bringing extensive expertise in strategic HR management and organizational development. With her executive experience and strong commitment to fostering a positive workplace culture, she can provide valuable insights on talent acquisition and employee engagement strategies.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.3802857142857143,
+        "ai_summary": "Florence Davis is an accomplished Human Resources Director at Wendy's, bringing extensive expertise in strategic HR management and organizational development. With her executive experience and strong commitment to fostering a positive workplace culture, she can provide valuable insights on talent acquisition and employee engagement strategies."
+      }
+    },
+    "createdAt": "2025-12-12T22:22:01.345Z"
+  },
+  {
+    "id": "local-1765578124514",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Becky",
+      "last_name": "Seiler",
+      "value": "rebecca.seiler@wendys.com",
+      "position": "Director of Franchise Management",
+      "department": "management",
+      "seniority": "executive",
+      "linkedin": "https://www.linkedin.com/in/becky-seiler-276686a",
+      "twitter": null,
+      "confidence": 94,
+      "verification": {
+        "date": null,
+        "status": null
+      },
+      "sources": [
+        {
+          "domain": "linkedin.com",
+          "uri": "https://www.google.com/search?q=site:linkedin.com%20becky%20seiler%20wendys",
+          "extracted_on": "2025-02-18",
+          "last_seen_on": "2025-12-06",
+          "still_on_page": true
+        }
+      ],
+      "name": "Becky Seiler",
+      "email": "rebecca.seiler@wendys.com",
+      "company": "Wendy's",
+      "verified": false,
+      "summary": "Becky Seiler is the Director of Franchise Management at Wendy's, where she leverages her extensive expertise in franchise operations and strategic management to drive growth and enhance franchisee relationships. Her executive leadership and insights into the fast-food industry make her a valuable contributor to discussions on franchise development and operational efficiency.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.3802857142857143,
+      "ai_summary": "Becky Seiler is the Director of Franchise Management at Wendy's, where she leverages her extensive expertise in franchise operations and strategic management to drive growth and enhance franchisee relationships. Her executive leadership and insights into the fast-food industry make her a valuable contributor to discussions on franchise development and operational efficiency."
+    },
+    "action": "accept",
+    "query": "",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Becky",
+        "last_name": "Seiler",
+        "value": "rebecca.seiler@wendys.com",
+        "position": "Director of Franchise Management",
+        "department": "management",
+        "seniority": "executive",
+        "linkedin": "https://www.linkedin.com/in/becky-seiler-276686a",
+        "twitter": null,
+        "confidence": 94,
+        "verification": {
+          "date": null,
+          "status": null
+        },
+        "sources": [
+          {
+            "domain": "linkedin.com",
+            "uri": "https://www.google.com/search?q=site:linkedin.com%20becky%20seiler%20wendys",
+            "extracted_on": "2025-02-18",
+            "last_seen_on": "2025-12-06",
+            "still_on_page": true
+          }
+        ],
+        "name": "Becky Seiler",
+        "email": "rebecca.seiler@wendys.com",
+        "company": "Wendy's",
+        "verified": false,
+        "summary": "Becky Seiler is the Director of Franchise Management at Wendy's, where she leverages her extensive expertise in franchise operations and strategic management to drive growth and enhance franchisee relationships. Her executive leadership and insights into the fast-food industry make her a valuable contributor to discussions on franchise development and operational efficiency.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.3802857142857143,
+        "ai_summary": "Becky Seiler is the Director of Franchise Management at Wendy's, where she leverages her extensive expertise in franchise operations and strategic management to drive growth and enhance franchisee relationships. Her executive leadership and insights into the fast-food industry make her a valuable contributor to discussions on franchise development and operational efficiency."
+      }
+    },
+    "createdAt": "2025-12-12T22:22:04.514Z"
+  },
+  {
+    "id": "local-1765578127498",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Peter",
+      "last_name": "Buckley",
+      "value": "peter.buckley@wendys.com",
+      "position": "Managing Director",
+      "department": "executive",
+      "seniority": "executive",
+      "linkedin": "https://www.linkedin.com/in/peter-buckley-24b04a25b",
+      "twitter": null,
+      "confidence": 94,
+      "verification": {
+        "date": "2025-11-16",
+        "status": "accept_all"
+      },
+      "sources": [
+        {
+          "domain": "linkedin.com",
+          "uri": "https://www.google.com/search?q=site:linkedin.com%20peter%20buckley%20wendys",
+          "extracted_on": "2025-08-22",
+          "last_seen_on": "2025-11-30",
+          "still_on_page": true
+        }
+      ],
+      "name": "Peter Buckley",
+      "email": "peter.buckley@wendys.com",
+      "company": "Wendy's",
+      "verified": false,
+      "summary": "Peter Buckley is the Managing Director at Wendy's, bringing extensive executive leadership and strategic expertise to the fast-food industry. His insights into operational efficiency and brand development could provide valuable perspectives in discussions about enhancing customer experience and driving growth in competitive markets.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.38016666666666665,
+      "ai_summary": "Peter Buckley is the Managing Director at Wendy's, bringing extensive executive leadership and strategic expertise to the fast-food industry. His insights into operational efficiency and brand development could provide valuable perspectives in discussions about enhancing customer experience and driving growth in competitive markets."
+    },
+    "action": "accept",
+    "query": "",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Peter",
+        "last_name": "Buckley",
+        "value": "peter.buckley@wendys.com",
+        "position": "Managing Director",
+        "department": "executive",
+        "seniority": "executive",
+        "linkedin": "https://www.linkedin.com/in/peter-buckley-24b04a25b",
+        "twitter": null,
+        "confidence": 94,
+        "verification": {
+          "date": "2025-11-16",
+          "status": "accept_all"
+        },
+        "sources": [
+          {
+            "domain": "linkedin.com",
+            "uri": "https://www.google.com/search?q=site:linkedin.com%20peter%20buckley%20wendys",
+            "extracted_on": "2025-08-22",
+            "last_seen_on": "2025-11-30",
+            "still_on_page": true
+          }
+        ],
+        "name": "Peter Buckley",
+        "email": "peter.buckley@wendys.com",
+        "company": "Wendy's",
+        "verified": false,
+        "summary": "Peter Buckley is the Managing Director at Wendy's, bringing extensive executive leadership and strategic expertise to the fast-food industry. His insights into operational efficiency and brand development could provide valuable perspectives in discussions about enhancing customer experience and driving growth in competitive markets.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.38016666666666665,
+        "ai_summary": "Peter Buckley is the Managing Director at Wendy's, bringing extensive executive leadership and strategic expertise to the fast-food industry. His insights into operational efficiency and brand development could provide valuable perspectives in discussions about enhancing customer experience and driving growth in competitive markets."
+      }
+    },
+    "createdAt": "2025-12-12T22:22:07.498Z"
+  },
+  {
+    "id": "local-1765578134530",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Eric",
+      "last_name": "Roschel",
+      "value": "eric.roschel@wendys.com",
+      "position": "Director of Business Development",
+      "department": "sales",
+      "seniority": "executive",
+      "linkedin": "https://www.linkedin.com/in/ericroschel",
+      "twitter": null,
+      "confidence": 94,
+      "verification": {
+        "date": "2025-11-13",
+        "status": "accept_all"
+      },
+      "sources": [
+        {
+          "domain": "linkedin.com",
+          "uri": "https://www.google.com/search?q=site:linkedin.com%20eric%20roschel%20wendys",
+          "extracted_on": "2025-07-24",
+          "last_seen_on": "2025-11-29",
+          "still_on_page": true
+        }
+      ],
+      "name": "Eric Roschel",
+      "email": "eric.roschel@wendys.com",
+      "company": "Wendy's",
+      "verified": false,
+      "summary": "Eric Roschel is the Director of Business Development at Wendy's, where he leverages his executive expertise in sales to drive strategic growth and enhance market presence. His insights into industry trends and customer engagement strategies make him a valuable asset for discussions on business innovation and development within the fast-food sector.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.37994736842105264,
+      "ai_summary": "Eric Roschel is the Director of Business Development at Wendy's, where he leverages his executive expertise in sales to drive strategic growth and enhance market presence. His insights into industry trends and customer engagement strategies make him a valuable asset for discussions on business innovation and development within the fast-food sector."
+    },
+    "action": "accept",
+    "query": "",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Eric",
+        "last_name": "Roschel",
+        "value": "eric.roschel@wendys.com",
+        "position": "Director of Business Development",
+        "department": "sales",
+        "seniority": "executive",
+        "linkedin": "https://www.linkedin.com/in/ericroschel",
+        "twitter": null,
+        "confidence": 94,
+        "verification": {
+          "date": "2025-11-13",
+          "status": "accept_all"
+        },
+        "sources": [
+          {
+            "domain": "linkedin.com",
+            "uri": "https://www.google.com/search?q=site:linkedin.com%20eric%20roschel%20wendys",
+            "extracted_on": "2025-07-24",
+            "last_seen_on": "2025-11-29",
+            "still_on_page": true
+          }
+        ],
+        "name": "Eric Roschel",
+        "email": "eric.roschel@wendys.com",
+        "company": "Wendy's",
+        "verified": false,
+        "summary": "Eric Roschel is the Director of Business Development at Wendy's, where he leverages his executive expertise in sales to drive strategic growth and enhance market presence. His insights into industry trends and customer engagement strategies make him a valuable asset for discussions on business innovation and development within the fast-food sector.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.37994736842105264,
+        "ai_summary": "Eric Roschel is the Director of Business Development at Wendy's, where he leverages his executive expertise in sales to drive strategic growth and enhance market presence. His insights into industry trends and customer engagement strategies make him a valuable asset for discussions on business innovation and development within the fast-food sector."
+      }
+    },
+    "createdAt": "2025-12-12T22:22:14.530Z"
+  },
+  {
+    "id": "local-1765578138090",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "David",
+      "last_name": "Galinsky",
+      "value": "david.galinsky@wendys.com",
+      "position": "Senior Director, Analytics",
+      "department": "it",
+      "seniority": "senior",
+      "linkedin": "https://www.linkedin.com/in/david-galinsky-8721826",
+      "twitter": null,
+      "confidence": 94,
+      "verification": {
+        "date": "2025-11-23",
+        "status": "accept_all"
+      },
+      "sources": [
+        {
+          "domain": "linkedin.com",
+          "uri": "https://www.google.com/search?q=site:linkedin.com%20david%20galinsky%20wendys",
+          "extracted_on": "2025-08-17",
+          "last_seen_on": "2025-12-03",
+          "still_on_page": true
+        }
+      ],
+      "name": "David Galinsky",
+      "email": "david.galinsky@wendys.com",
+      "company": "Wendy's",
+      "verified": false,
+      "summary": "David Galinsky is a Senior Director of Analytics at Wendy's, where he leverages his extensive expertise in data analysis to drive strategic decision-making and enhance operational efficiency. His deep understanding of analytics within the IT department positions him to offer valuable insights into data-driven strategies that can optimize business performance.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.37984615384615383,
+      "ai_summary": "David Galinsky is a Senior Director of Analytics at Wendy's, where he leverages his extensive expertise in data analysis to drive strategic decision-making and enhance operational efficiency. His deep understanding of analytics within the IT department positions him to offer valuable insights into data-driven strategies that can optimize business performance."
+    },
+    "action": "accept",
+    "query": "",
+    "metadata": {
+      "rawContact": {
+        "first_name": "David",
+        "last_name": "Galinsky",
+        "value": "david.galinsky@wendys.com",
+        "position": "Senior Director, Analytics",
+        "department": "it",
+        "seniority": "senior",
+        "linkedin": "https://www.linkedin.com/in/david-galinsky-8721826",
+        "twitter": null,
+        "confidence": 94,
+        "verification": {
+          "date": "2025-11-23",
+          "status": "accept_all"
+        },
+        "sources": [
+          {
+            "domain": "linkedin.com",
+            "uri": "https://www.google.com/search?q=site:linkedin.com%20david%20galinsky%20wendys",
+            "extracted_on": "2025-08-17",
+            "last_seen_on": "2025-12-03",
+            "still_on_page": true
+          }
+        ],
+        "name": "David Galinsky",
+        "email": "david.galinsky@wendys.com",
+        "company": "Wendy's",
+        "verified": false,
+        "summary": "David Galinsky is a Senior Director of Analytics at Wendy's, where he leverages his extensive expertise in data analysis to drive strategic decision-making and enhance operational efficiency. His deep understanding of analytics within the IT department positions him to offer valuable insights into data-driven strategies that can optimize business performance.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.37984615384615383,
+        "ai_summary": "David Galinsky is a Senior Director of Analytics at Wendy's, where he leverages his extensive expertise in data analysis to drive strategic decision-making and enhance operational efficiency. His deep understanding of analytics within the IT department positions him to offer valuable insights into data-driven strategies that can optimize business performance."
+      }
+    },
+    "createdAt": "2025-12-12T22:22:18.090Z"
+  },
+  {
+    "id": "local-1765578152183",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Faith",
+      "last_name": "Vaughn",
+      "value": "faith.vaughn@popeyes.com",
+      "position": "Owner",
+      "department": "executive",
+      "seniority": null,
+      "linkedin": "https://www.linkedin.com/in/faith-vaughn-b3325130",
+      "twitter": null,
+      "confidence": 94,
+      "verification": {
+        "date": null,
+        "status": null
+      },
+      "sources": [
+        {
+          "domain": "linkedin.com",
+          "uri": "https://www.google.com/search?q=site:linkedin.com%20faith%20vaughn%20popeyes",
+          "extracted_on": "2025-01-14",
+          "last_seen_on": "2025-12-02",
+          "still_on_page": true
+        }
+      ],
+      "name": "Faith Vaughn",
+      "email": "faith.vaughn@popeyes.com",
+      "company": "Popeyes Louisiana Kitchen",
+      "verified": false,
+      "summary": "Faith Vaughn is the Owner of Popeyes Louisiana Kitchen, where she leverages her executive expertise to drive business growth and operational excellence. Her leadership in the fast-food industry positions her as a valuable contributor to discussions on franchise development and customer experience enhancement.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.3806875,
+      "ai_summary": "Faith Vaughn is the Owner of Popeyes Louisiana Kitchen, where she leverages her executive expertise to drive business growth and operational excellence. Her leadership in the fast-food industry positions her as a valuable contributor to discussions on franchise development and customer experience enhancement."
+    },
+    "action": "accept",
+    "query": "",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Faith",
+        "last_name": "Vaughn",
+        "value": "faith.vaughn@popeyes.com",
+        "position": "Owner",
+        "department": "executive",
+        "seniority": null,
+        "linkedin": "https://www.linkedin.com/in/faith-vaughn-b3325130",
+        "twitter": null,
+        "confidence": 94,
+        "verification": {
+          "date": null,
+          "status": null
+        },
+        "sources": [
+          {
+            "domain": "linkedin.com",
+            "uri": "https://www.google.com/search?q=site:linkedin.com%20faith%20vaughn%20popeyes",
+            "extracted_on": "2025-01-14",
+            "last_seen_on": "2025-12-02",
+            "still_on_page": true
+          }
+        ],
+        "name": "Faith Vaughn",
+        "email": "faith.vaughn@popeyes.com",
+        "company": "Popeyes Louisiana Kitchen",
+        "verified": false,
+        "summary": "Faith Vaughn is the Owner of Popeyes Louisiana Kitchen, where she leverages her executive expertise to drive business growth and operational excellence. Her leadership in the fast-food industry positions her as a valuable contributor to discussions on franchise development and customer experience enhancement.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.3806875,
+        "ai_summary": "Faith Vaughn is the Owner of Popeyes Louisiana Kitchen, where she leverages her executive expertise to drive business growth and operational excellence. Her leadership in the fast-food industry positions her as a valuable contributor to discussions on franchise development and customer experience enhancement."
+      }
+    },
+    "createdAt": "2025-12-12T22:22:32.183Z"
+  },
+  {
+    "id": "local-1765578155655",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Zeke",
+      "last_name": "Kerr",
+      "value": "zeke.kerr@popeyes.com",
+      "position": "Director of Operations",
+      "department": "executive",
+      "seniority": "executive",
+      "linkedin": "https://www.linkedin.com/in/zeke-kerr-2b772155",
+      "twitter": null,
+      "confidence": 94,
+      "verification": {
+        "date": null,
+        "status": null
+      },
+      "sources": [
+        {
+          "domain": "linkedin.com",
+          "uri": "https://www.google.com/search?q=site:linkedin.com%20zeke%20kerr%20popeyes",
+          "extracted_on": "2025-01-14",
+          "last_seen_on": "2025-11-21",
+          "still_on_page": true
+        }
+      ],
+      "name": "Zeke Kerr",
+      "email": "zeke.kerr@popeyes.com",
+      "company": "Popeyes Louisiana Kitchen",
+      "verified": false,
+      "summary": "Zeke Kerr is the Director of Operations at Popeyes Louisiana Kitchen, where he leverages his executive expertise to optimize operational efficiency and drive strategic growth initiatives. His extensive experience in the fast-food industry positions him as a valuable resource for discussions on operational excellence and franchise management.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.3802857142857143,
+      "ai_summary": "Zeke Kerr is the Director of Operations at Popeyes Louisiana Kitchen, where he leverages his executive expertise to optimize operational efficiency and drive strategic growth initiatives. His extensive experience in the fast-food industry positions him as a valuable resource for discussions on operational excellence and franchise management."
+    },
+    "action": "accept",
+    "query": "",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Zeke",
+        "last_name": "Kerr",
+        "value": "zeke.kerr@popeyes.com",
+        "position": "Director of Operations",
+        "department": "executive",
+        "seniority": "executive",
+        "linkedin": "https://www.linkedin.com/in/zeke-kerr-2b772155",
+        "twitter": null,
+        "confidence": 94,
+        "verification": {
+          "date": null,
+          "status": null
+        },
+        "sources": [
+          {
+            "domain": "linkedin.com",
+            "uri": "https://www.google.com/search?q=site:linkedin.com%20zeke%20kerr%20popeyes",
+            "extracted_on": "2025-01-14",
+            "last_seen_on": "2025-11-21",
+            "still_on_page": true
+          }
+        ],
+        "name": "Zeke Kerr",
+        "email": "zeke.kerr@popeyes.com",
+        "company": "Popeyes Louisiana Kitchen",
+        "verified": false,
+        "summary": "Zeke Kerr is the Director of Operations at Popeyes Louisiana Kitchen, where he leverages his executive expertise to optimize operational efficiency and drive strategic growth initiatives. His extensive experience in the fast-food industry positions him as a valuable resource for discussions on operational excellence and franchise management.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.3802857142857143,
+        "ai_summary": "Zeke Kerr is the Director of Operations at Popeyes Louisiana Kitchen, where he leverages his executive expertise to optimize operational efficiency and drive strategic growth initiatives. His extensive experience in the fast-food industry positions him as a valuable resource for discussions on operational excellence and franchise management."
+      }
+    },
+    "createdAt": "2025-12-12T22:22:35.655Z"
+  },
+  {
+    "id": "local-1765578155668",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Naseem",
+      "last_name": "Sayani",
+      "value": "naseem.sayani@popeyes.com",
+      "position": "Catering Director",
+      "department": "management",
+      "seniority": "executive",
+      "linkedin": "https://www.linkedin.com/in/naseem-sayani-b26744a5",
+      "twitter": null,
+      "confidence": 94,
+      "verification": {
+        "date": null,
+        "status": null
+      },
+      "sources": [
+        {
+          "domain": "linkedin.com",
+          "uri": "https://www.google.com/search?q=site:linkedin.com%20naseem%20sayani%20popeyes",
+          "extracted_on": "2025-01-14",
+          "last_seen_on": "2025-12-05",
+          "still_on_page": true
+        }
+      ],
+      "name": "Naseem Sayani",
+      "email": "naseem.sayani@popeyes.com",
+      "company": "Popeyes Louisiana Kitchen",
+      "verified": false,
+      "summary": "Naseem Sayani is an accomplished Catering Director at Popeyes Louisiana Kitchen, where he leverages his extensive management expertise to enhance catering operations and drive business growth. His strategic insights and leadership in the food service industry position him as a valuable contributor to discussions on effective catering solutions and operational excellence.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.38016666666666665,
+      "ai_summary": "Naseem Sayani is an accomplished Catering Director at Popeyes Louisiana Kitchen, where he leverages his extensive management expertise to enhance catering operations and drive business growth. His strategic insights and leadership in the food service industry position him as a valuable contributor to discussions on effective catering solutions and operational excellence."
+    },
+    "action": "accept",
+    "query": "",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Naseem",
+        "last_name": "Sayani",
+        "value": "naseem.sayani@popeyes.com",
+        "position": "Catering Director",
+        "department": "management",
+        "seniority": "executive",
+        "linkedin": "https://www.linkedin.com/in/naseem-sayani-b26744a5",
+        "twitter": null,
+        "confidence": 94,
+        "verification": {
+          "date": null,
+          "status": null
+        },
+        "sources": [
+          {
+            "domain": "linkedin.com",
+            "uri": "https://www.google.com/search?q=site:linkedin.com%20naseem%20sayani%20popeyes",
+            "extracted_on": "2025-01-14",
+            "last_seen_on": "2025-12-05",
+            "still_on_page": true
+          }
+        ],
+        "name": "Naseem Sayani",
+        "email": "naseem.sayani@popeyes.com",
+        "company": "Popeyes Louisiana Kitchen",
+        "verified": false,
+        "summary": "Naseem Sayani is an accomplished Catering Director at Popeyes Louisiana Kitchen, where he leverages his extensive management expertise to enhance catering operations and drive business growth. His strategic insights and leadership in the food service industry position him as a valuable contributor to discussions on effective catering solutions and operational excellence.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.38016666666666665,
+        "ai_summary": "Naseem Sayani is an accomplished Catering Director at Popeyes Louisiana Kitchen, where he leverages his extensive management expertise to enhance catering operations and drive business growth. His strategic insights and leadership in the food service industry position him as a valuable contributor to discussions on effective catering solutions and operational excellence."
+      }
+    },
+    "createdAt": "2025-12-12T22:22:35.668Z"
+  },
+  {
+    "id": "local-1765578159247",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Brenda",
+      "last_name": "Median",
+      "value": "brenda.median@popeyes.com",
+      "position": "Head Cashier",
+      "department": "management",
+      "seniority": "executive",
+      "linkedin": "https://www.linkedin.com/in/brenda-median-2b02b61b9",
+      "twitter": null,
+      "confidence": 94,
+      "verification": {
+        "date": null,
+        "status": null
+      },
+      "sources": [
+        {
+          "domain": "linkedin.com",
+          "uri": "https://www.google.com/search?q=site:linkedin.com%20brenda%20median%20popeyes",
+          "extracted_on": "2025-01-14",
+          "last_seen_on": "2025-12-09",
+          "still_on_page": true
+        }
+      ],
+      "name": "Brenda Median",
+      "email": "brenda.median@popeyes.com",
+      "company": "Popeyes Louisiana Kitchen",
+      "verified": false,
+      "summary": "Brenda Median is the Head Cashier at Popeyes Louisiana Kitchen, bringing executive management expertise to streamline operations and enhance customer service in a fast-paced environment. Her leadership skills and in-depth knowledge of retail management make her a valuable asset for discussions on operational efficiency and team dynamics in the food service industry.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.37994736842105264,
+      "ai_summary": "Brenda Median is the Head Cashier at Popeyes Louisiana Kitchen, bringing executive management expertise to streamline operations and enhance customer service in a fast-paced environment. Her leadership skills and in-depth knowledge of retail management make her a valuable asset for discussions on operational efficiency and team dynamics in the food service industry."
+    },
+    "action": "accept",
+    "query": "",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Brenda",
+        "last_name": "Median",
+        "value": "brenda.median@popeyes.com",
+        "position": "Head Cashier",
+        "department": "management",
+        "seniority": "executive",
+        "linkedin": "https://www.linkedin.com/in/brenda-median-2b02b61b9",
+        "twitter": null,
+        "confidence": 94,
+        "verification": {
+          "date": null,
+          "status": null
+        },
+        "sources": [
+          {
+            "domain": "linkedin.com",
+            "uri": "https://www.google.com/search?q=site:linkedin.com%20brenda%20median%20popeyes",
+            "extracted_on": "2025-01-14",
+            "last_seen_on": "2025-12-09",
+            "still_on_page": true
+          }
+        ],
+        "name": "Brenda Median",
+        "email": "brenda.median@popeyes.com",
+        "company": "Popeyes Louisiana Kitchen",
+        "verified": false,
+        "summary": "Brenda Median is the Head Cashier at Popeyes Louisiana Kitchen, bringing executive management expertise to streamline operations and enhance customer service in a fast-paced environment. Her leadership skills and in-depth knowledge of retail management make her a valuable asset for discussions on operational efficiency and team dynamics in the food service industry.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.37994736842105264,
+        "ai_summary": "Brenda Median is the Head Cashier at Popeyes Louisiana Kitchen, bringing executive management expertise to streamline operations and enhance customer service in a fast-paced environment. Her leadership skills and in-depth knowledge of retail management make her a valuable asset for discussions on operational efficiency and team dynamics in the food service industry."
+      }
+    },
+    "createdAt": "2025-12-12T22:22:39.247Z"
+  },
+  {
+    "id": "local-1765578159260",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Frank",
+      "last_name": "Rice",
+      "value": "frank.rice@popeyes.com",
+      "position": "Multi Unit Manager",
+      "department": "management",
+      "seniority": "senior",
+      "linkedin": "https://www.linkedin.com/in/frank-rice-98965750",
+      "twitter": null,
+      "confidence": 94,
+      "verification": {
+        "date": null,
+        "status": null
+      },
+      "sources": [
+        {
+          "domain": "linkedin.com",
+          "uri": "https://www.google.com/search?q=site:linkedin.com%20frank%20rice%20popeyes",
+          "extracted_on": "2025-01-16",
+          "last_seen_on": "2025-12-05",
+          "still_on_page": true
+        }
+      ],
+      "name": "Frank Rice",
+      "email": "frank.rice@popeyes.com",
+      "company": "Popeyes Louisiana Kitchen",
+      "verified": false,
+      "summary": "Frank Rice is a seasoned Multi Unit Manager at Popeyes Louisiana Kitchen, bringing extensive expertise in operational management and team leadership across multiple locations. His senior-level experience positions him to provide valuable insights into effective management strategies and operational efficiencies within the fast-food industry.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.37994736842105264,
+      "ai_summary": "Frank Rice is a seasoned Multi Unit Manager at Popeyes Louisiana Kitchen, bringing extensive expertise in operational management and team leadership across multiple locations. His senior-level experience positions him to provide valuable insights into effective management strategies and operational efficiencies within the fast-food industry."
+    },
+    "action": "accept",
+    "query": "",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Frank",
+        "last_name": "Rice",
+        "value": "frank.rice@popeyes.com",
+        "position": "Multi Unit Manager",
+        "department": "management",
+        "seniority": "senior",
+        "linkedin": "https://www.linkedin.com/in/frank-rice-98965750",
+        "twitter": null,
+        "confidence": 94,
+        "verification": {
+          "date": null,
+          "status": null
+        },
+        "sources": [
+          {
+            "domain": "linkedin.com",
+            "uri": "https://www.google.com/search?q=site:linkedin.com%20frank%20rice%20popeyes",
+            "extracted_on": "2025-01-16",
+            "last_seen_on": "2025-12-05",
+            "still_on_page": true
+          }
+        ],
+        "name": "Frank Rice",
+        "email": "frank.rice@popeyes.com",
+        "company": "Popeyes Louisiana Kitchen",
+        "verified": false,
+        "summary": "Frank Rice is a seasoned Multi Unit Manager at Popeyes Louisiana Kitchen, bringing extensive expertise in operational management and team leadership across multiple locations. His senior-level experience positions him to provide valuable insights into effective management strategies and operational efficiencies within the fast-food industry.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.37994736842105264,
+        "ai_summary": "Frank Rice is a seasoned Multi Unit Manager at Popeyes Louisiana Kitchen, bringing extensive expertise in operational management and team leadership across multiple locations. His senior-level experience positions him to provide valuable insights into effective management strategies and operational efficiencies within the fast-food industry."
+      }
+    },
+    "createdAt": "2025-12-12T22:22:39.260Z"
+  },
+  {
+    "id": "local-1765578163031",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Lonnie",
+      "last_name": "Silver",
+      "value": "lonnie.silver@popeyes.com",
+      "position": "Executive Chef",
+      "department": "operations",
+      "seniority": "executive",
+      "linkedin": "https://www.linkedin.com/in/lonnie-silver-b854741a5",
+      "twitter": null,
+      "confidence": 94,
+      "verification": {
+        "date": "2025-12-09",
+        "status": "accept_all"
+      },
+      "sources": [
+        {
+          "domain": "linkedin.com",
+          "uri": "https://www.google.com/search?q=site:linkedin.com%20lonnie%20silver%20popeyes",
+          "extracted_on": "2025-01-14",
+          "last_seen_on": "2025-11-29",
+          "still_on_page": true
+        }
+      ],
+      "name": "Lonnie Silver",
+      "email": "lonnie.silver@popeyes.com",
+      "company": "Popeyes Louisiana Kitchen",
+      "verified": false,
+      "summary": "Lonnie Silver is an Executive Chef at Popeyes Louisiana Kitchen, specializing in operations management and culinary excellence. With extensive expertise in fast-casual dining, he brings valuable insights into optimizing kitchen efficiency and enhancing food quality, making him an asset in discussions about innovation and operational strategies in the food service industry.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.37984615384615383,
+      "ai_summary": "Lonnie Silver is an Executive Chef at Popeyes Louisiana Kitchen, specializing in operations management and culinary excellence. With extensive expertise in fast-casual dining, he brings valuable insights into optimizing kitchen efficiency and enhancing food quality, making him an asset in discussions about innovation and operational strategies in the food service industry."
+    },
+    "action": "accept",
+    "query": "",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Lonnie",
+        "last_name": "Silver",
+        "value": "lonnie.silver@popeyes.com",
+        "position": "Executive Chef",
+        "department": "operations",
+        "seniority": "executive",
+        "linkedin": "https://www.linkedin.com/in/lonnie-silver-b854741a5",
+        "twitter": null,
+        "confidence": 94,
+        "verification": {
+          "date": "2025-12-09",
+          "status": "accept_all"
+        },
+        "sources": [
+          {
+            "domain": "linkedin.com",
+            "uri": "https://www.google.com/search?q=site:linkedin.com%20lonnie%20silver%20popeyes",
+            "extracted_on": "2025-01-14",
+            "last_seen_on": "2025-11-29",
+            "still_on_page": true
+          }
+        ],
+        "name": "Lonnie Silver",
+        "email": "lonnie.silver@popeyes.com",
+        "company": "Popeyes Louisiana Kitchen",
+        "verified": false,
+        "summary": "Lonnie Silver is an Executive Chef at Popeyes Louisiana Kitchen, specializing in operations management and culinary excellence. With extensive expertise in fast-casual dining, he brings valuable insights into optimizing kitchen efficiency and enhancing food quality, making him an asset in discussions about innovation and operational strategies in the food service industry.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.37984615384615383,
+        "ai_summary": "Lonnie Silver is an Executive Chef at Popeyes Louisiana Kitchen, specializing in operations management and culinary excellence. With extensive expertise in fast-casual dining, he brings valuable insights into optimizing kitchen efficiency and enhancing food quality, making him an asset in discussions about innovation and operational strategies in the food service industry."
+      }
+    },
+    "createdAt": "2025-12-12T22:22:43.031Z"
+  },
+  {
+    "id": "local-1765578175698",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Bruce",
+      "last_name": "Anderson",
+      "value": "bruce-anderson@chickfila.com",
+      "position": null,
+      "department": null,
+      "seniority": null,
+      "linkedin": null,
+      "twitter": null,
+      "confidence": 85,
+      "verification": {
+        "date": null,
+        "status": null
+      },
+      "sources": [
+        {
+          "domain": "ezlocal.com",
+          "uri": "https://ezlocal.com/il/moline/custom-jewelry-store/091761054",
+          "extracted_on": "2019-02-01",
+          "last_seen_on": "2020-07-17",
+          "still_on_page": true
+        },
+        {
+          "domain": "ezlocal.com",
+          "uri": "https://ezlocal.com/il/moline/vitamin-and-supplements-store/096659659",
+          "extracted_on": "2018-12-25",
+          "last_seen_on": "2020-02-12",
+          "still_on_page": true
+        }
+      ],
+      "name": "Bruce Anderson",
+      "email": "bruce-anderson@chickfila.com",
+      "company": null,
+      "verified": false,
+      "summary": "Bruce Anderson brings a wealth of experience and expertise to the table, making him a valuable asset for strategic discussions and collaborations. His diverse background equips him with unique insights that can drive innovation and problem-solving in various contexts.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.34,
+      "ai_summary": "Bruce Anderson brings a wealth of experience and expertise to the table, making him a valuable asset for strategic discussions and collaborations. His diverse background equips him with unique insights that can drive innovation and problem-solving in various contexts."
+    },
+    "action": "accept",
+    "query": "",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Bruce",
+        "last_name": "Anderson",
+        "value": "bruce-anderson@chickfila.com",
+        "position": null,
+        "department": null,
+        "seniority": null,
+        "linkedin": null,
+        "twitter": null,
+        "confidence": 85,
+        "verification": {
+          "date": null,
+          "status": null
+        },
+        "sources": [
+          {
+            "domain": "ezlocal.com",
+            "uri": "https://ezlocal.com/il/moline/custom-jewelry-store/091761054",
+            "extracted_on": "2019-02-01",
+            "last_seen_on": "2020-07-17",
+            "still_on_page": true
+          },
+          {
+            "domain": "ezlocal.com",
+            "uri": "https://ezlocal.com/il/moline/vitamin-and-supplements-store/096659659",
+            "extracted_on": "2018-12-25",
+            "last_seen_on": "2020-02-12",
+            "still_on_page": true
+          }
+        ],
+        "name": "Bruce Anderson",
+        "email": "bruce-anderson@chickfila.com",
+        "company": null,
+        "verified": false,
+        "summary": "Bruce Anderson brings a wealth of experience and expertise to the table, making him a valuable asset for strategic discussions and collaborations. His diverse background equips him with unique insights that can drive innovation and problem-solving in various contexts.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.34,
+        "ai_summary": "Bruce Anderson brings a wealth of experience and expertise to the table, making him a valuable asset for strategic discussions and collaborations. His diverse background equips him with unique insights that can drive innovation and problem-solving in various contexts."
+      }
+    },
+    "createdAt": "2025-12-12T22:22:55.698Z"
+  },
+  {
+    "id": "local-1765578188634",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Brigitte",
+      "last_name": "Meister",
+      "value": "graham_r@subway.com",
+      "position": "Owner",
+      "department": "executive",
+      "seniority": null,
+      "linkedin": "https://www.linkedin.com/in/brigitte-meister-55b162170",
+      "twitter": null,
+      "confidence": 99,
+      "verification": {
+        "date": "2025-12-01",
+        "status": "valid"
+      },
+      "sources": [
+        {
+          "domain": "linkedin.com",
+          "uri": "https://www.google.com/search?q=site:linkedin.com%20brigitte%20meister%20subway",
+          "extracted_on": "2025-02-08",
+          "last_seen_on": "2025-12-01",
+          "still_on_page": true
+        }
+      ],
+      "name": "Brigitte Meister",
+      "email": "graham_r@subway.com",
+      "company": "Subway",
+      "verified": true,
+      "summary": "Brigitte Meister is the owner of a Subway franchise, bringing extensive expertise in executive management and operations within the fast-food industry. Her entrepreneurial leadership and strategic vision can provide valuable insights into franchise development and customer engagement strategies.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.6508387096774194,
+      "ai_summary": "Brigitte Meister is the owner of a Subway franchise, bringing extensive expertise in executive management and operations within the fast-food industry. Her entrepreneurial leadership and strategic vision can provide valuable insights into franchise development and customer engagement strategies."
+    },
+    "action": "accept",
+    "query": "",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Brigitte",
+        "last_name": "Meister",
+        "value": "graham_r@subway.com",
+        "position": "Owner",
+        "department": "executive",
+        "seniority": null,
+        "linkedin": "https://www.linkedin.com/in/brigitte-meister-55b162170",
+        "twitter": null,
+        "confidence": 99,
+        "verification": {
+          "date": "2025-12-01",
+          "status": "valid"
+        },
+        "sources": [
+          {
+            "domain": "linkedin.com",
+            "uri": "https://www.google.com/search?q=site:linkedin.com%20brigitte%20meister%20subway",
+            "extracted_on": "2025-02-08",
+            "last_seen_on": "2025-12-01",
+            "still_on_page": true
+          }
+        ],
+        "name": "Brigitte Meister",
+        "email": "graham_r@subway.com",
+        "company": "Subway",
+        "verified": true,
+        "summary": "Brigitte Meister is the owner of a Subway franchise, bringing extensive expertise in executive management and operations within the fast-food industry. Her entrepreneurial leadership and strategic vision can provide valuable insights into franchise development and customer engagement strategies.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.6508387096774194,
+        "ai_summary": "Brigitte Meister is the owner of a Subway franchise, bringing extensive expertise in executive management and operations within the fast-food industry. Her entrepreneurial leadership and strategic vision can provide valuable insights into franchise development and customer engagement strategies."
+      }
+    },
+    "createdAt": "2025-12-12T22:23:08.634Z"
+  },
+  {
+    "id": "local-1765578191990",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Paul",
+      "last_name": "Buckley",
+      "value": "buckley_p@subway.com",
+      "position": "Franchise Performance Manager",
+      "department": "management",
+      "seniority": "senior",
+      "linkedin": "https://www.linkedin.com/in/paul-buckley-7533a045",
+      "twitter": null,
+      "confidence": 99,
+      "verification": {
+        "date": "2025-11-19",
+        "status": "valid"
+      },
+      "sources": [
+        {
+          "domain": "linkedin.com",
+          "uri": "https://www.google.com/search?q=site:linkedin.com%20paul%20buckley%20subway",
+          "extracted_on": "2025-01-17",
+          "last_seen_on": "2025-12-07",
+          "still_on_page": true
+        }
+      ],
+      "name": "Paul Buckley",
+      "email": "buckley_p@subway.com",
+      "company": "Subway",
+      "verified": true,
+      "summary": "Paul Buckley is a senior Franchise Performance Manager at Subway, where he leverages his extensive expertise in franchise operations to drive performance improvements and enhance overall business efficiency. His insights into franchise management and operational excellence make him a valuable resource for discussions on optimizing franchise systems and fostering sustainable growth.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.6501666666666667,
+      "ai_summary": "Paul Buckley is a senior Franchise Performance Manager at Subway, where he leverages his extensive expertise in franchise operations to drive performance improvements and enhance overall business efficiency. His insights into franchise management and operational excellence make him a valuable resource for discussions on optimizing franchise systems and fostering sustainable growth."
+    },
+    "action": "accept",
+    "query": "",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Paul",
+        "last_name": "Buckley",
+        "value": "buckley_p@subway.com",
+        "position": "Franchise Performance Manager",
+        "department": "management",
+        "seniority": "senior",
+        "linkedin": "https://www.linkedin.com/in/paul-buckley-7533a045",
+        "twitter": null,
+        "confidence": 99,
+        "verification": {
+          "date": "2025-11-19",
+          "status": "valid"
+        },
+        "sources": [
+          {
+            "domain": "linkedin.com",
+            "uri": "https://www.google.com/search?q=site:linkedin.com%20paul%20buckley%20subway",
+            "extracted_on": "2025-01-17",
+            "last_seen_on": "2025-12-07",
+            "still_on_page": true
+          }
+        ],
+        "name": "Paul Buckley",
+        "email": "buckley_p@subway.com",
+        "company": "Subway",
+        "verified": true,
+        "summary": "Paul Buckley is a senior Franchise Performance Manager at Subway, where he leverages his extensive expertise in franchise operations to drive performance improvements and enhance overall business efficiency. His insights into franchise management and operational excellence make him a valuable resource for discussions on optimizing franchise systems and fostering sustainable growth.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.6501666666666667,
+        "ai_summary": "Paul Buckley is a senior Franchise Performance Manager at Subway, where he leverages his extensive expertise in franchise operations to drive performance improvements and enhance overall business efficiency. His insights into franchise management and operational excellence make him a valuable resource for discussions on optimizing franchise systems and fostering sustainable growth."
+      }
+    },
+    "createdAt": "2025-12-12T22:23:11.990Z"
+  },
+  {
+    "id": "local-1765578192005",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Ravi",
+      "last_name": "Dhanoa",
+      "value": "ravi_d@subway.com",
+      "position": "Owner",
+      "department": "executive",
+      "seniority": null,
+      "linkedin": "https://www.linkedin.com/in/ravi-dhanoa-0357b8120",
+      "twitter": null,
+      "confidence": 99,
+      "verification": {
+        "date": "2025-12-01",
+        "status": "valid"
+      },
+      "sources": [
+        {
+          "domain": "linkedin.com",
+          "uri": "https://www.google.com/search?q=site:linkedin.com%20ravi%20dhanoa%20subway",
+          "extracted_on": "2025-08-20",
+          "last_seen_on": "2025-12-03",
+          "still_on_page": true
+        }
+      ],
+      "name": "Ravi Dhanoa",
+      "email": "ravi_d@subway.com",
+      "company": "Subway",
+      "verified": true,
+      "summary": "Ravi Dhanoa is the owner of a Subway franchise, bringing valuable expertise in restaurant management and operations within the fast-food industry. His leadership in the executive department positions him as a knowledgeable resource for discussions on business strategy, customer service, and franchise development.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.6506875,
+      "ai_summary": "Ravi Dhanoa is the owner of a Subway franchise, bringing valuable expertise in restaurant management and operations within the fast-food industry. His leadership in the executive department positions him as a knowledgeable resource for discussions on business strategy, customer service, and franchise development."
+    },
+    "action": "accept",
+    "query": "",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Ravi",
+        "last_name": "Dhanoa",
+        "value": "ravi_d@subway.com",
+        "position": "Owner",
+        "department": "executive",
+        "seniority": null,
+        "linkedin": "https://www.linkedin.com/in/ravi-dhanoa-0357b8120",
+        "twitter": null,
+        "confidence": 99,
+        "verification": {
+          "date": "2025-12-01",
+          "status": "valid"
+        },
+        "sources": [
+          {
+            "domain": "linkedin.com",
+            "uri": "https://www.google.com/search?q=site:linkedin.com%20ravi%20dhanoa%20subway",
+            "extracted_on": "2025-08-20",
+            "last_seen_on": "2025-12-03",
+            "still_on_page": true
+          }
+        ],
+        "name": "Ravi Dhanoa",
+        "email": "ravi_d@subway.com",
+        "company": "Subway",
+        "verified": true,
+        "summary": "Ravi Dhanoa is the owner of a Subway franchise, bringing valuable expertise in restaurant management and operations within the fast-food industry. His leadership in the executive department positions him as a knowledgeable resource for discussions on business strategy, customer service, and franchise development.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.6506875,
+        "ai_summary": "Ravi Dhanoa is the owner of a Subway franchise, bringing valuable expertise in restaurant management and operations within the fast-food industry. His leadership in the executive department positions him as a knowledgeable resource for discussions on business strategy, customer service, and franchise development."
+      }
+    },
+    "createdAt": "2025-12-12T22:23:12.005Z"
+  },
+  {
+    "id": "local-1765578192339",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Diana",
+      "last_name": "Carmenates",
+      "value": "carmenates_d@subway.com",
+      "position": "Director of Events",
+      "department": "management",
+      "seniority": "executive",
+      "linkedin": "https://www.linkedin.com/in/dianacarmenates",
+      "twitter": null,
+      "confidence": 99,
+      "verification": {
+        "date": "2025-11-14",
+        "status": "valid"
+      },
+      "sources": [
+        {
+          "domain": "linkedin.com",
+          "uri": "https://www.google.com/search?q=site:linkedin.com%20diana%20carmenates%20subway",
+          "extracted_on": "2025-08-19",
+          "last_seen_on": "2025-08-19",
+          "still_on_page": true
+        }
+      ],
+      "name": "Diana Carmenates",
+      "email": "carmenates_d@subway.com",
+      "company": "Subway",
+      "verified": true,
+      "summary": "Diana Carmenates is the Director of Events at Subway, where she leverages her executive management expertise to orchestrate impactful events that enhance brand visibility and customer engagement. Her strategic vision and leadership in event planning make her a valuable asset for discussions on innovative marketing initiatives and experiential strategies.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.650054054054054,
+      "ai_summary": "Diana Carmenates is the Director of Events at Subway, where she leverages her executive management expertise to orchestrate impactful events that enhance brand visibility and customer engagement. Her strategic vision and leadership in event planning make her a valuable asset for discussions on innovative marketing initiatives and experiential strategies."
+    },
+    "action": "accept",
+    "query": "",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Diana",
+        "last_name": "Carmenates",
+        "value": "carmenates_d@subway.com",
+        "position": "Director of Events",
+        "department": "management",
+        "seniority": "executive",
+        "linkedin": "https://www.linkedin.com/in/dianacarmenates",
+        "twitter": null,
+        "confidence": 99,
+        "verification": {
+          "date": "2025-11-14",
+          "status": "valid"
+        },
+        "sources": [
+          {
+            "domain": "linkedin.com",
+            "uri": "https://www.google.com/search?q=site:linkedin.com%20diana%20carmenates%20subway",
+            "extracted_on": "2025-08-19",
+            "last_seen_on": "2025-08-19",
+            "still_on_page": true
+          }
+        ],
+        "name": "Diana Carmenates",
+        "email": "carmenates_d@subway.com",
+        "company": "Subway",
+        "verified": true,
+        "summary": "Diana Carmenates is the Director of Events at Subway, where she leverages her executive management expertise to orchestrate impactful events that enhance brand visibility and customer engagement. Her strategic vision and leadership in event planning make her a valuable asset for discussions on innovative marketing initiatives and experiential strategies.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.650054054054054,
+        "ai_summary": "Diana Carmenates is the Director of Events at Subway, where she leverages her executive management expertise to orchestrate impactful events that enhance brand visibility and customer engagement. Her strategic vision and leadership in event planning make her a valuable asset for discussions on innovative marketing initiatives and experiential strategies."
+      }
+    },
+    "createdAt": "2025-12-12T22:23:12.339Z"
+  },
+  {
+    "id": "local-1765578195505",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Jesse",
+      "last_name": "Grewal",
+      "value": "grewal_j@subway.com",
+      "position": "Owner",
+      "department": "executive",
+      "seniority": null,
+      "linkedin": "https://www.linkedin.com/in/jesse-grewal-307751b4",
+      "twitter": null,
+      "confidence": 99,
+      "verification": {
+        "date": null,
+        "status": null
+      },
+      "sources": [
+        {
+          "domain": "linkedin.com",
+          "uri": "https://www.google.com/search?q=site:linkedin.com%20jesse%20grewal%20subway",
+          "extracted_on": "2025-01-12",
+          "last_seen_on": "2025-12-01",
+          "still_on_page": true
+        }
+      ],
+      "name": "Jesse Grewal",
+      "email": "grewal_j@subway.com",
+      "company": "Subway",
+      "verified": false,
+      "summary": "Jesse Grewal is the owner of a Subway franchise, where he leverages his executive expertise to drive operational excellence and customer satisfaction. His entrepreneurial mindset and industry knowledge make him a valuable resource for discussions on business growth and franchise management.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.401,
+      "ai_summary": "Jesse Grewal is the owner of a Subway franchise, where he leverages his executive expertise to drive operational excellence and customer satisfaction. His entrepreneurial mindset and industry knowledge make him a valuable resource for discussions on business growth and franchise management."
+    },
+    "action": "accept",
+    "query": "",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Jesse",
+        "last_name": "Grewal",
+        "value": "grewal_j@subway.com",
+        "position": "Owner",
+        "department": "executive",
+        "seniority": null,
+        "linkedin": "https://www.linkedin.com/in/jesse-grewal-307751b4",
+        "twitter": null,
+        "confidence": 99,
+        "verification": {
+          "date": null,
+          "status": null
+        },
+        "sources": [
+          {
+            "domain": "linkedin.com",
+            "uri": "https://www.google.com/search?q=site:linkedin.com%20jesse%20grewal%20subway",
+            "extracted_on": "2025-01-12",
+            "last_seen_on": "2025-12-01",
+            "still_on_page": true
+          }
+        ],
+        "name": "Jesse Grewal",
+        "email": "grewal_j@subway.com",
+        "company": "Subway",
+        "verified": false,
+        "summary": "Jesse Grewal is the owner of a Subway franchise, where he leverages his executive expertise to drive operational excellence and customer satisfaction. His entrepreneurial mindset and industry knowledge make him a valuable resource for discussions on business growth and franchise management.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.401,
+        "ai_summary": "Jesse Grewal is the owner of a Subway franchise, where he leverages his executive expertise to drive operational excellence and customer satisfaction. His entrepreneurial mindset and industry knowledge make him a valuable resource for discussions on business growth and franchise management."
+      }
+    },
+    "createdAt": "2025-12-12T22:23:15.505Z"
+  },
+  {
+    "id": "local-1765578195514",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Ian",
+      "last_name": "Poole",
+      "value": "poole_i@subway.com",
+      "position": "Vice President of Development",
+      "department": "executive",
+      "seniority": "executive",
+      "linkedin": "https://www.linkedin.com/in/ian-poole-cfe-mba-5a33179",
+      "twitter": null,
+      "confidence": 99,
+      "verification": {
+        "date": "2025-11-28",
+        "status": "valid"
+      },
+      "sources": [
+        {
+          "domain": "linkedin.com",
+          "uri": "https://www.google.com/search?q=site:linkedin.com%20ian%20poole%20subway",
+          "extracted_on": "2025-08-07",
+          "last_seen_on": "2025-08-07",
+          "still_on_page": true
+        }
+      ],
+      "name": "Ian Poole",
+      "email": "poole_i@subway.com",
+      "company": "Subway",
+      "verified": true,
+      "summary": "Ian Poole is the Vice President of Development at Subway, where he leverages his extensive expertise in franchise growth and strategic planning to drive company expansion. With his executive-level experience and a strong background in business development, Ian is well-positioned to provide valuable insights into the evolving landscape of the quick-service restaurant industry.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.6498461538461539,
+      "ai_summary": "Ian Poole is the Vice President of Development at Subway, where he leverages his extensive expertise in franchise growth and strategic planning to drive company expansion. With his executive-level experience and a strong background in business development, Ian is well-positioned to provide valuable insights into the evolving landscape of the quick-service restaurant industry."
+    },
+    "action": "accept",
+    "query": "",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Ian",
+        "last_name": "Poole",
+        "value": "poole_i@subway.com",
+        "position": "Vice President of Development",
+        "department": "executive",
+        "seniority": "executive",
+        "linkedin": "https://www.linkedin.com/in/ian-poole-cfe-mba-5a33179",
+        "twitter": null,
+        "confidence": 99,
+        "verification": {
+          "date": "2025-11-28",
+          "status": "valid"
+        },
+        "sources": [
+          {
+            "domain": "linkedin.com",
+            "uri": "https://www.google.com/search?q=site:linkedin.com%20ian%20poole%20subway",
+            "extracted_on": "2025-08-07",
+            "last_seen_on": "2025-08-07",
+            "still_on_page": true
+          }
+        ],
+        "name": "Ian Poole",
+        "email": "poole_i@subway.com",
+        "company": "Subway",
+        "verified": true,
+        "summary": "Ian Poole is the Vice President of Development at Subway, where he leverages his extensive expertise in franchise growth and strategic planning to drive company expansion. With his executive-level experience and a strong background in business development, Ian is well-positioned to provide valuable insights into the evolving landscape of the quick-service restaurant industry.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.6498461538461539,
+        "ai_summary": "Ian Poole is the Vice President of Development at Subway, where he leverages his extensive expertise in franchise growth and strategic planning to drive company expansion. With his executive-level experience and a strong background in business development, Ian is well-positioned to provide valuable insights into the evolving landscape of the quick-service restaurant industry."
+      }
+    },
+    "createdAt": "2025-12-12T22:23:15.514Z"
+  },
+  {
+    "id": "local-1765578198003",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Brian",
+      "last_name": "Simmons",
+      "value": "simmons_b@subway.com",
+      "position": "Franchise Performance Director",
+      "department": "management",
+      "seniority": "executive",
+      "linkedin": "https://www.linkedin.com/in/brian-simmons-b886a88",
+      "twitter": null,
+      "confidence": 99,
+      "verification": {
+        "date": null,
+        "status": null
+      },
+      "sources": [
+        {
+          "domain": "linkedin.com",
+          "uri": "https://www.google.com/search?q=site:linkedin.com%20brian%20simmons%20subway",
+          "extracted_on": "2025-08-13",
+          "last_seen_on": "2025-12-04",
+          "still_on_page": true
+        }
+      ],
+      "name": "Brian Simmons",
+      "email": "simmons_b@subway.com",
+      "company": "Subway",
+      "verified": false,
+      "summary": "Brian Simmons is an Executive Franchise Performance Director at Subway, specializing in optimizing franchise operations and enhancing business performance. His extensive expertise in management and strategic development positions him as a valuable resource for discussions on franchise growth and operational excellence in the fast-food industry.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.40068750000000003,
+      "ai_summary": "Brian Simmons is an Executive Franchise Performance Director at Subway, specializing in optimizing franchise operations and enhancing business performance. His extensive expertise in management and strategic development positions him as a valuable resource for discussions on franchise growth and operational excellence in the fast-food industry."
+    },
+    "action": "accept",
+    "query": "",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Brian",
+        "last_name": "Simmons",
+        "value": "simmons_b@subway.com",
+        "position": "Franchise Performance Director",
+        "department": "management",
+        "seniority": "executive",
+        "linkedin": "https://www.linkedin.com/in/brian-simmons-b886a88",
+        "twitter": null,
+        "confidence": 99,
+        "verification": {
+          "date": null,
+          "status": null
+        },
+        "sources": [
+          {
+            "domain": "linkedin.com",
+            "uri": "https://www.google.com/search?q=site:linkedin.com%20brian%20simmons%20subway",
+            "extracted_on": "2025-08-13",
+            "last_seen_on": "2025-12-04",
+            "still_on_page": true
+          }
+        ],
+        "name": "Brian Simmons",
+        "email": "simmons_b@subway.com",
+        "company": "Subway",
+        "verified": false,
+        "summary": "Brian Simmons is an Executive Franchise Performance Director at Subway, specializing in optimizing franchise operations and enhancing business performance. His extensive expertise in management and strategic development positions him as a valuable resource for discussions on franchise growth and operational excellence in the fast-food industry.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.40068750000000003,
+        "ai_summary": "Brian Simmons is an Executive Franchise Performance Director at Subway, specializing in optimizing franchise operations and enhancing business performance. His extensive expertise in management and strategic development positions him as a valuable resource for discussions on franchise growth and operational excellence in the fast-food industry."
+      }
+    },
+    "createdAt": "2025-12-12T22:23:18.003Z"
+  },
+  {
+    "id": "local-1765579388339",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Lerron",
+      "last_name": "Reid",
+      "value": "lreid@redlobster.com",
+      "position": "Director of Operations",
+      "department": "executive",
+      "seniority": "executive",
+      "linkedin": "https://www.linkedin.com/in/lerron-reid-5057181b9",
+      "twitter": null,
+      "confidence": 99,
+      "verification": {
+        "date": "2025-12-11",
+        "status": "valid"
+      },
+      "sources": [
+        {
+          "domain": "linkedin.com",
+          "uri": "https://www.google.com/search?q=site:linkedin.com%20lerron%20reid%20redlobster",
+          "extracted_on": "2025-01-12",
+          "last_seen_on": "2025-12-01",
+          "still_on_page": true
+        }
+      ],
+      "name": "Lerron Reid",
+      "email": "lreid@redlobster.com",
+      "company": "Red Lobster",
+      "verified": true,
+      "summary": "Lerron Reid is the Director of Operations at Red Lobster, bringing extensive executive experience in optimizing restaurant operations and enhancing customer experiences. His strategic leadership and operational expertise make him a valuable contributor to discussions on industry best practices and operational efficiency.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.6541081081081082,
+      "ai_summary": "Lerron Reid is the Director of Operations at Red Lobster, bringing extensive executive experience in optimizing restaurant operations and enhancing customer experiences. His strategic leadership and operational expertise make him a valuable contributor to discussions on industry best practices and operational efficiency."
+    },
+    "action": "accept",
+    "query": "Red Lobster",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Lerron",
+        "last_name": "Reid",
+        "value": "lreid@redlobster.com",
+        "position": "Director of Operations",
+        "department": "executive",
+        "seniority": "executive",
+        "linkedin": "https://www.linkedin.com/in/lerron-reid-5057181b9",
+        "twitter": null,
+        "confidence": 99,
+        "verification": {
+          "date": "2025-12-11",
+          "status": "valid"
+        },
+        "sources": [
+          {
+            "domain": "linkedin.com",
+            "uri": "https://www.google.com/search?q=site:linkedin.com%20lerron%20reid%20redlobster",
+            "extracted_on": "2025-01-12",
+            "last_seen_on": "2025-12-01",
+            "still_on_page": true
+          }
+        ],
+        "name": "Lerron Reid",
+        "email": "lreid@redlobster.com",
+        "company": "Red Lobster",
+        "verified": true,
+        "summary": "Lerron Reid is the Director of Operations at Red Lobster, bringing extensive executive experience in optimizing restaurant operations and enhancing customer experiences. His strategic leadership and operational expertise make him a valuable contributor to discussions on industry best practices and operational efficiency.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.6541081081081082,
+        "ai_summary": "Lerron Reid is the Director of Operations at Red Lobster, bringing extensive executive experience in optimizing restaurant operations and enhancing customer experiences. His strategic leadership and operational expertise make him a valuable contributor to discussions on industry best practices and operational efficiency."
+      }
+    },
+    "createdAt": "2025-12-12T22:43:08.339Z"
+  },
+  {
+    "id": "local-1765579392100",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Michele",
+      "last_name": "Brennan",
+      "value": "mbrennan@redlobster.com",
+      "position": "Senior Director of Digital Experience",
+      "department": "support",
+      "seniority": "executive",
+      "linkedin": "https://www.linkedin.com/in/micheleabrennan",
+      "twitter": null,
+      "confidence": 99,
+      "verification": {
+        "date": "2025-11-23",
+        "status": "valid"
+      },
+      "sources": [
+        {
+          "domain": "linkedin.com",
+          "uri": "https://www.google.com/search?q=site:linkedin.com%20michele%20brennan%20redlobster",
+          "extracted_on": "2025-08-11",
+          "last_seen_on": "2025-12-10",
+          "still_on_page": true
+        }
+      ],
+      "name": "Michele Brennan",
+      "email": "mbrennan@redlobster.com",
+      "company": "Red Lobster",
+      "verified": true,
+      "summary": "Michele Brennan is the Senior Director of Digital Experience at Red Lobster, where she leverages her executive expertise to enhance customer engagement through innovative digital strategies. With a strong background in digital transformation, Michele brings valuable insights into optimizing user experiences and driving business growth within the hospitality industry.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.6528181818181819,
+      "ai_summary": "Michele Brennan is the Senior Director of Digital Experience at Red Lobster, where she leverages her executive expertise to enhance customer engagement through innovative digital strategies. With a strong background in digital transformation, Michele brings valuable insights into optimizing user experiences and driving business growth within the hospitality industry."
+    },
+    "action": "accept",
+    "query": "Red Lobster",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Michele",
+        "last_name": "Brennan",
+        "value": "mbrennan@redlobster.com",
+        "position": "Senior Director of Digital Experience",
+        "department": "support",
+        "seniority": "executive",
+        "linkedin": "https://www.linkedin.com/in/micheleabrennan",
+        "twitter": null,
+        "confidence": 99,
+        "verification": {
+          "date": "2025-11-23",
+          "status": "valid"
+        },
+        "sources": [
+          {
+            "domain": "linkedin.com",
+            "uri": "https://www.google.com/search?q=site:linkedin.com%20michele%20brennan%20redlobster",
+            "extracted_on": "2025-08-11",
+            "last_seen_on": "2025-12-10",
+            "still_on_page": true
+          }
+        ],
+        "name": "Michele Brennan",
+        "email": "mbrennan@redlobster.com",
+        "company": "Red Lobster",
+        "verified": true,
+        "summary": "Michele Brennan is the Senior Director of Digital Experience at Red Lobster, where she leverages her executive expertise to enhance customer engagement through innovative digital strategies. With a strong background in digital transformation, Michele brings valuable insights into optimizing user experiences and driving business growth within the hospitality industry.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.6528181818181819,
+        "ai_summary": "Michele Brennan is the Senior Director of Digital Experience at Red Lobster, where she leverages her executive expertise to enhance customer engagement through innovative digital strategies. With a strong background in digital transformation, Michele brings valuable insights into optimizing user experiences and driving business growth within the hospitality industry."
+      }
+    },
+    "createdAt": "2025-12-12T22:43:12.100Z"
+  },
+  {
+    "id": "local-1765579392114",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Crystal",
+      "last_name": "Cregan",
+      "value": "ccregan@redlobster.com",
+      "position": "Talent Acquisition Specialist",
+      "department": null,
+      "seniority": null,
+      "linkedin": "https://www.linkedin.com/in/crystal-cregan-0a636bb1",
+      "twitter": null,
+      "confidence": 99,
+      "verification": {
+        "date": "2025-12-12",
+        "status": "valid"
+      },
+      "sources": [
+        {
+          "domain": "linkedin.com",
+          "uri": "https://www.google.com/search?q=site:linkedin.com%20crystal%20cregan%20redlobster",
+          "extracted_on": "2025-01-11",
+          "last_seen_on": "2025-11-29",
+          "still_on_page": true
+        }
+      ],
+      "name": "Crystal Cregan",
+      "email": "ccregan@redlobster.com",
+      "company": "Red Lobster",
+      "verified": true,
+      "summary": "Crystal Cregan is a Talent Acquisition Specialist at Red Lobster, where she leverages her expertise in recruitment to identify and attract top talent for the hospitality industry. Her insights into talent sourcing and candidate engagement make her a valuable resource for discussions on effective hiring practices and workforce development.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.6535,
+      "ai_summary": "Crystal Cregan is a Talent Acquisition Specialist at Red Lobster, where she leverages her expertise in recruitment to identify and attract top talent for the hospitality industry. Her insights into talent sourcing and candidate engagement make her a valuable resource for discussions on effective hiring practices and workforce development."
+    },
+    "action": "accept",
+    "query": "Red Lobster",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Crystal",
+        "last_name": "Cregan",
+        "value": "ccregan@redlobster.com",
+        "position": "Talent Acquisition Specialist",
+        "department": null,
+        "seniority": null,
+        "linkedin": "https://www.linkedin.com/in/crystal-cregan-0a636bb1",
+        "twitter": null,
+        "confidence": 99,
+        "verification": {
+          "date": "2025-12-12",
+          "status": "valid"
+        },
+        "sources": [
+          {
+            "domain": "linkedin.com",
+            "uri": "https://www.google.com/search?q=site:linkedin.com%20crystal%20cregan%20redlobster",
+            "extracted_on": "2025-01-11",
+            "last_seen_on": "2025-11-29",
+            "still_on_page": true
+          }
+        ],
+        "name": "Crystal Cregan",
+        "email": "ccregan@redlobster.com",
+        "company": "Red Lobster",
+        "verified": true,
+        "summary": "Crystal Cregan is a Talent Acquisition Specialist at Red Lobster, where she leverages her expertise in recruitment to identify and attract top talent for the hospitality industry. Her insights into talent sourcing and candidate engagement make her a valuable resource for discussions on effective hiring practices and workforce development.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.6535,
+        "ai_summary": "Crystal Cregan is a Talent Acquisition Specialist at Red Lobster, where she leverages her expertise in recruitment to identify and attract top talent for the hospitality industry. Her insights into talent sourcing and candidate engagement make her a valuable resource for discussions on effective hiring practices and workforce development."
+      }
+    },
+    "createdAt": "2025-12-12T22:43:12.114Z"
+  },
+  {
+    "id": "local-1765579392122",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Lori",
+      "last_name": "Cherry",
+      "value": "lcherry@redlobster.com",
+      "position": "Director of Communications",
+      "department": "communication",
+      "seniority": "executive",
+      "linkedin": "https://www.linkedin.com/in/lori-cherry-80132a3a",
+      "twitter": null,
+      "confidence": 99,
+      "verification": {
+        "date": "2025-12-03",
+        "status": "valid"
+      },
+      "sources": [
+        {
+          "domain": "linkedin.com",
+          "uri": "https://www.google.com/search?q=site:linkedin.com%20lori%20cherry%20redlobster",
+          "extracted_on": "2025-05-09",
+          "last_seen_on": "2025-05-09",
+          "still_on_page": true
+        }
+      ],
+      "name": "Lori Cherry",
+      "email": "lcherry@redlobster.com",
+      "company": "Red Lobster",
+      "verified": true,
+      "summary": "Lori Cherry is the Director of Communications at Red Lobster, where she leverages her executive expertise to craft strategic messaging and enhance brand visibility. With a strong background in communication, Lori brings valuable insights into effective stakeholder engagement and public relations strategies, making her a key asset for discussions on brand management and corporate communication.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.6523829787234042,
+      "ai_summary": "Lori Cherry is the Director of Communications at Red Lobster, where she leverages her executive expertise to craft strategic messaging and enhance brand visibility. With a strong background in communication, Lori brings valuable insights into effective stakeholder engagement and public relations strategies, making her a key asset for discussions on brand management and corporate communication."
+    },
+    "action": "accept",
+    "query": "Red Lobster",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Lori",
+        "last_name": "Cherry",
+        "value": "lcherry@redlobster.com",
+        "position": "Director of Communications",
+        "department": "communication",
+        "seniority": "executive",
+        "linkedin": "https://www.linkedin.com/in/lori-cherry-80132a3a",
+        "twitter": null,
+        "confidence": 99,
+        "verification": {
+          "date": "2025-12-03",
+          "status": "valid"
+        },
+        "sources": [
+          {
+            "domain": "linkedin.com",
+            "uri": "https://www.google.com/search?q=site:linkedin.com%20lori%20cherry%20redlobster",
+            "extracted_on": "2025-05-09",
+            "last_seen_on": "2025-05-09",
+            "still_on_page": true
+          }
+        ],
+        "name": "Lori Cherry",
+        "email": "lcherry@redlobster.com",
+        "company": "Red Lobster",
+        "verified": true,
+        "summary": "Lori Cherry is the Director of Communications at Red Lobster, where she leverages her executive expertise to craft strategic messaging and enhance brand visibility. With a strong background in communication, Lori brings valuable insights into effective stakeholder engagement and public relations strategies, making her a key asset for discussions on brand management and corporate communication.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.6523829787234042,
+        "ai_summary": "Lori Cherry is the Director of Communications at Red Lobster, where she leverages her executive expertise to craft strategic messaging and enhance brand visibility. With a strong background in communication, Lori brings valuable insights into effective stakeholder engagement and public relations strategies, making her a key asset for discussions on brand management and corporate communication."
+      }
+    },
+    "createdAt": "2025-12-12T22:43:12.122Z"
+  },
+  {
+    "id": "local-1765579394974",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Molly",
+      "last_name": "McLemore",
+      "value": "mmclemore@redlobster.com",
+      "position": "Head Chef",
+      "department": "operations",
+      "seniority": "executive",
+      "linkedin": "https://www.linkedin.com/in/molly-mclemore-864a94305",
+      "twitter": null,
+      "confidence": 99,
+      "verification": {
+        "date": null,
+        "status": null
+      },
+      "sources": [
+        {
+          "domain": "linkedin.com",
+          "uri": "https://www.google.com/search?q=site:linkedin.com%20molly%20mclemore%20redlobster",
+          "extracted_on": "2025-10-31",
+          "last_seen_on": "2025-12-10",
+          "still_on_page": true
+        }
+      ],
+      "name": "Molly McLemore",
+      "email": "mmclemore@redlobster.com",
+      "company": "Red Lobster",
+      "verified": false,
+      "summary": "Molly McLemore is the Head Chef at Red Lobster, where she excels in operational leadership and culinary innovation. With her extensive expertise in the seafood dining sector, she brings valuable insights into menu development and kitchen efficiency, making her an asset in discussions on culinary trends and restaurant management.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.40331707317073173,
+      "ai_summary": "Molly McLemore is the Head Chef at Red Lobster, where she excels in operational leadership and culinary innovation. With her extensive expertise in the seafood dining sector, she brings valuable insights into menu development and kitchen efficiency, making her an asset in discussions on culinary trends and restaurant management."
+    },
+    "action": "accept",
+    "query": "Red Lobster",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Molly",
+        "last_name": "McLemore",
+        "value": "mmclemore@redlobster.com",
+        "position": "Head Chef",
+        "department": "operations",
+        "seniority": "executive",
+        "linkedin": "https://www.linkedin.com/in/molly-mclemore-864a94305",
+        "twitter": null,
+        "confidence": 99,
+        "verification": {
+          "date": null,
+          "status": null
+        },
+        "sources": [
+          {
+            "domain": "linkedin.com",
+            "uri": "https://www.google.com/search?q=site:linkedin.com%20molly%20mclemore%20redlobster",
+            "extracted_on": "2025-10-31",
+            "last_seen_on": "2025-12-10",
+            "still_on_page": true
+          }
+        ],
+        "name": "Molly McLemore",
+        "email": "mmclemore@redlobster.com",
+        "company": "Red Lobster",
+        "verified": false,
+        "summary": "Molly McLemore is the Head Chef at Red Lobster, where she excels in operational leadership and culinary innovation. With her extensive expertise in the seafood dining sector, she brings valuable insights into menu development and kitchen efficiency, making her an asset in discussions on culinary trends and restaurant management.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.40331707317073173,
+        "ai_summary": "Molly McLemore is the Head Chef at Red Lobster, where she excels in operational leadership and culinary innovation. With her extensive expertise in the seafood dining sector, she brings valuable insights into menu development and kitchen efficiency, making her an asset in discussions on culinary trends and restaurant management."
+      }
+    },
+    "createdAt": "2025-12-12T22:43:14.974Z"
+  },
+  {
+    "id": "local-1765579394983",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Charles",
+      "last_name": "Counard",
+      "value": "ccounard@redlobster.com",
+      "position": "Senior Director of Operations",
+      "department": "operations",
+      "seniority": "executive",
+      "linkedin": "https://www.linkedin.com/in/charles-counard-a9620294",
+      "twitter": null,
+      "confidence": 99,
+      "verification": {
+        "date": null,
+        "status": null
+      },
+      "sources": [
+        {
+          "domain": "linkedin.com",
+          "uri": "https://www.google.com/search?q=site:linkedin.com%20charles%20counard%20redlobster",
+          "extracted_on": "2025-01-15",
+          "last_seen_on": "2025-11-27",
+          "still_on_page": true
+        }
+      ],
+      "name": "Charles Counard",
+      "email": "ccounard@redlobster.com",
+      "company": "Red Lobster",
+      "verified": false,
+      "summary": "Charles Counard is the Senior Director of Operations at Red Lobster, bringing extensive expertise in operational management and strategic leadership to enhance organizational efficiency and drive growth. His executive experience positions him as a valuable contributor to discussions on operational excellence and industry best practices.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.4035,
+      "ai_summary": "Charles Counard is the Senior Director of Operations at Red Lobster, bringing extensive expertise in operational management and strategic leadership to enhance organizational efficiency and drive growth. His executive experience positions him as a valuable contributor to discussions on operational excellence and industry best practices."
+    },
+    "action": "accept",
+    "query": "Red Lobster",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Charles",
+        "last_name": "Counard",
+        "value": "ccounard@redlobster.com",
+        "position": "Senior Director of Operations",
+        "department": "operations",
+        "seniority": "executive",
+        "linkedin": "https://www.linkedin.com/in/charles-counard-a9620294",
+        "twitter": null,
+        "confidence": 99,
+        "verification": {
+          "date": null,
+          "status": null
+        },
+        "sources": [
+          {
+            "domain": "linkedin.com",
+            "uri": "https://www.google.com/search?q=site:linkedin.com%20charles%20counard%20redlobster",
+            "extracted_on": "2025-01-15",
+            "last_seen_on": "2025-11-27",
+            "still_on_page": true
+          }
+        ],
+        "name": "Charles Counard",
+        "email": "ccounard@redlobster.com",
+        "company": "Red Lobster",
+        "verified": false,
+        "summary": "Charles Counard is the Senior Director of Operations at Red Lobster, bringing extensive expertise in operational management and strategic leadership to enhance organizational efficiency and drive growth. His executive experience positions him as a valuable contributor to discussions on operational excellence and industry best practices.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.4035,
+        "ai_summary": "Charles Counard is the Senior Director of Operations at Red Lobster, bringing extensive expertise in operational management and strategic leadership to enhance organizational efficiency and drive growth. His executive experience positions him as a valuable contributor to discussions on operational excellence and industry best practices."
+      }
+    },
+    "createdAt": "2025-12-12T22:43:14.983Z"
+  },
+  {
+    "id": "local-1765579397522",
+    "userId": "QhDxx1SPxfh5Vx27BMfjrlzOUJu1",
+    "contact": {
+      "first_name": "Erik",
+      "last_name": "Mennen",
+      "value": "emennen@redlobster.com",
+      "position": "Executive Chef",
+      "department": "operations",
+      "seniority": "executive",
+      "linkedin": "https://www.linkedin.com/in/erik-mennen-50558a286",
+      "twitter": null,
+      "confidence": 99,
+      "verification": {
+        "date": null,
+        "status": null
+      },
+      "sources": [
+        {
+          "domain": "linkedin.com",
+          "uri": "https://www.google.com/search?q=site:linkedin.com%20erik%20mennen%20redlobster",
+          "extracted_on": "2025-08-08",
+          "last_seen_on": "2025-12-05",
+          "still_on_page": true
+        }
+      ],
+      "name": "Erik Mennen",
+      "email": "emennen@redlobster.com",
+      "company": "Red Lobster",
+      "verified": false,
+      "summary": "Erik Mennen is an Executive Chef at Red Lobster, specializing in culinary operations and menu development. With extensive expertise in kitchen management and food quality assurance, he brings valuable insights into operational efficiency and culinary innovation, making him a key asset in discussions about restaurant management and dining trends.",
+      "summaryGenerated": true,
+      "_relevanceScore": 0.40331707317073173,
+      "ai_summary": "Erik Mennen is an Executive Chef at Red Lobster, specializing in culinary operations and menu development. With extensive expertise in kitchen management and food quality assurance, he brings valuable insights into operational efficiency and culinary innovation, making him a key asset in discussions about restaurant management and dining trends."
+    },
+    "action": "accept",
+    "query": "Red Lobster",
+    "metadata": {
+      "rawContact": {
+        "first_name": "Erik",
+        "last_name": "Mennen",
+        "value": "emennen@redlobster.com",
+        "position": "Executive Chef",
+        "department": "operations",
+        "seniority": "executive",
+        "linkedin": "https://www.linkedin.com/in/erik-mennen-50558a286",
+        "twitter": null,
+        "confidence": 99,
+        "verification": {
+          "date": null,
+          "status": null
+        },
+        "sources": [
+          {
+            "domain": "linkedin.com",
+            "uri": "https://www.google.com/search?q=site:linkedin.com%20erik%20mennen%20redlobster",
+            "extracted_on": "2025-08-08",
+            "last_seen_on": "2025-12-05",
+            "still_on_page": true
+          }
+        ],
+        "name": "Erik Mennen",
+        "email": "emennen@redlobster.com",
+        "company": "Red Lobster",
+        "verified": false,
+        "summary": "Erik Mennen is an Executive Chef at Red Lobster, specializing in culinary operations and menu development. With extensive expertise in kitchen management and food quality assurance, he brings valuable insights into operational efficiency and culinary innovation, making him a key asset in discussions about restaurant management and dining trends.",
+        "summaryGenerated": true,
+        "_relevanceScore": 0.40331707317073173,
+        "ai_summary": "Erik Mennen is an Executive Chef at Red Lobster, specializing in culinary operations and menu development. With extensive expertise in kitchen management and food quality assurance, he brings valuable insights into operational efficiency and culinary innovation, making him a key asset in discussions about restaurant management and dining trends."
+      }
+    },
+    "createdAt": "2025-12-12T22:43:17.522Z"
+  }
+]

@@ -1,0 +1,10 @@
+{
+  "timestamp": "2025-12-12T22:57:12.736Z",
+  "weights": {
+    "titleMatch": 0.018890719046217135,
+    "semanticScore": 0.3443893814018955,
+    "deptMatch": 0.33958394642767326,
+    "seniorMatch": 0.2971359531242141
+  },
+  "version": "1.0"
+}

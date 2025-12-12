@@ -37,6 +37,18 @@ const SearchPage = () => {
     } else {
       navigate("/");
     }
+    // Trigger backend training on page load (best-effort; non-blocking)
+    (async () => {
+      try {
+        // Import api helper lazily to avoid circular issues
+        const { api } = await import("../api/backend");
+        console.log('🔁 Triggering backend training (SearchPage mount)');
+        await api.runTraining();
+        console.log('🔁 Training request completed');
+      } catch (err) {
+        console.debug('Training request failed (non-fatal):', err.message || err);
+      }
+    })();
   }, [navigate]);
 
   // Close history menu when clicking outside
