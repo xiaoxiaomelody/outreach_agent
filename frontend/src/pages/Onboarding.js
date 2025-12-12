@@ -20,6 +20,27 @@ const Onboarding = () => {
   const [school, setSchool] = useState("");
   const [industries, setIndustries] = useState([]);
 
+  const isValidEmail = (e) => {
+    try {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+    } catch (err) {
+      return false;
+    }
+  };
+
+  const isFormValid = () => {
+    return (
+      name &&
+      name.trim().length > 0 &&
+      email &&
+      isValidEmail(email) &&
+      school &&
+      school.trim().length > 0 &&
+      industries &&
+      industries.length > 0
+    );
+  };
+
   useEffect(() => {
     try {
       const raw = localStorage.getItem("userProfile");
@@ -128,7 +149,11 @@ const Onboarding = () => {
         </fieldset>
 
         <div style={{ marginTop: 8 }} className="full-width profile-actions">
-          <button type="submit" className="btn btn-primary">
+          <button
+            type="submit"
+            className="btn btn-primary btn-next"
+            disabled={!isFormValid()}
+          >
             Continue
           </button>
         </div>

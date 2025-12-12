@@ -36,7 +36,7 @@ const AccountSettingsOnboarding = () => {
         </button>
 
         <button
-          className="btn btn-primary"
+          className="btn btn-primary btn-next"
           onClick={() => {
             try {
               localStorage.removeItem("isNewAccount");
