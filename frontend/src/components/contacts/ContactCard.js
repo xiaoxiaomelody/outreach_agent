@@ -63,6 +63,7 @@ const ContactCard = ({ contact }) => {
         }
         shortlist.shortlist.push(contact);
         localStorage.setItem("myContacts", JSON.stringify(shortlist));
+        setLiked(true);
         setDisliked(false);
         return true;
       }
@@ -95,6 +96,7 @@ const ContactCard = ({ contact }) => {
       console.log('📋 Add contact result:', success);
       
       if (success) {
+        setLiked(true);
         setDisliked(false);
 
         if (!silent) {

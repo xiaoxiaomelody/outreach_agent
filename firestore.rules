@@ -17,6 +17,14 @@ service cloud.firestore {
       allow read, write: if isOwner(userId);
     }
     
+    // Contacts collection - users can only read/write their own contacts
+    match /contacts/{contactId} {
+      // Allow read/write only if the contact belongs to the authenticated user
+      allow read, write: if isAuthenticated() && 
+        (resource == null || resource.data.userId == request.auth.uid) &&
+        (request.resource == null || request.resource.data.userId == request.auth.uid);
+    }
+    
     // Deny all other access
     match /{document=**} {
       allow read, write: if false;
