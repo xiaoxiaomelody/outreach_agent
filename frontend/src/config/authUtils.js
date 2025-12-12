@@ -40,7 +40,12 @@ export const signUpWithEmail = async (email, password) => {
         
         return { success: true, user: userCredential.user };
     } catch (error) {
-        return { success: false, error: error.message };
+        // Return both code and message for better error handling
+        return { 
+            success: false, 
+            error: error.message,
+            errorCode: error.code || null
+        };
     }
 };
 
@@ -75,7 +80,12 @@ export const signInWithEmail = async (email, password) => {
         
         return { success: true, user: userCredential.user };
     } catch (error) {
-        return { success: false, error: error.message };
+        // Return both code and message for better error handling
+        return { 
+            success: false, 
+            error: error.message,
+            errorCode: error.code || null
+        };
     }
 };
 
@@ -111,7 +121,12 @@ export const signInWithGoogle = async () => {
         return { success: true, user: userCredential.user };
     } catch (error) {
         console.error('Google sign-in error:', error);
-        return { success: false, error: error.message };
+        // Return both code and message for better error handling
+        return { 
+            success: false, 
+            error: error.message,
+            errorCode: error.code || null
+        };
     }
 };
 
