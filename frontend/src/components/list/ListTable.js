@@ -22,6 +22,22 @@ const ListTable = ({
   selectedEmails = [],
   onToggleSelect = () => {},
 }) => {
+  const [templates, setTemplates] = useState([]);
+
+  // Load templates from Firestore on mount
+  useEffect(() => {
+    const loadTemplates = async () => {
+      try {
+        const loadedTemplates = await loadEmailTemplates();
+        setTemplates(loadedTemplates);
+      } catch (error) {
+        console.error('Error loading templates:', error);
+        setTemplates([]);
+      }
+    };
+    loadTemplates();
+  }, []);
+
   const getTemplateName = (contact) => {
     // Determine template based on industry or use default
     if (contact.industry) {
@@ -120,33 +136,28 @@ const ListTable = ({
                   <td>
                     {activeTab === "shortlist" &&
                     typeof onChangeTemplate === "function" ? (
-                      (() => {
-                        const templates = loadEmailTemplates();
-                        return (
-                          <select
-                            className="template-select"
-                            value={contact.template || getTemplateName(contact)}
-                            onChange={(e) => {
-                              e.stopPropagation();
-                              onChangeTemplate &&
-                                onChangeTemplate(contact, e.target.value);
-                            }}
-                            onClick={(e) => e.stopPropagation()}
-                            aria-label={`Template for ${
-                              contact.first_name ||
-                              contact.name ||
-                              contact.email
-                            }`}
-                          >
-                            {templates.map((t) => (
-                              <option key={t.id ?? t.name} value={t.name}>
-                                {t.name}
-                                {t.subject ? ` — ${t.subject}` : ""}
-                              </option>
-                            ))}
-                          </select>
-                        );
-                      })()
+                      <select
+                        className="template-select"
+                        value={contact.template || getTemplateName(contact)}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          onChangeTemplate &&
+                            onChangeTemplate(contact, e.target.value);
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        aria-label={`Template for ${
+                          contact.first_name ||
+                          contact.name ||
+                          contact.email
+                        }`}
+                      >
+                        {templates.map((t) => (
+                          <option key={t.id ?? t.name} value={t.name}>
+                            {t.name}
+                            {t.subject ? ` — ${t.subject}` : ""}
+                          </option>
+                        ))}
+                      </select>
                     ) : (
                       <span className="template-badge">
                         {getTemplateName(contact)}

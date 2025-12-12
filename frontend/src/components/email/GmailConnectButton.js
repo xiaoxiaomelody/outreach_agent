@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { gmailApi } from "../../api/gmail";
+import { getGmailConnectionState } from "../../services/firestore.service";
+import { getCurrentUser } from "../../config/authUtils";
 import "./GmailConnectButton.css";
 import Icon from "../icons/Icon";
 
@@ -33,6 +35,28 @@ const GmailConnectButton = ({ onStatusChange, autoConnect = false }) => {
     setChecking(true);
     try {
       console.log("📧 [STATUS CHECK] Checking Gmail status...");
+      
+      // First try to get from Firestore directly (faster, no API call)
+      const user = getCurrentUser();
+      if (user?.uid) {
+        try {
+          const firestoreState = await getGmailConnectionState(user.uid);
+          if (firestoreState.connected) {
+            console.log("📧 [STATUS CHECK] Found in Firestore:", firestoreState);
+            setConnected(firestoreState.connected);
+            setGmailEmail(firestoreState.email || "");
+            if (onStatusChange) {
+              onStatusChange(firestoreState.connected);
+            }
+            setChecking(false);
+            return;
+          }
+        } catch (firestoreError) {
+          console.warn("📧 [STATUS CHECK] Firestore check failed, falling back to API:", firestoreError);
+        }
+      }
+      
+      // Fallback to API call (for backend verification)
       const result = await gmailApi.getGmailStatus();
       console.log("📧 [STATUS CHECK] Status result:", result);
 

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "../styles/ProfilePage.css";
 import GmailConnectButton from "../components/email/GmailConnectButton";
 import { getCurrentUser } from "../config/authUtils";
+import { getUserProfile } from "../services/firestore.service";
 
 const AccountSettings = () => {
   const [gmailConnected, setGmailConnected] = useState(false);
@@ -19,23 +20,32 @@ const AccountSettings = () => {
     }
   }, []);
 
-  // detect minimal profile stored locally (onboarding)
+  // detect minimal profile stored in Firestore (onboarding)
   const [isNewAccount, setIsNewAccount] = useState(false);
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem("userProfile");
-      if (!raw) return setIsNewAccount(true);
-      const p = JSON.parse(raw || "{}");
-      const isNew =
-        !p.name &&
-        !p.email &&
-        !p.school &&
-        !(p.resumeName || "") &&
-        (!p.industries || p.industries.length === 0);
-      setIsNewAccount(isNew);
-    } catch (err) {
-      setIsNewAccount(false);
-    }
+    const checkProfile = async () => {
+      const user = getCurrentUser();
+      if (!user?.uid) {
+        setIsNewAccount(true);
+        return;
+      }
+
+      try {
+        const profile = await getUserProfile(user.uid);
+        const isNew =
+          !profile.name &&
+          !profile.email &&
+          !profile.school &&
+          !(profile.resumeName || "") &&
+          (!profile.industries || profile.industries.length === 0);
+        setIsNewAccount(isNew);
+      } catch (err) {
+        console.error("Error checking profile:", err);
+        setIsNewAccount(false);
+      }
+    };
+
+    checkProfile();
   }, []);
   const navigate = useNavigate();
 

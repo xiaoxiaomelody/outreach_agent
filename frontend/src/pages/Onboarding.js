@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/ProfilePage.css";
 import { getCurrentUser } from "../config/authUtils";
+import { getUserProfile, updateUserProfile } from "../services/firestore.service";
 
 const industryOptions = [
   "Tech",
@@ -42,30 +43,42 @@ const Onboarding = () => {
   };
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem("userProfile");
-      if (raw) {
-        const p = JSON.parse(raw);
-        // Only prefill the email from any existing local profile — do not
-        // prefill other profile fields so onboarding forces fresh input.
-        if (p.email) setEmail(p.email);
-        // continue checking demo/auth if available
-      }
-    } catch (e) {}
+    const loadEmail = async () => {
+      try {
+        const u = getCurrentUser();
+        if (u?.uid) {
+          // Try to get email from Firestore profile first
+          try {
+            const profile = await getUserProfile(u.uid);
+            if (profile?.email) {
+              setEmail(profile.email);
+              return;
+            }
+          } catch (e) {
+            console.warn("Error loading profile from Firestore:", e);
+          }
+        }
 
-    try {
-      const demo = sessionStorage.getItem("demoUser");
-      if (demo) {
-        const du = JSON.parse(demo);
-        if (du.email) setEmail(du.email);
-        return;
-      }
-    } catch (e) {}
+        // Fallback: try to get from Firebase Auth user
+        if (u && u.email) {
+          setEmail(u.email);
+          return;
+        }
 
-    try {
-      const u = getCurrentUser();
-      if (u && u.email) setEmail(u.email);
-    } catch (e) {}
+        // Fallback: check demo user
+        try {
+          const demo = sessionStorage.getItem("demoUser");
+          if (demo) {
+            const du = JSON.parse(demo);
+            if (du.email) setEmail(du.email);
+          }
+        } catch (e) {}
+      } catch (e) {
+        console.error("Error loading email:", e);
+      }
+    };
+
+    loadEmail();
   }, []);
 
   const toggleIndustry = (i) => {
@@ -74,8 +87,14 @@ const Onboarding = () => {
     );
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const user = getCurrentUser();
+    if (!user?.uid) {
+      alert("You must be logged in to save your profile");
+      return;
+    }
+
     const profile = {
       name: name || "",
       email: email || "",
@@ -84,14 +103,23 @@ const Onboarding = () => {
       resumeName: "",
       resumeData: "",
     };
+
     try {
-      localStorage.setItem("userProfile", JSON.stringify(profile));
-      localStorage.removeItem("isNewAccount");
+      // Save to Firestore
+      await updateUserProfile(user.uid, profile);
+      console.log("✅ Profile saved to Firestore during onboarding");
+      
+      // Remove onboarding flag
+      try {
+        localStorage.removeItem("isNewAccount");
+      } catch (e) {}
+      
+      // Proceed to the slim account-settings onboarding step
+      navigate("/profile/onboarding-settings");
     } catch (err) {
-      console.warn("Failed to write profile to localStorage", err);
+      console.error("Failed to save profile to Firestore:", err);
+      alert("Failed to save profile. Please try again.");
     }
-    // Proceed to the slim account-settings onboarding step
-    navigate("/profile/onboarding-settings");
   };
 
   return (

@@ -91,6 +91,8 @@ export const createOrUpdateUserProfile = async (userId, userData) => {
         school: '',
         industries: [],
         bio: '',
+        resumeName: '',
+        resumeData: '',
       },
       behavior: existingData?.behavior || {
         searchHistory: [],
@@ -98,6 +100,7 @@ export const createOrUpdateUserProfile = async (userId, userData) => {
         rejectedContacts: [],
         lastActivity: null,
       },
+      emailDrafts: existingData?.emailDrafts || {},
       // Initialize searchHistory field for new users
       searchHistory: existingData?.searchHistory || [],
     };
@@ -493,6 +496,120 @@ export const updateUserTemplates = async (userId, templates) => {
 };
 
 /**
+ * Get email drafts for a user
+ * @param {string} userId - User ID
+ * @returns {Promise<Object>} Object mapping contact email to draft { subject, body, updatedAt }
+ */
+export const getUserEmailDrafts = async (userId) => {
+  if (!db || !userId) {
+    console.warn('Firestore not initialized or userId missing');
+    return {};
+  }
+
+  try {
+    const userData = await getUserData(userId);
+    return userData?.emailDrafts || {};
+  } catch (error) {
+    console.error('Error getting email drafts:', error);
+    return {};
+  }
+};
+
+/**
+ * Save email draft for a specific contact
+ * @param {string} userId - User ID
+ * @param {string} contactEmail - Contact email identifier
+ * @param {Object} draft - Draft object { subject, body }
+ * @returns {Promise<void>}
+ */
+export const saveEmailDraft = async (userId, contactEmail, draft) => {
+  if (!db || !userId || !contactEmail) {
+    console.warn('Firestore not initialized or missing parameters');
+    return;
+  }
+
+  try {
+    const userRef = doc(db, 'users', userId);
+    const userData = await getUserData(userId);
+    const currentDrafts = userData?.emailDrafts || {};
+    
+    // Update the specific draft
+    const updatedDrafts = {
+      ...currentDrafts,
+      [contactEmail]: {
+        subject: draft.subject || '',
+        body: draft.body || '',
+        updatedAt: new Date().toISOString()
+      }
+    };
+
+    await updateDoc(userRef, {
+      emailDrafts: updatedDrafts,
+      updatedAt: serverTimestamp()
+    });
+    console.log('✅ Email draft saved to Firestore');
+  } catch (error) {
+    console.error('Error saving email draft:', error);
+    throw error;
+  }
+};
+
+/**
+ * Delete email draft for a specific contact
+ * @param {string} userId - User ID
+ * @param {string} contactEmail - Contact email identifier
+ * @returns {Promise<void>}
+ */
+export const deleteEmailDraft = async (userId, contactEmail) => {
+  if (!db || !userId || !contactEmail) {
+    console.warn('Firestore not initialized or missing parameters');
+    return;
+  }
+
+  try {
+    const userRef = doc(db, 'users', userId);
+    const userData = await getUserData(userId);
+    const currentDrafts = userData?.emailDrafts || {};
+    
+    // Remove the specific draft
+    const updatedDrafts = { ...currentDrafts };
+    delete updatedDrafts[contactEmail];
+
+    await updateDoc(userRef, {
+      emailDrafts: updatedDrafts,
+      updatedAt: serverTimestamp()
+    });
+    console.log('✅ Email draft deleted from Firestore');
+  } catch (error) {
+    console.error('Error deleting email draft:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get Gmail connection state from Firestore
+ * @param {string} userId - User ID
+ * @returns {Promise<Object>} Gmail connection state { connected: boolean, email: string }
+ */
+export const getGmailConnectionState = async (userId) => {
+  if (!db || !userId) {
+    console.warn('Firestore not initialized or userId missing');
+    return { connected: false, email: '' };
+  }
+
+  try {
+    const userData = await getUserData(userId);
+    return {
+      connected: userData?.gmailConnected || false,
+      email: userData?.gmailEmail || ''
+    };
+  } catch (error) {
+    console.error('Error getting Gmail connection state:', error);
+    return { connected: false, email: '' };
+  }
+};
+
+/**
  * Get user profile
  * @param {string} userId - User ID
  * @returns {Promise<Object>} User profile object
@@ -506,6 +623,8 @@ export const getUserProfile = async (userId) => {
       school: '',
       industries: [],
       bio: '',
+      resumeName: '',
+      resumeData: '',
     };
   }
 
@@ -517,6 +636,8 @@ export const getUserProfile = async (userId) => {
       school: '',
       industries: [],
       bio: '',
+      resumeName: '',
+      resumeData: '',
     };
   } catch (error) {
     console.error('Error getting user profile:', error);
@@ -526,6 +647,8 @@ export const getUserProfile = async (userId) => {
       school: '',
       industries: [],
       bio: '',
+      resumeName: '',
+      resumeData: '',
     };
   }
 };
@@ -550,6 +673,8 @@ export const updateUserProfile = async (userId, profile) => {
       'profile.school': profile.school || '',
       'profile.industries': profile.industries || [],
       'profile.bio': profile.bio || '',
+      'profile.resumeName': profile.resumeName || '',
+      'profile.resumeData': profile.resumeData || '',
       updatedAt: serverTimestamp(),
     });
     console.log('✅ User profile updated in Firestore');

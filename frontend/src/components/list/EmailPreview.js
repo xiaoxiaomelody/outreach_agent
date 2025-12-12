@@ -3,8 +3,12 @@ import gmailApi from "../../api/gmail";
 import "./EmailPreview.css";
 import Icon from "../icons/Icon";
 import { getCurrentUser } from "../../config/authUtils";
-import { getUserTemplates } from "../../services/firestore.service";
-import { moveContactToSent } from "../../services/firestore.service";
+import { 
+  getUserTemplates, 
+  moveContactToSent,
+  getUserEmailDrafts,
+  saveEmailDraft
+} from "../../services/firestore.service";
 
 /**
  * Email Preview Component
@@ -51,21 +55,19 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
       if (user?.uid) {
         try {
           templates = await getUserTemplates(user.uid);
+          if (templates && templates.length > 0) {
+            console.log('✅ Loaded templates from Firestore');
+          } else {
+            console.log('📋 No templates found in Firestore for user');
+            templates = [];
+          }
         } catch (error) {
           console.error("Error loading templates from Firestore:", error);
+          templates = [];
         }
-      }
-
-      // Fallback to localStorage if Firestore is empty
-      if (!templates || templates.length === 0) {
-        try {
-          const localTemplates = JSON.parse(
-            localStorage.getItem("emailTemplates") || "[]"
-          );
-          templates = localTemplates;
-        } catch (err) {
-          console.error("Error loading templates from localStorage:", err);
-        }
+      } else {
+        console.warn("No user found, cannot load templates from Firestore");
+        templates = [];
       }
 
       // Determine desired template name or id from contact (support either string name or id)
@@ -153,21 +155,24 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
       }
 
       // After generating from a template, if there's a saved draft for this contact, use it
-      try {
-        const drafts = JSON.parse(localStorage.getItem("emailDrafts") || "{}");
-        const key = getDraftKey(contact);
-        if (drafts && drafts[key]) {
-          const d = drafts[key];
-          if (d.subject) setSubject(d.subject);
-          if (d.body) setBody(d.body);
+      if (user?.uid) {
+        try {
+          const drafts = await getUserEmailDrafts(user.uid);
+          const key = getDraftKey(contact);
+          if (drafts && drafts[key]) {
+            const d = drafts[key];
+            if (d.subject) setSubject(d.subject);
+            if (d.body) setBody(d.body);
+            console.log("✅ Restored draft from Firestore for", key);
+          }
+        } catch (err) {
+          console.error("Error loading draft from Firestore:", err);
         }
-      } catch (err) {
-        // ignore parse errors
       }
     };
 
     loadTemplate();
-  }, [contact]);
+  }, [contact, contactEmail, lastContactEmail, hasUserEdits]);
 
   const getTemplateName = (contact) => {
     if (contact.industry) {
@@ -267,21 +272,25 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
     }
   };
 
-  const handleSave = () => {
-    // Save a per-contact draft (subject + body) to localStorage
+  const handleSave = async () => {
+    // Save a per-contact draft (subject + body) to Firestore
+    const user = getCurrentUser();
+    if (!user?.uid) {
+      alert("You must be logged in to save drafts");
+      return;
+    }
+
     try {
       const key = getDraftKey(contact);
-      const drafts = JSON.parse(localStorage.getItem("emailDrafts") || "{}");
-      drafts[key] = {
+      await saveEmailDraft(user.uid, key, {
         subject: subject,
-        body: body,
-        updatedAt: Date.now(),
-      };
-      localStorage.setItem("emailDrafts", JSON.stringify(drafts));
+        body: body
+      });
       setIsEditing(false);
+      console.log("✅ Draft saved to Firestore");
     } catch (err) {
-      console.error("Failed to save draft", err);
-      alert("Failed to save draft");
+      console.error("Failed to save draft to Firestore:", err);
+      alert("Failed to save draft: " + err.message);
     }
   };
 

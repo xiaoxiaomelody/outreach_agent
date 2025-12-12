@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/ProfilePage.css";
 import { getCurrentUser } from "../config/authUtils";
-import { createOrUpdateUserProfile } from "../services/firestore.service";
+import { getUserProfile, updateUserProfile } from "../services/firestore.service";
 
 const defaultProfile = {
   name: "",
@@ -43,61 +43,107 @@ const ProfileInfo = () => {
     } catch (err) {}
   };
 
+  // Load profile from Firestore on mount
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem("userProfile");
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        setProfile(parsed);
-        setSavedProfile(parsed);
+    const loadProfile = async () => {
+      const user = getCurrentUser();
+      if (!user?.uid) {
+        console.warn("No user found, cannot load profile from Firestore");
+        return;
       }
-    } catch (err) {
-      /* ignore */
-    }
+
+      try {
+        const firestoreProfile = await getUserProfile(user.uid);
+        if (firestoreProfile) {
+          // Map Firestore profile structure to component state
+          const loadedProfile = {
+            name: firestoreProfile.name || "",
+            email: firestoreProfile.email || user.email || "",
+            school: firestoreProfile.school || "",
+            industries: firestoreProfile.industries || [],
+            resumeName: firestoreProfile.resumeName || "",
+            resumeData: firestoreProfile.resumeData || "",
+          };
+          setProfile(loadedProfile);
+          setSavedProfile(loadedProfile);
+          console.log("✅ Loaded profile from Firestore");
+        }
+      } catch (error) {
+        console.error("Error loading profile from Firestore:", error);
+        // Fallback: try localStorage for migration
+        try {
+          const raw = localStorage.getItem("userProfile");
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            setProfile(parsed);
+            setSavedProfile(parsed);
+            // Migrate to Firestore
+            if (user?.uid) {
+              updateUserProfile(user.uid, {
+                name: parsed.name || "",
+                email: parsed.email || "",
+                school: parsed.school || "",
+                industries: parsed.industries || [],
+                resumeName: parsed.resumeName || "",
+                resumeData: parsed.resumeData || "",
+              }).catch((err) => {
+                console.error("Failed to migrate profile to Firestore:", err);
+              });
+            }
+          }
+        } catch (err) {
+          /* ignore */
+        }
+      }
+    };
+
+    loadProfile();
   }, []);
 
-  // Autosave profile when it changes (debounced)
+  // Autosave profile to Firestore when it changes (debounced)
   React.useEffect(() => {
     if (initialLoad.current) {
       initialLoad.current = false;
       return;
     }
 
+    const user = getCurrentUser();
+    if (!user?.uid) {
+      console.warn("No user found, cannot save profile to Firestore");
+      return;
+    }
+
     if (saveTimer.current) clearTimeout(saveTimer.current);
-    saveTimer.current = setTimeout(() => {
+    saveTimer.current = setTimeout(async () => {
       try {
-        localStorage.setItem("userProfile", JSON.stringify(profile));
+        // Save directly to Firestore
+        await updateUserProfile(user.uid, {
+          name: profile.name || "",
+          email: profile.email || user.email || "",
+          school: profile.school || "",
+          industries: profile.industries || [],
+          resumeName: profile.resumeName || "",
+          resumeData: profile.resumeData || "",
+        });
+        
         setSavedProfile(profile);
+        console.log("✅ Profile saved to Firestore");
         window.dispatchEvent(
           new CustomEvent("app-toast", {
             detail: { message: "Profile saved", type: "info", duration: 1200 },
           })
         );
       } catch (err) {
-        /* ignore */
-      }
-
-      // sync to backend if authenticated
-      try {
-        const u = getCurrentUser();
-        if (u && u.uid) {
-          const userData = {
-            email: profile.email || u.email || "",
-            displayName: profile.name || u.displayName || "",
-            profile: {
-              name: profile.name || "",
-              email: profile.email || "",
-              school: profile.school || "",
-              industries: profile.industries || [],
-              resumeName: profile.resumeName || "",
+        console.error("Failed to save profile to Firestore:", err);
+        window.dispatchEvent(
+          new CustomEvent("app-toast", {
+            detail: { 
+              message: "Failed to save profile", 
+              type: "error", 
+              duration: 2000 
             },
-          };
-          createOrUpdateUserProfile(u.uid, userData).catch((err) => {
-            console.error("Failed to sync profile to backend:", err);
-          });
-        }
-      } catch (err) {
-        console.warn("Profile sync skipped - no authenticated user", err);
+          })
+        );
       }
     }, 800);
 

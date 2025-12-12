@@ -312,7 +312,31 @@ const refreshAccessToken = async (tokens, userId) => {
       expiryDate: credentials.expiry_date
     };
   } catch (error) {
-    console.error('Token refresh error:', error);
+    console.error('❌ [TOKEN REFRESH] Token refresh error:', error.message);
+    
+    // If refresh token is invalid, clear stored tokens
+    if (error.message && error.message.includes('invalid_grant')) {
+      console.error('❌ [TOKEN REFRESH] Invalid grant - refresh token is invalid or revoked');
+      console.error('❌ [TOKEN REFRESH] Clearing stored tokens for user:', userId);
+      
+      // Clear tokens in Firestore
+      if (process.env.DEV_MODE !== 'true') {
+        try {
+          const db = getFirestore();
+          await db.collection('users').doc(userId).update({
+            'gmailTokens': null,
+            'gmailConnected': false,
+            'gmailEmail': null
+          });
+          console.log('✅ [TOKEN REFRESH] Cleared invalid tokens from Firestore');
+        } catch (dbError) {
+          console.error('❌ [TOKEN REFRESH] Failed to clear tokens:', dbError.message);
+        }
+      }
+      
+      throw new Error('Gmail access has been revoked or expired. Please reconnect your Gmail account in Settings.');
+    }
+    
     throw error;
   }
 };
@@ -334,11 +358,20 @@ const getGmailClient = async (userId) => {
   // Check if token is expired and refresh if needed
   const now = Date.now();
   if (tokens.expiryDate && now >= tokens.expiryDate) {
-    const refreshedTokens = await refreshAccessToken(tokens, userId);
-    oauth2Client.setCredentials({
-      access_token: refreshedTokens.accessToken,
-      refresh_token: refreshedTokens.refreshToken
-    });
+    try {
+      const refreshedTokens = await refreshAccessToken(tokens, userId);
+      oauth2Client.setCredentials({
+        access_token: refreshedTokens.accessToken,
+        refresh_token: refreshedTokens.refreshToken
+      });
+    } catch (refreshError) {
+      // If refresh fails with invalid_grant, the error is already handled in refreshAccessToken
+      // Re-throw with user-friendly message
+      if (refreshError.message && refreshError.message.includes('invalid_grant')) {
+        throw new Error('Gmail access has been revoked or expired. Please reconnect your Gmail account in Settings.');
+      }
+      throw refreshError;
+    }
   } else {
     oauth2Client.setCredentials({
       access_token: tokens.accessToken,
@@ -372,49 +405,24 @@ const createEmailMessage = ({ to, subject, body, fromName }) => {
   
   // Remove any standalone "Subject:" lines (case insensitive)
   cleanBody = cleanBody.replace(/^\s*[Ss]ubject\s*:?\s*.*[\r\n]+/gm, '');
-  
-  // Remove leading/trailing whitespace
-  cleanBody = cleanBody.trim();
-  
-  // Ensure body is properly formatted HTML
-  // If it's not already HTML, wrap it in basic HTML structure
-  if (!cleanBody.includes('<html') && !cleanBody.includes('<body')) {
-    // Check if it contains HTML tags at all
-    if (!cleanBody.match(/<[a-z][\s\S]*>/i)) {
-      // Plain text - convert to HTML with proper line breaks
-      cleanBody = cleanBody
-        .replace(/\r\n/g, '<br>')
-        .replace(/\n/g, '<br>')
-        .replace(/\r/g, '<br>');
-    }
-    // Wrap in a simple HTML structure for better formatting
-    cleanBody = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-  <div style="background-color: #ffffff;">
-    ${cleanBody}
-  </div>
-</body>
-</html>`;
-  } else {
-    // Already has HTML structure, but ensure it's complete
-    if (!cleanBody.includes('<!DOCTYPE') && !cleanBody.includes('<html')) {
-      cleanBody = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-  ${cleanBody}
-</body>
-</html>`;
-    }
+    
+    // Normalize whitespace
+  cleanBody = body.trim();
+
+  // Detect if body already contains HTML tags
+  const isHtml = /<[a-z][\s\S]*>/i.test(cleanBody);
+
+  if (!isHtml) {
+    // Plain text → HTML
+    cleanBody = cleanBody
+      .replace(/\r\n/g, '\n')
+      .replace(/\r/g, '\n')
+      .replace(/\n{2,}/g, '<br><br>')
+      .replace(/\n/g, '<br>');
   }
+
+  // Wrap in a minimal container (Gmail-style)
+  cleanBody = `<div>${cleanBody}</div>`;
 
   const message = [
     `From: ${fromField}`,
@@ -423,10 +431,10 @@ const createEmailMessage = ({ to, subject, body, fromName }) => {
     'MIME-Version: 1.0',
     'Content-Type: text/html; charset=utf-8',
     '',
-    cleanBody.trim()
+    cleanBody
   ].join('\r\n');
 
-  // Encode to base64url
+  // Base64url encode
   const encodedMessage = Buffer.from(message)
     .toString('base64')
     .replace(/\+/g, '-')
@@ -482,7 +490,7 @@ const sendEmail = async (userId, emailData) => {
       console.error(`❌ [SEND EMAIL] Failed to get Gmail client:`, error.message);
       return {
         success: false,
-        error: error.message || 'Gmail not connected. Please connect your Gmail account first via the "Connect Gmail" button.'
+        error: error.message || 'Gmail not connected. Please connect your Gmail account first via Setting.'
       };
     }
 
@@ -497,12 +505,34 @@ const sendEmail = async (userId, emailData) => {
       hasRawMessage: !!encodedMessage 
     });
     
-    const response = await gmail.users.messages.send({
-      userId: 'me',
-      requestBody: {
-        raw: encodedMessage
+    let response;
+    try {
+      response = await gmail.users.messages.send({
+        userId: 'me',
+        requestBody: {
+          raw: encodedMessage
+        }
+      });
+    } catch (gmailError) {
+      // Handle invalid_grant errors from Gmail API
+      if (gmailError.message && gmailError.message.includes('invalid_grant')) {
+        console.error('❌ [SEND EMAIL] Invalid grant error from Gmail API');
+        // Clear tokens
+        try {
+          const db = getFirestore();
+          await db.collection('users').doc(userId).update({
+            'gmailTokens': null,
+            'gmailConnected': false,
+            'gmailEmail': null
+          });
+          console.log('✅ [SEND EMAIL] Cleared invalid tokens');
+        } catch (dbError) {
+          console.error('❌ [SEND EMAIL] Failed to clear tokens:', dbError.message);
+        }
+        throw new Error('Gmail access has been revoked or expired. Please reconnect your Gmail account in Settings.');
       }
-    });
+      throw gmailError;
+    }
 
     console.log(`✅ [SEND EMAIL] Gmail API call successful!`);
     console.log(`✅ [SEND EMAIL] Response:`, { 

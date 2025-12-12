@@ -22,7 +22,7 @@ const TemplatesPage = () => {
       name: "Finance",
       subject: "Intro — [Name] at [Company]",
       content:
-        "Hello [Name],\n\nThis is an email template that I can use to reach out to other people in my target industry. I am super interested in this particular industry because of XYZ.\n\nPlease hire me.\n\nYours desperately,\n[Your Name]",
+        "xixi",
     },
     {
       id: 2,
