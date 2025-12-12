@@ -9,6 +9,8 @@ import MyListPage from "./pages/MyListPage";
 import ProfileLayout from "./pages/ProfileLayout";
 import ProfileInfo from "./pages/ProfileInfo";
 import AccountSettings from "./pages/AccountSettings";
+import Onboarding from "./pages/Onboarding";
+import AccountSettingsOnboarding from "./pages/AccountSettingsOnboarding";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ToastContainer from "./components/ui/ToastContainer";
 import "./styles/App.css";
@@ -61,8 +63,14 @@ function App() {
             }
           >
             <Route index element={<ProfileInfo />} />
+            <Route path="onboarding" element={<Onboarding />} />
             <Route path="settings" element={<AccountSettings />} />
+            <Route
+              path="onboarding-settings"
+              element={<AccountSettingsOnboarding />}
+            />
           </Route>
+
           {/* Legacy Dashboard route - redirect to search */}
           <Route
             path="/dashboard"

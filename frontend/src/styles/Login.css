@@ -17,6 +17,8 @@
   width: 100%;
   max-width: 500px;
   text-align: center;
+  position: relative;
+  z-index: 10000;
 }
 
 .login-title {
@@ -32,6 +34,8 @@
   gap: 1rem;
   justify-content: center;
   margin-bottom: 3rem;
+  position: relative;
+  z-index: 10001;
 }
 
 .forgot-password-container {
@@ -60,7 +64,11 @@
   cursor: pointer;
   transition: all 0.2s;
   min-width: 120px;
-  opacity: 1;
+  opacity: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  visibility: visible !important;
 }
 
 .action-btn:disabled,
@@ -70,8 +78,10 @@
 }
 
 .action-btn.primary {
-  background-color: #1a1a1a;
-  color: white;
+  background-color: #1a1a1a !important;
+  color: white !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12) !important;
+  pointer-events: auto !important;
 }
 
 .action-btn.primary:hover:not(:disabled):not(.disabled) {
@@ -79,8 +89,11 @@
 }
 
 .action-btn.secondary {
-  background-color: #e0e0e0;
-  color: #333;
+  background-color: #e0e0e0 !important;
+  color: #333 !important;
+  border: 1px solid #d1d1d1 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06) !important;
+  pointer-events: auto !important;
 }
 
 .action-btn.secondary:hover:not(:disabled):not(.disabled) {
@@ -104,6 +117,8 @@
   max-width: 400px;
   margin-left: auto;
   margin-right: auto;
+  position: relative;
+  z-index: 3;
 }
 
 .form-group {
@@ -157,9 +172,18 @@
 }
 
 .btn-submit {
-  background-color: #333;
-  color: white;
+  background-color: #333 !important;
+  color: white !important;
   margin-top: 1rem;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 10003 !important;
+  pointer-events: auto !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
 }
 
 .btn-submit:hover:not(:disabled) {

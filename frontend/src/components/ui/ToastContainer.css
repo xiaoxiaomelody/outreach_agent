@@ -29,6 +29,7 @@
 .toast-container .toast-message {
   color: #111;
   font-size: 0.95rem;
+  flex: 1 1 auto;
 }
 
 .toast-success {
@@ -43,6 +44,7 @@
 
 .toast-action {
   margin-left: 12px;
+  margin-right: 8px;
   background: transparent;
   border: none;
   color: #2563eb;
@@ -51,7 +53,7 @@
 }
 
 .toast-close {
-  margin-left: 8px;
+  margin-left: auto;
   background: transparent;
   border: none;
   color: #999;
