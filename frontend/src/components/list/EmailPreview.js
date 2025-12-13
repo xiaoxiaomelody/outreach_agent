@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import gmailApi from "../../api/gmail";
 import "./EmailPreview.css";
 import Icon from "../icons/Icon";
@@ -7,8 +7,10 @@ import {
   getUserTemplates, 
   moveContactToSent,
   getUserEmailDrafts,
-  saveEmailDraft
+  saveEmailDraft,
+  getUserProfile
 } from "../../services/firestore.service";
+import { useEmailStream } from "../../hooks/useEmailStream";
 
 /**
  * Email Preview Component
@@ -19,6 +21,23 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
   const [body, setBody] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [sending, setSending] = useState(false);
+  
+  // AI Draft Generation
+  const [hasResume, setHasResume] = useState(false);
+  const [checkingResume, setCheckingResume] = useState(true);
+  const [selectedTone, setSelectedTone] = useState("Formal");
+  const [showToneSelector, setShowToneSelector] = useState(false);
+  
+  // Use the email stream hook
+  const {
+    draftContent,
+    isStreaming,
+    error: streamError,
+    status: streamStatus,
+    generateDraft,
+    cancelStream,
+    setContent
+  } = useEmailStream();
 
   // helper to build a stable key for storing per-contact drafts
   const getDraftKey = (c) => {
@@ -29,6 +48,32 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
   const contactEmail = contact?.value || contact?.email || "";
   const [hasUserEdits, setHasUserEdits] = useState(false);
   const [lastContactEmail, setLastContactEmail] = useState("");
+  
+  // Check if user has uploaded a resume
+  useEffect(() => {
+    const checkResumeStatus = async () => {
+      const user = getCurrentUser();
+      if (!user?.uid) {
+        setHasResume(false);
+        setCheckingResume(false);
+        return;
+      }
+      
+      try {
+        const profile = await getUserProfile(user.uid);
+        // Check if user has a validated resume (either resumeName or resume object)
+        const hasValidResume = !!(profile?.resumeName || profile?.resume?.fullName);
+        setHasResume(hasValidResume);
+      } catch (error) {
+        console.error("Error checking resume status:", error);
+        setHasResume(false);
+      } finally {
+        setCheckingResume(false);
+      }
+    };
+    
+    checkResumeStatus();
+  }, []);
 
   useEffect(() => {
     // Only regenerate email if:
@@ -129,29 +174,9 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
         setBody(initialBody);
         setSubject(initialSubject);
 
-        // Try to use OpenAI to personalize, override the initial values if successful
-        try {
-          const result = await gmailApi.draftEmail({
-            recipientName: fullName,
-            recipientEmail: contact.value || contact.email,
-            recipientPosition: contact.position,
-            recipientCompany: contact.company || contact.organization,
-            recipientSummary:
-              contact.ai_summary ||
-              `${fullName} works as ${contact.position} at ${
-                contact.company || contact.organization
-              }`,
-            template: template.content,
-            senderName: "Recruitly",
-          });
-
-          if (result.success && result.data) {
-            if (result.data.body) setBody(result.data.body);
-            if (result.data.subject) setSubject(result.data.subject);
-          }
-        } catch (error) {
-          // ignore and keep initialBody/initialSubject
-        }
+        // NOTE: Removed automatic AI personalization
+        // User can manually trigger AI drafting via the "✨ Auto-Draft with AI" button
+        // This preserves the template structure hints like [mention: working experience -> ...]
       }
 
       // After generating from a template, if there's a saved draft for this contact, use it
@@ -188,6 +213,87 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
     }
     return "Tech";
   };
+
+  // Handle AI draft generation
+  const handleAIDraft = useCallback(async () => {
+    // Check if there's existing content
+    if (body.trim()) {
+      const overwrite = window.confirm(
+        "You have existing content. Do you want to overwrite it with an AI-generated draft?\n\nClick 'OK' to overwrite, or 'Cancel' to append instead."
+      );
+      
+      if (!overwrite) {
+        // User wants to append - not supported in this version, just return
+        // Could implement append mode here if needed
+        return;
+      }
+    }
+    
+    setIsEditing(true); // Enable editing mode to show the textarea
+    setContent(''); // Clear the hook's content
+    
+    try {
+      const fullName = `${contact.first_name || ""} ${contact.last_name || ""}`.trim() || contact.name || "";
+      
+      const generatedContent = await generateDraft({
+        recipientInfo: {
+          companyName: contact.company || contact.organization || "Unknown Company",
+          jobTitle: contact.position || "Professional",
+          recipientName: fullName,
+          recipientRole: contact.position
+        },
+        tone: selectedTone,
+        jobDescription: contact.job_description // If available in contact
+      });
+      
+      // Update body with generated content
+      if (generatedContent) {
+        setBody(generatedContent);
+        setHasUserEdits(true);
+      }
+    } catch (error) {
+      // Show error toast
+      try {
+        window.dispatchEvent(
+          new CustomEvent("app-toast", {
+            detail: {
+              message: error.message || "Failed to generate email draft",
+              type: "error",
+              duration: 4000,
+            },
+          })
+        );
+      } catch (e) {
+        alert("Failed to generate email: " + error.message);
+      }
+    }
+  }, [body, contact, selectedTone, generateDraft, setContent]);
+
+  // Update body when streaming content changes
+  useEffect(() => {
+    if (isStreaming && draftContent) {
+      setBody(draftContent);
+    }
+  }, [isStreaming, draftContent]);
+
+  // Show stream errors as toasts
+  useEffect(() => {
+    if (streamError) {
+      try {
+        window.dispatchEvent(
+          new CustomEvent("app-toast", {
+            detail: {
+              message: streamError,
+              type: "error",
+              duration: 4000,
+            },
+          })
+        );
+      } catch (e) {
+        // Ignore toast dispatch errors
+      }
+    }
+  }, [streamError]);
 
   const handleSend = async () => {
     setSending(true);
@@ -304,8 +410,75 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
           </button>
         </div>
         <div className="preview-hint">
-          {!isEditing && (
+          {!isEditing && !isStreaming && (
             <span onClick={() => setIsEditing(true)}>Click to make edits</span>
+          )}
+          {isStreaming && streamStatus && (
+            <span className="ai-status">
+              <span className="ai-status-dot"></span>
+              {streamStatus.message}
+            </span>
+          )}
+        </div>
+        
+        {/* AI Draft Generation Section */}
+        <div className="ai-draft-section">
+          {checkingResume ? (
+            <div className="ai-draft-loading">Checking profile...</div>
+          ) : hasResume ? (
+            <div className="ai-draft-controls">
+              <div className="tone-selector">
+                <button 
+                  className="tone-toggle"
+                  onClick={() => setShowToneSelector(!showToneSelector)}
+                  disabled={isStreaming}
+                >
+                  Tone: {selectedTone} ▾
+                </button>
+                {showToneSelector && (
+                  <div className="tone-dropdown">
+                    {['Formal', 'Casual', 'Confident', 'Curious'].map(tone => (
+                      <button
+                        key={tone}
+                        className={`tone-option ${selectedTone === tone ? 'selected' : ''}`}
+                        onClick={() => {
+                          setSelectedTone(tone);
+                          setShowToneSelector(false);
+                        }}
+                      >
+                        {tone}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              
+              {isStreaming ? (
+                <button 
+                  className="btn-ai-stop"
+                  onClick={cancelStream}
+                >
+                  ⏹ Stop
+                </button>
+              ) : (
+                <button 
+                  className="btn-ai-draft"
+                  onClick={handleAIDraft}
+                  disabled={sending}
+                >
+                  ✨ Auto-Draft with AI
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="ai-draft-disabled">
+              <span className="ai-disabled-text">
+                <a href="/profile" className="upload-resume-link">
+                  Upload Resume
+                </a>
+                {" "}to enable AI Drafting
+              </span>
+            </div>
           )}
         </div>
         <div className="preview-content">
@@ -323,7 +496,7 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
               />
             ) : (
               <div className="preview-subject">
-                {subject || "[Subject]: Please hire me!"}
+                {subject || "Intro — [Name] at [Company]"}
               </div>
             )}
           </div>
@@ -343,7 +516,7 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
               <div className="preview-body">
                 <pre>
                   {body ||
-                    "Hello [Name],\n\nMy name is Sidd and I want to work at Bank of America\nPlease hire me.\nYours desperately,\nSiddharth"}
+                    "Hello [Name],\n\n[mention: working experience -> tech stack -> ask whether the company has position]"}
                 </pre>
               </div>
             )}
@@ -360,7 +533,12 @@ const EmailPreview = ({ contact, onClose, onSend }) => {
               Save
             </button>
           )}
-          <button className="btn-send" onClick={handleSend} disabled={sending}>
+          <button 
+            className="btn-send" 
+            onClick={handleSend} 
+            disabled={sending || isStreaming}
+            title={isStreaming ? "Wait for AI generation to complete" : ""}
+          >
             {sending ? "Sending..." : "Send"}
             <Icon
               name="paper-plane"

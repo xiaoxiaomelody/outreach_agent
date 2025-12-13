@@ -1,8 +1,26 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/ProfilePage.css";
 import { getCurrentUser } from "../config/authUtils";
 import { getUserProfile, updateUserProfile } from "../services/firestore.service";
+
+// Lazy load ResumeUpload to handle potential import errors gracefully
+const ResumeUpload = lazy(() => 
+  import("../components/profile/ResumeUpload").catch(() => ({
+    default: () => (
+      <div style={{ padding: '1rem', background: '#fef3c7', borderRadius: '8px', border: '1px solid #f59e0b' }}>
+        <p style={{ margin: 0, color: '#92400e' }}>⚠️ Resume upload temporarily unavailable. Please try refreshing the page.</p>
+      </div>
+    )
+  }))
+);
+
+// Fallback component while loading
+const ResumeUploadFallback = () => (
+  <div style={{ padding: '1rem', background: '#f0f4ff', borderRadius: '8px', border: '1px dashed #6366f1' }}>
+    <p style={{ margin: 0, color: '#4f46e5' }}>📄 Loading resume upload...</p>
+  </div>
+);
 
 const defaultProfile = {
   name: "",
@@ -26,6 +44,7 @@ const industryOptions = [
 const ProfileInfo = () => {
   const [profile, setProfile] = useState(defaultProfile);
   const [savedProfile, setSavedProfile] = useState(defaultProfile);
+  const [parsedResumeData, setParsedResumeData] = useState(null);
   const saveTimer = React.useRef(null);
   const initialLoad = React.useRef(true);
   const lastSavingToast = React.useRef(0);
@@ -173,21 +192,16 @@ const ProfileInfo = () => {
     setProfile(savedProfile || defaultProfile);
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files && e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const data = ev.target.result;
-      setProfile((p) => ({ ...p, resumeName: file.name, resumeData: data }));
-      maybeShowSavingToast();
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const removeResume = (e) => {
-    e.preventDefault();
-    setProfile((p) => ({ ...p, resumeName: "", resumeData: "" }));
+  // Handle successful resume upload from ResumeUpload component
+  const handleResumeUploadSuccess = (result) => {
+    console.log("✅ Resume upload success:", result);
+    setParsedResumeData(result.data);
+    // Update profile with resume info (the backend has already saved the parsed data)
+    setProfile((p) => ({ 
+      ...p, 
+      resumeName: result.metadata?.originalFilename || "Resume uploaded",
+      resumeData: "validated" // Mark as validated (actual data is stored in backend)
+    }));
   };
 
   return (
@@ -276,69 +290,15 @@ const ProfileInfo = () => {
           </div>
         </fieldset>
 
-        <label className="full-width">
-          Resume
-          <div className="resume-upload">
-            <div className="resume-box">
-              <input
-                type="file"
-                accept=".pdf,.doc,.docx"
-                onChange={handleFileChange}
-                aria-label="Upload resume"
-              />
-              <div className="resume-box-content">
-                <div className="upload-icon" aria-hidden="true">
-                  <svg
-                    width="32"
-                    height="32"
-                    viewBox="0 0 48 48"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <g clipPath="url(#clip0_104_536)">
-                      <path
-                        d="M31.9999 32L23.9999 24M23.9999 24L15.9999 32M23.9999 24V42M40.7799 36.78C42.7306 35.7165 44.2716 34.0338 45.1597 31.9972C46.0477 29.9607 46.2323 27.6865 45.6843 25.5334C45.1363 23.3803 43.8869 21.471 42.1333 20.1069C40.3796 18.7428 38.2216 18.0015 35.9999 18H33.4799C32.8746 15.6585 31.7462 13.4847 30.1798 11.642C28.6134 9.7993 26.6496 8.3357 24.4361 7.36121C22.2226 6.38673 19.817 5.92672 17.4002 6.01576C14.9833 6.10481 12.6181 6.7406 10.4823 7.87533C8.34649 9.01006 6.49574 10.6142 5.06916 12.5672C3.64259 14.5201 2.6773 16.7711 2.24588 19.1508C1.81446 21.5305 1.92813 23.9771 2.57835 26.3065C3.22856 28.636 4.3984 30.7877 5.99992 32.6"
-                        stroke="#1E1E1E"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </g>
-                    <defs>
-                      <clipPath id="clip0_104_536">
-                        <rect width="48" height="48" fill="white" />
-                      </clipPath>
-                    </defs>
-                  </svg>
-                </div>
-
-                <div className="resume-box-text">
-                  {profile.resumeName ? (
-                    <div className="resume-name">{profile.resumeName}</div>
-                  ) : (
-                    <div className="muted">
-                      Click to upload your resume (PDF/DOC)
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {profile.resumeName && (
-                <div className="resume-actions">
-                  <button
-                    className="btn small"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeResume(e);
-                    }}
-                  >
-                    Remove
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </label>
+        <div className="full-width">
+          <label style={{ marginBottom: '0.5rem', display: 'block' }}>Resume</label>
+          <Suspense fallback={<ResumeUploadFallback />}>
+            <ResumeUpload 
+              onUploadSuccess={handleResumeUploadSuccess}
+              initialData={parsedResumeData}
+            />
+          </Suspense>
+        </div>
       </div>
     </div>
   );

@@ -226,6 +226,21 @@ const Icon = ({ name, size = 18, className = "", ...props }) => {
           <path d="M3 12h18M3 6h18M3 18h18" />
         </svg>
       );
+    case "chat":
+      return (
+        <svg {...common}>
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+        </svg>
+      );
+    case "bot":
+      return (
+        <svg {...common}>
+          <rect x="3" y="11" width="18" height="10" rx="2" />
+          <circle cx="12" cy="5" r="2" />
+          <path d="M12 7v4" />
+          <path d="M8 16h.01M16 16h.01" />
+        </svg>
+      );
     default:
       return null;
   }

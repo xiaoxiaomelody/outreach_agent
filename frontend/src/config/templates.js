@@ -8,14 +8,14 @@ export const DEFAULT_TEMPLATES = [
     name: "Finance",
     subject: "Intro — [Name] at [Company]",
     content:
-      "Hello [Name],\n\nThis is an email template that I can use to reach out to other people in my target industry. I am super interested in this particular industry because of XYZ.\n\nPlease hire me.\n\nYours desperately,\nSiddharth",
+      "Hello [Name],\n\n[mention: education -> project experience -> seeking for communication opportunity]",
   },
   {
     id: 2,
     name: "Tech",
     subject: "Intro — [Name]",
     content:
-      "Hello [Name],\n\nI'm reaching out because I'm interested in opportunities in the tech industry...\n\nBest regards,\nSiddharth",
+      "Hello [Name],\n\n[mention: working experience -> tech stack -> ask whether the company has position]",
   },
 ];
 

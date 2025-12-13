@@ -1,0 +1,250 @@
+###############################################################################
+# Resume Processing API Test File
+# 
+# For VS Code: Install "REST Client" extension
+# For other tools: Use curl commands below each request
+#
+# Workflow:
+# 1. Health Check -> Verify server is running
+# 2. Upload Resume -> Get doc_id
+# 3. Analyze Resume -> Get structured analysis
+###############################################################################
+
+### ============================================
+### CONFIGURATION
+### ============================================
+
+@baseUrl = http://localhost:8080
+@authToken = YOUR_FIREBASE_ID_TOKEN_HERE
+
+### ============================================
+### HEALTH CHECK (No Auth Required)
+### ============================================
+
+### Health Check
+# curl -X GET http://localhost:8080/api/health
+GET {{baseUrl}}/api/health
+
+### Hello Endpoint
+# curl -X GET http://localhost:8080/api/hello
+GET {{baseUrl}}/api/hello
+
+### ============================================
+### RESUME UPLOAD (Phase 1 + 2)
+### ============================================
+
+### Upload Resume (PDF)
+# curl -X POST http://localhost:8080/api/resume/upload \
+#   -H "Authorization: Bearer YOUR_TOKEN" \
+#   -F "resume=@/path/to/resume.pdf"
+POST {{baseUrl}}/api/resume/upload
+Authorization: Bearer {{authToken}}
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
+
+------WebKitFormBoundary
+Content-Disposition: form-data; name="resume"; filename="test-resume.pdf"
+Content-Type: application/pdf
+
+< ./test-resume.pdf
+------WebKitFormBoundary--
+
+### Expected Response:
+# {
+#   "status": "success",
+#   "doc_id": "resume_user123",
+#   "message": "Resume uploaded, validated, and indexed successfully",
+#   "data": {
+#     "fullName": "John Doe",
+#     "currentRole": "Software Engineer",
+#     "yearsOfExperience": 5,
+#     "skillCount": 15,
+#     "experienceCount": 3
+#   },
+#   "metadata": {
+#     "pagesProcessed": 2,
+#     "charactersExtracted": 5420,
+#     "vectorIndexed": true,
+#     "chunksIndexed": 8
+#   }
+# }
+
+### ============================================
+### RESUME ANALYSIS (Phase 3)
+### ============================================
+
+### Basic Analysis (uses authenticated user's resume)
+# curl -X POST http://localhost:8080/api/resume/analyze \
+#   -H "Authorization: Bearer YOUR_TOKEN" \
+#   -H "Content-Type: application/json" \
+#   -d '{}'
+POST {{baseUrl}}/api/resume/analyze
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{}
+
+### Analysis with Custom Query
+# curl -X POST http://localhost:8080/api/resume/analyze \
+#   -H "Authorization: Bearer YOUR_TOKEN" \
+#   -H "Content-Type: application/json" \
+#   -d '{"query": "What are the candidates leadership experiences?"}'
+POST {{baseUrl}}/api/resume/analyze
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "query": "What are the candidate's leadership experiences?"
+}
+
+### Analysis by Document ID
+# curl -X POST http://localhost:8080/api/resume/analyze/resume_user123 \
+#   -H "Authorization: Bearer YOUR_TOKEN" \
+#   -H "Content-Type: application/json"
+POST {{baseUrl}}/api/resume/analyze/resume_user123
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{}
+
+### ============================================
+### JOB FIT ANALYSIS
+### ============================================
+
+### Job Fit Analysis
+# curl -X POST http://localhost:8080/api/resume/job-fit \
+#   -H "Authorization: Bearer YOUR_TOKEN" \
+#   -H "Content-Type: application/json" \
+#   -d '{...}'
+POST {{baseUrl}}/api/resume/job-fit
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "jobTitle": "Senior Software Engineer",
+  "jobDescription": "We are looking for a Senior Software Engineer to join our platform team. You will be responsible for building scalable distributed systems and mentoring junior engineers.",
+  "requiredSkills": ["Python", "Go", "Kubernetes", "PostgreSQL"],
+  "preferredSkills": ["Rust", "Machine Learning", "Leadership"]
+}
+
+### Expected Response:
+# {
+#   "success": true,
+#   "jobTitle": "Senior Software Engineer",
+#   "candidateName": "John Doe",
+#   "fitAnalysis": {
+#     "fit_score": 85,
+#     "matching_skills": ["Python", "Go", "Kubernetes"],
+#     "missing_skills": ["Rust"],
+#     "recommendation": "Strong candidate..."
+#   }
+# }
+
+### ============================================
+### SKILL MATCH ANALYSIS
+### ============================================
+
+### Check Skill Match
+# curl -X POST http://localhost:8080/api/resume/skills-match \
+#   -H "Authorization: Bearer YOUR_TOKEN" \
+#   -H "Content-Type: application/json" \
+#   -d '{"requiredSkills": ["Python", "AWS", "Docker"]}'
+POST {{baseUrl}}/api/resume/skills-match
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "requiredSkills": ["Python", "JavaScript", "AWS", "Docker", "Kubernetes", "React", "Go"]
+}
+
+### Expected Response:
+# {
+#   "success": true,
+#   "skillAnalysis": {
+#     "totalRequired": 7,
+#     "totalFound": 5,
+#     "matchRate": "71.4%",
+#     "foundSkills": ["Python", "AWS", "Docker", "Kubernetes", "Go"],
+#     "missingSkills": ["JavaScript", "React"],
+#     "details": { ... }
+#   }
+# }
+
+### ============================================
+### RED FLAGS ANALYSIS
+### ============================================
+
+### Get Red Flags
+# curl -X GET http://localhost:8080/api/resume/red-flags \
+#   -H "Authorization: Bearer YOUR_TOKEN"
+GET {{baseUrl}}/api/resume/red-flags
+Authorization: Bearer {{authToken}}
+
+### ============================================
+### CUSTOM QUERY
+### ============================================
+
+### Custom Query
+# curl -X POST http://localhost:8080/api/resume/query \
+#   -H "Authorization: Bearer YOUR_TOKEN" \
+#   -H "Content-Type: application/json" \
+#   -d '{"query": "..."}'
+POST {{baseUrl}}/api/resume/query
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "query": "Does this candidate have experience with machine learning or AI?"
+}
+
+### ============================================
+### ERROR CASES
+### ============================================
+
+### Error: No Auth Token (401)
+POST {{baseUrl}}/api/resume/analyze
+Content-Type: application/json
+
+{}
+
+### Error: Document Not Found (404)
+POST {{baseUrl}}/api/resume/analyze/non_existent_doc_12345
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{}
+
+### Error: Invalid Request (400)
+POST {{baseUrl}}/api/resume/skills-match
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "requiredSkills": "not-an-array"
+}
+
+###############################################################################
+# CURL COMMANDS FOR QUICK TESTING
+###############################################################################
+#
+# 1. Health Check:
+#    curl http://localhost:8080/api/health
+#
+# 2. Upload Resume:
+#    curl -X POST http://localhost:8080/api/resume/upload \
+#      -H "Authorization: Bearer $TOKEN" \
+#      -F "resume=@resume.pdf"
+#
+# 3. Analyze Resume:
+#    curl -X POST http://localhost:8080/api/resume/analyze \
+#      -H "Authorization: Bearer $TOKEN" \
+#      -H "Content-Type: application/json" \
+#      -d '{"jobDescription": "Looking for Python developer..."}'
+#
+# 4. Skill Match:
+#    curl -X POST http://localhost:8080/api/resume/skills-match \
+#      -H "Authorization: Bearer $TOKEN" \
+#      -H "Content-Type: application/json" \
+#      -d '{"requiredSkills": ["Python", "AWS"]}'
+#
+###############################################################################
+

@@ -35,15 +35,9 @@ const TemplateInput = ({ onTemplateChange, value }) => {
     }
   };
 
-  const exampleTemplate = `Hi {name},
+  const exampleTemplate = `Hello {name},
 
-I came across your profile and was impressed by your work as {position} at {company}.
-
-{summary}
-
-I'd love to connect and discuss potential opportunities.
-
-Best regards`;
+[mention: working experience -> tech stack -> ask whether the company has position]`;
 
   const useExample = () => {
     setTemplate(exampleTemplate);

@@ -154,7 +154,6 @@ const ListTable = ({
                         {templates.map((t) => (
                           <option key={t.id ?? t.name} value={t.name}>
                             {t.name}
-                            {t.subject ? ` — ${t.subject}` : ""}
                           </option>
                         ))}
                       </select>

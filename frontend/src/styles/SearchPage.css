@@ -1,26 +1,138 @@
 .search-page {
   min-height: 100vh;
-  background-color: #ffffff;
+  background-color: #f8fafc;
 }
 
 .search-page-content {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 3rem 2rem;
+  padding: 2rem;
 }
 
+/* ============================================
+   Greeting Section
+   ============================================ */
 .search-greeting {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
 }
 
 .search-greeting h1 {
-  font-size: 2rem;
-  font-weight: 600;
-  color: #333;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 0.5rem 0;
+}
+
+.greeting-subtitle {
+  font-size: 1rem;
+  color: #64748b;
   margin: 0;
 }
 
+/* ============================================
+   Main Content Area
+   ============================================ */
+.search-main-area {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  transition: all 0.3s ease;
+  align-items: center;
+}
+
+.search-main-area.with-contacts {
+  /* When contacts panel is shown */
+}
+
+.chat-wrapper {
+  width: 100%;
+  max-width: 800px;
+  transition: all 0.3s ease;
+}
+
+.search-main-area.with-contacts .chat-wrapper {
+  max-width: 800px;
+}
+
+/* ============================================
+   Contacts Panel
+   ============================================ */
+.contacts-panel {
+  width: 100%;
+  max-width: 800px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  max-height: 60vh;
+  animation: slideInDown 0.3s ease-out;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.contacts-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px 16px 0 0;
+}
+
+.contacts-panel-header h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+}
+
+.close-panel-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.close-panel-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.contacts-panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.contacts-panel .contacts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+/* ============================================
+   Legacy Styles (for compatibility)
+   ============================================ */
 .search-bar-container {
   display: flex;
   justify-content: center;
@@ -260,4 +372,31 @@
 .history-delete:hover {
   background-color: #f0f0f0;
   color: #ef4444;
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+@media (max-width: 1200px) {
+  .contacts-panel {
+    max-height: 50vh;
+  }
+}
+
+@media (max-width: 768px) {
+  .search-page-content {
+    padding: 1rem;
+  }
+
+  .search-greeting h1 {
+    font-size: 1.5rem;
+  }
+
+  .chat-wrapper {
+    max-width: 100%;
+  }
+
+  .contacts-panel {
+    max-height: 40vh;
+  }
 }

@@ -37,7 +37,7 @@ const domainSearch = async (domain, options = {}) => {
     const params = {
       domain,
       api_key: HUNTER_API_KEY,
-      limit: options.limit || 10,
+      limit: options.limit || 1,
       offset: options.offset || 0,
       ...(options.type && { type: options.type }),
       ...(options.seniority && { seniority: options.seniority }),

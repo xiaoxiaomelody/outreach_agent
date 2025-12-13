@@ -51,6 +51,10 @@ const nlpSearchRoutes = require('./src/routes/nlp-search.routes');
 const chatRoutes = require('./src/routes/chat.routes');
 const rankingRoutes = require('./src/routes/ranking.routes');
 const trainingRoutes = require('./src/routes/training.routes');
+const resumeRoutes = require('./src/routes/resume.routes');
+
+// Import profile controller for resume upload
+const profileController = require('./src/controllers/profile.controller');
 
 
 // Register Gmail callback route (NO authentication - called by Google)
@@ -67,6 +71,9 @@ app.use('/api/ranking', authenticateUser, rankingRoutes);
 // Allow training saves in DEV/local usage without requiring auth. Uses optionalAuth
 // so a signed-in user's `req.user` will still be available when present.
 app.use('/api/training', optionalAuth, trainingRoutes);
+
+// Resume upload and RAG analysis routes
+app.use('/api/resume', authenticateUser, resumeRoutes);
 
 // Get current user profile
 app.get('/api/user/profile', authenticateUser, async (req, res) => {
@@ -94,6 +101,9 @@ app.put('/api/user/profile', authenticateUser, async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+// Upload and parse resume (PDF)
+app.post('/api/user/resume', authenticateUser, profileController.handleResumeUpload);
 
 // Get user-specific data (authenticated)
 app.get('/api/data/:collection', authenticateUser, async (req, res) => {

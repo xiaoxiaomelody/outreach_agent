@@ -1,252 +1,408 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import ReactMarkdown from "react-markdown";
 import "./ChatSearch.css";
 import Icon from "../icons/Icon";
+import { useChatStream } from "../../hooks/useChatStream";
 
 /**
  * Chat Search Component
- * Natural language interface for contact search
+ * AI-powered chat interface for finding contacts with streaming responses
  */
-const ChatSearch = ({ onSearch, isSearching }) => {
+const ChatSearch = ({ onContactsFound }) => {
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState([
-    {
-      type: "assistant",
-      icon: "wave",
-      text: (
-        <>
-          <strong>Hi!</strong> I can help you find contacts. Try asking me
-          something like:
-        </>
-      ),
-      timestamp: new Date(),
-    },
-    {
-      type: "suggestions",
-      suggestions: [
-        "Find 10 engineers at Google",
-        "Show me marketing people at Stripe",
-        "Get senior executives from Microsoft",
-        "Find contacts at Amazon",
-      ],
-      timestamp: new Date(),
-    },
-  ]);
   const messagesEndRef = useRef(null);
-  const inputRef = useRef(null);
+  const textareaRef = useRef(null);
+  const chatContainerRef = useRef(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  const {
+    messages,
+    isStreaming,
+    status,
+    error,
+    sendMessage,
+    clearMessages,
+    cancelStream,
+  } = useChatStream();
+
+  // Auto-scroll to bottom when new messages arrive
+  const scrollToBottom = useCallback(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, []);
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, status, scrollToBottom]);
 
+  // Auto-resize textarea
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 120) + "px";
+    }
+  }, [input]);
+
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!input.trim() || isSearching) return;
+    if (!input.trim() || isStreaming) return;
 
     const userMessage = input.trim();
     setInput("");
+    
+    // Reset textarea height
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
 
-    // Add user message to chat
-    const newUserMessage = {
-      type: "user",
-      text: userMessage,
-      timestamp: new Date(),
-    };
-    setMessages((prev) => [...prev, newUserMessage]);
+    await sendMessage(userMessage);
+  };
 
-    // Add thinking message
-    const thinkingMessage = {
-      type: "assistant",
-      icon: "idea",
-      text: "Understanding your query...",
-      isThinking: true,
-      timestamp: new Date(),
-    };
-    setMessages((prev) => [...prev, thinkingMessage]);
-
-    // Call the search function
-    try {
-      const result = await onSearch(userMessage);
-
-      // Remove thinking message
-      setMessages((prev) => prev.filter((m) => !m.isThinking));
-
-      if (result.success) {
-        // Add success message
-        const resultMessage = {
-          type: "assistant",
-          icon: "check",
-          text: `Found ${result.data.resultCount} contacts at ${result.data.parsedCriteria.company}!`,
-          parsedCriteria: result.data.parsedCriteria,
-          timestamp: new Date(),
-        };
-        setMessages((prev) => [...prev, resultMessage]);
-      } else {
-        // Add error message
-        const errorMessage = {
-          type: "assistant",
-          icon: "error",
-          text: result.error || "Failed to find contacts",
-          error: true,
-          timestamp: new Date(),
-        };
-        setMessages((prev) => [...prev, errorMessage]);
-
-        if (result.suggestion) {
-          setMessages((prev) => [
-            ...prev,
-            {
-              type: "assistant",
-              icon: "idea",
-              text: result.suggestion,
-              timestamp: new Date(),
-            },
-          ]);
-        }
-      }
-    } catch (error) {
-      // Remove thinking message
-      setMessages((prev) => prev.filter((m) => !m.isThinking));
-
-      const errorMessage = {
-        type: "assistant",
-        icon: "error",
-        text: `Something went wrong. Please try again.`,
-        error: true,
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, errorMessage]);
+  // Handle keyboard shortcuts
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
     }
   };
 
+  // Handle suggestion click
   const handleSuggestionClick = (suggestion) => {
     setInput(suggestion);
-    inputRef.current?.focus();
+    textareaRef.current?.focus();
   };
 
-  const quickExamples = [
+  // Handle clear history
+  const handleClearHistory = () => {
+    if (window.confirm("Clear all chat history?")) {
+      clearMessages();
+    }
+  };
+
+  // Quick suggestions for new users
+  const suggestions = [
     "Find 5 engineers at Stripe",
-    "Show me executives at Google",
-    "Get marketing team at HubSpot",
-    "Find contacts at Microsoft",
+    "Show me marketing people at Google",
+    "Get executives at Microsoft",
+    "Find sales contacts at HubSpot",
   ];
 
+  // Check if we should show welcome screen
+  const showWelcome = messages.length === 0;
+
   return (
-    <div className="chat-search-container">
-      <div className="chat-messages">
-        {messages.map((message, index) => (
-          <div key={index} className={`message message-${message.type}`}>
-            {message.type === "suggestions" ? (
+    <div className="chat-container" ref={chatContainerRef}>
+      {/* Header with clear button */}
+      <div className="chat-header">
+        <div className="chat-header-left">
+          <Icon name="chat" size={20} />
+          <span>AI Contact Finder</span>
+        </div>
+        {messages.length > 0 && (
+          <button
+            className="clear-history-btn"
+            onClick={handleClearHistory}
+            title="Clear chat history"
+          >
+            <Icon name="trash" size={16} />
+            <span>Clear</span>
+          </button>
+        )}
+      </div>
+
+      {/* Messages area */}
+      <div className="chat-messages-area">
+        {showWelcome ? (
+          <div className="welcome-screen">
+            <div className="welcome-icon">
+              <Icon name="search" size={48} />
+            </div>
+            <h2>Find Business Contacts</h2>
+            <p>
+              Ask me to find contacts at any company. I can search by role,
+              department, or seniority level.
+            </p>
+            <div className="welcome-suggestions">
+              <p className="suggestions-label">Try asking:</p>
               <div className="suggestion-chips">
-                {message.suggestions.map((suggestion, i) => (
+                {suggestions.map((suggestion, i) => (
                   <button
                     key={i}
                     onClick={() => handleSuggestionClick(suggestion)}
                     className="suggestion-chip"
-                    disabled={isSearching}
+                    disabled={isStreaming}
                   >
                     {suggestion}
                   </button>
                 ))}
               </div>
-            ) : (
-              <>
-                <div className="message-content">
-                  {message.icon && (
-                    <Icon name={message.icon} style={{ marginRight: 8 }} />
-                  )}
-                  {message.text}
-                  {message.isThinking && (
-                    <span className="thinking-dots">
-                      <span>.</span>
-                      <span>.</span>
-                      <span>.</span>
-                    </span>
-                  )}
-                </div>
-                {message.parsedCriteria && (
-                  <div className="parsed-info">
-                    <strong>Understood:</strong>
-                    <ul>
-                      <li>Company: {message.parsedCriteria.company}</li>
-                      {message.parsedCriteria.count && (
-                        <li>Count: {message.parsedCriteria.count}</li>
-                      )}
-                      {message.parsedCriteria.role && (
-                        <li>Role: {message.parsedCriteria.role}</li>
-                      )}
-                      {message.parsedCriteria.department && (
-                        <li>Department: {message.parsedCriteria.department}</li>
-                      )}
-                      {message.parsedCriteria.seniority && (
-                        <li>Seniority: {message.parsedCriteria.seniority}</li>
-                      )}
-                    </ul>
-                  </div>
-                )}
-              </>
-            )}
+            </div>
           </div>
-        ))}
-        <div ref={messagesEndRef} />
+        ) : (
+          <div className="messages-list">
+            {messages.map((message) => (
+              <MessageBubble
+                key={message.id}
+                message={message}
+                onContactsFound={onContactsFound}
+              />
+            ))}
+
+            {/* Status indicator */}
+            {status && (
+              <StatusIndicator status={status} />
+            )}
+
+            {/* Error display */}
+            {error && (
+              <div className="error-message-bubble">
+                <Icon name="warning" size={16} />
+                <span>{error}</span>
+              </div>
+            )}
+
+            <div ref={messagesEndRef} />
+          </div>
+        )}
       </div>
 
-      <form onSubmit={handleSubmit} className="chat-input-form">
-        <div className="quick-examples">
-          {quickExamples.map((example, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => handleSuggestionClick(example)}
-              className="example-chip"
-              disabled={isSearching}
+      {/* Input area */}
+      <div className="chat-input-area">
+        {/* Quick examples when not in welcome screen */}
+        {!showWelcome && messages.length > 0 && (
+          <div className="quick-chips">
+            {suggestions.slice(0, 3).map((example, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => handleSuggestionClick(example)}
+                className="quick-chip"
+                disabled={isStreaming}
+              >
+                {example}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="input-form">
+          <div className="input-wrapper">
+            <textarea
+              ref={textareaRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Ask me to find contacts... (e.g., 'Find 10 engineers at Google')"
+              className="chat-textarea"
+              disabled={isStreaming}
+              rows={1}
+            />
+            {isStreaming ? (
+              <button
+                type="button"
+                onClick={cancelStream}
+                className="cancel-btn"
+                title="Stop generating"
+              >
+                <Icon name="close" size={20} />
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={!input.trim()}
+                className="send-btn"
+                title="Send message"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="m22 2-7 20-4-9-9-4Z" />
+                  <path d="M22 2 11 13" />
+                </svg>
+              </button>
+            )}
+          </div>
+          <p className="input-hint">
+            Press <kbd>Enter</kbd> to send, <kbd>Shift + Enter</kbd> for new line
+          </p>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * Message Bubble Component
+ * Renders individual chat messages with proper styling
+ */
+const MessageBubble = ({ message, onContactsFound }) => {
+  const { role, content, isStreaming, hasError, toolResult } = message;
+
+  // User message - right aligned, blue bubble
+  if (role === "user") {
+    return (
+      <div className="message-row message-row-user">
+        <div className="message-bubble message-bubble-user">
+          <div className="message-text">{content}</div>
+        </div>
+      </div>
+    );
+  }
+
+  // System/tool message
+  if (role === "system" || role === "tool") {
+    return (
+      <div className="message-row message-row-system">
+        <div className="system-message">
+          {content}
+        </div>
+      </div>
+    );
+  }
+
+  // Assistant message - left aligned, supports markdown
+  return (
+    <div className="message-row message-row-assistant">
+      <div className="assistant-avatar">
+        <Icon name="bot" size={20} />
+      </div>
+      <div className={`message-bubble message-bubble-assistant ${hasError ? 'has-error' : ''}`}>
+        <div className="message-text">
+          {content ? (
+            <ReactMarkdown
+              components={{
+                // Custom renderers for better styling
+                p: ({ children }) => <p className="md-paragraph">{children}</p>,
+                strong: ({ children }) => <strong className="md-bold">{children}</strong>,
+                em: ({ children }) => <em className="md-italic">{children}</em>,
+                ul: ({ children }) => <ul className="md-list">{children}</ul>,
+                ol: ({ children }) => <ol className="md-list md-list-ordered">{children}</ol>,
+                li: ({ children }) => <li className="md-list-item">{children}</li>,
+                code: ({ inline, children }) =>
+                  inline ? (
+                    <code className="md-code-inline">{children}</code>
+                  ) : (
+                    <pre className="md-code-block"><code>{children}</code></pre>
+                  ),
+                a: ({ href, children }) => (
+                  <a href={href} target="_blank" rel="noopener noreferrer" className="md-link">
+                    {children}
+                  </a>
+                ),
+              }}
             >
-              {example}
-            </button>
-          ))}
+              {content}
+            </ReactMarkdown>
+          ) : isStreaming ? (
+            <span className="typing-indicator">
+              <span></span>
+              <span></span>
+              <span></span>
+            </span>
+          ) : (
+            <span className="empty-message">Thinking...</span>
+          )}
         </div>
 
-        <div className="input-wrapper">
-          <input
-            ref={inputRef}
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask me to find contacts... (e.g., 'Find 10 engineers at Google')"
-            className="chat-input"
-            disabled={isSearching}
-          />
-          <button
-            type="submit"
-            disabled={!input.trim() || isSearching}
-            className="send-button"
-          >
-            {isSearching ? (
-              "⏳"
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.35-4.35" />
-              </svg>
-            )}
-          </button>
-        </div>
-      </form>
+        {/* Show contacts preview if tool result available */}
+        {toolResult && toolResult.contacts && toolResult.contacts.length > 0 && (
+          <div className="contacts-preview">
+            <div className="contacts-preview-header">
+              <span>📇 Found {toolResult.resultCount} contacts</span>
+              {onContactsFound && (
+                <button
+                  className="view-all-btn"
+                  onClick={() => onContactsFound(toolResult.contacts)}
+                >
+                  View All →
+                </button>
+              )}
+            </div>
+            <div className="contacts-preview-list">
+              {toolResult.contacts.slice(0, 3).map((contact, i) => (
+                <div key={i} className="contact-preview-item">
+                  <div className="contact-name">{contact.name}</div>
+                  <div className="contact-position">{contact.position}</div>
+                  <div className="contact-email">{contact.email}</div>
+                </div>
+              ))}
+              {toolResult.contacts.length > 3 && (
+                <div className="more-contacts">
+                  +{toolResult.contacts.length - 3} more contacts
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/**
+ * Status Indicator Component
+ * Shows real-time status updates (thinking, searching, etc.)
+ */
+const StatusIndicator = ({ status }) => {
+  if (!status) return null;
+
+  // Handle both string and object status
+  const message = typeof status === 'string' ? status : status.message;
+  const type = typeof status === 'string' ? 'processing' : (status.type || 'processing');
+
+  // Get icon based on status type
+  const getStatusIcon = () => {
+    switch (type) {
+      case 'thinking':
+        return <span className="thinking-dots"><span>.</span><span>.</span><span>.</span></span>;
+      case 'loading':
+      case 'processing':
+      case 'searching':
+        return <span className="spinner" />;
+      case 'generating':
+        return <span className="pulse-icon">✨</span>;
+      case 'success':
+        return '✅';
+      case 'warning':
+        return '⚠️';
+      case 'error':
+        return '❌';
+      default:
+        return '⏳';
+    }
+  };
+
+  // Get CSS class based on status type
+  const getStatusClass = () => {
+    switch (type) {
+      case 'success':
+        return 'status-success';
+      case 'warning':
+        return 'status-warning';
+      case 'error':
+        return 'status-error';
+      case 'searching':
+        return 'status-searching';
+      default:
+        return 'status-default';
+    }
+  };
+
+  return (
+    <div className={`status-message ${getStatusClass()}`}>
+      <div className="status-content">
+        <span className="status-icon">{getStatusIcon()}</span>
+        <span className="status-text">{message}</span>
+      </div>
     </div>
   );
 };

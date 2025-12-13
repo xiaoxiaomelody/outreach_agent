@@ -8,6 +8,7 @@ import {
   getUserTemplates,
   updateUserTemplates,
 } from "../services/firestore.service";
+import { DEFAULT_TEMPLATES } from "../config/templates";
 import "../styles/TemplatesPage.css";
 
 /**
@@ -22,14 +23,14 @@ const TemplatesPage = () => {
       name: "Finance",
       subject: "Intro — [Name] at [Company]",
       content:
-        "xixi",
+        "Hello [Name],\n\n[mention: education -> project experience -> seeking for communication opportunity]",
     },
     {
       id: 2,
       name: "Tech",
       subject: "Intro — [Name]",
       content:
-        "Hello [Name],\n\nI'm reaching out because I'm interested in opportunities in the tech industry...\n\nBest regards,\n[Your Name]",
+        "Hello [Name],\n\n[mention: working experience -> tech stack -> ask whether the company has position]",
     },
   ]);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
@@ -63,6 +64,24 @@ const TemplatesPage = () => {
       console.error("Error loading templates from Firestore:", error);
         setTemplates([]);
       }
+  };
+
+  // Reset templates to defaults and save to Firestore
+  const handleResetToDefaults = async () => {
+    if (!user?.uid) return;
+    
+    if (window.confirm("This will reset all templates to defaults. Continue?")) {
+      try {
+        await updateUserTemplates(user.uid, DEFAULT_TEMPLATES);
+        setTemplates(DEFAULT_TEMPLATES);
+        setSelectedTemplate(null);
+        console.log("✅ Templates reset to defaults");
+        alert("Templates have been reset to defaults!");
+      } catch (error) {
+        console.error("Error resetting templates:", error);
+        alert("Failed to reset templates. Please try again.");
+      }
+    }
   };
 
   const handleSelectTemplate = (template) => {
@@ -214,6 +233,23 @@ const TemplatesPage = () => {
                 />
               ))}
             </div>
+            <button 
+              className="btn-reset-defaults"
+              onClick={handleResetToDefaults}
+              style={{
+                marginTop: '1rem',
+                padding: '0.5rem 1rem',
+                backgroundColor: '#6b7280',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '0.875rem',
+                width: '100%'
+              }}
+            >
+              Reset to Defaults
+            </button>
           </div>
           <div className="templates-editor">
             {selectedTemplate ? (
