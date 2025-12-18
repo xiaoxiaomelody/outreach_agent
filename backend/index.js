@@ -52,6 +52,10 @@ const chatRoutes = require('./src/routes/chat.routes');
 const rankingRoutes = require('./src/routes/ranking.routes');
 const trainingRoutes = require('./src/routes/training.routes');
 const resumeRoutes = require('./src/routes/resume.routes');
+const jobsRoutes = require('./src/routes/jobs.routes');
+
+// Import job scraper service for startup initialization
+const jobScraperService = require('./src/services/jobScraper.service');
 
 // Import profile controller for resume upload
 const profileController = require('./src/controllers/profile.controller');
@@ -74,6 +78,9 @@ app.use('/api/training', optionalAuth, trainingRoutes);
 
 // Resume upload and RAG analysis routes
 app.use('/api/resume', authenticateUser, resumeRoutes);
+
+// Job listings routes (public - no authentication required)
+app.use('/api/jobs', jobsRoutes);
 
 // Get current user profile
 app.get('/api/user/profile', authenticateUser, async (req, res) => {
@@ -192,8 +199,16 @@ app.delete('/api/data/:collection/:id', authenticateUser, async (req, res) => {
 // START SERVER
 // ============================================
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`✅ Outreach Agent Backend running on port ${PORT}`);
   console.log(`📡 API available at http://localhost:${PORT}`);
+  
+  // Initialize job listings data on startup
+  try {
+    await jobScraperService.initializeJobData();
+  } catch (error) {
+    console.error('⚠️ Failed to initialize job data:', error.message);
+    // Don't crash the server, just log the error
+  }
 });
 

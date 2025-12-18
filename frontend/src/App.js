@@ -11,6 +11,7 @@ import ProfileInfo from "./pages/ProfileInfo";
 import AccountSettings from "./pages/AccountSettings";
 import Onboarding from "./pages/Onboarding";
 import AccountSettingsOnboarding from "./pages/AccountSettingsOnboarding";
+import JobAgentPage from "./pages/JobAgentPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ToastContainer from "./components/ui/ToastContainer";
 import "./styles/App.css";
@@ -34,6 +35,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <SearchPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/job-agent"
+            element={
+              <ProtectedRoute>
+                <JobAgentPage />
               </ProtectedRoute>
             }
           />
@@ -77,6 +86,16 @@ function App() {
             element={
               <ProtectedRoute>
                 <SearchPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Legacy Agent route - redirect to job-agent */}
+          <Route
+            path="/agent"
+            element={
+              <ProtectedRoute>
+                <JobAgentPage />
               </ProtectedRoute>
             }
           />

@@ -1,0 +1,365 @@
+/* Search Bar - Brown University Minimalist Style */
+
+/* ============================================
+   Search Bar Wrapper
+   ============================================ */
+.search-bar-wrapper {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* ============================================
+   Search Bar Form
+   ============================================ */
+.search-bar-form {
+  width: 100%;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  padding: 0.375rem;
+  gap: 0.375rem;
+  box-shadow: var(--shadow-md);
+  border: 1.5px solid var(--border-medium);
+  transition: all var(--transition-fast);
+}
+
+.search-bar:focus-within {
+  border-color: var(--brown-600);
+  box-shadow: var(--shadow-lg), 0 0 0 3px rgba(78, 54, 41, 0.08);
+}
+
+/* ============================================
+   Search Menu Button (History)
+   ============================================ */
+.search-menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--cream-200);
+  border: none;
+  border-radius: var(--radius-lg);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.search-menu-btn:hover {
+  background: var(--cream-300);
+  color: var(--text-secondary);
+}
+
+/* ============================================
+   Search Input
+   ============================================ */
+.search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  outline: none;
+  padding: 0.625rem 0.75rem;
+  min-width: 0;
+}
+
+.search-input::placeholder {
+  color: var(--text-light);
+}
+
+.search-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   Search Submit Button
+   ============================================ */
+.search-submit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: var(--brown-700);
+  border: none;
+  border-radius: var(--radius-lg);
+  color: var(--cream-100);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.search-submit-btn:hover:not(:disabled) {
+  background: var(--brown-800);
+  transform: scale(1.02);
+  box-shadow: var(--shadow-md);
+}
+
+.search-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.search-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================
+   History Dropdown
+   ============================================ */
+.history-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--border-light);
+  z-index: 1000;
+  overflow: hidden;
+  animation: dropdownFadeIn 0.2s ease-out;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--cream-100);
+}
+
+.history-header h3 {
+  font-family: var(--font-serif);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.history-count {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  background: var(--cream-200);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================
+   History Empty State
+   ============================================ */
+.history-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: var(--text-light);
+  text-align: center;
+}
+
+.history-empty p {
+  margin: 0.75rem 0 0.25rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.history-empty span {
+  font-size: 0.8rem;
+}
+
+/* ============================================
+   History List
+   ============================================ */
+.history-list {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.25rem;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  border-bottom: 1px solid var(--cream-200);
+}
+
+.history-item:last-child {
+  border-bottom: none;
+}
+
+.history-item:hover {
+  background: var(--cream-100);
+}
+
+.history-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--cream-200);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.history-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.history-query {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0.25rem;
+}
+
+.history-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--text-light);
+}
+
+.history-result-count {
+  color: var(--brown-600);
+  font-weight: 500;
+}
+
+.history-delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--text-light);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+  opacity: 0;
+}
+
+.history-item:hover .history-delete-btn {
+  opacity: 1;
+}
+
+.history-delete-btn:hover {
+  background: rgba(196, 80, 28, 0.1);
+  color: var(--rust);
+}
+
+/* ============================================
+   Search Suggestions
+   ============================================ */
+.search-suggestions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0 0.25rem;
+}
+
+.suggestions-label {
+  font-size: 0.8rem;
+  color: var(--text-light);
+}
+
+.suggestion-chip {
+  padding: 0.375rem 0.75rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.suggestion-chip:hover:not(:disabled) {
+  border-color: var(--brown-600);
+  color: var(--brown-600);
+  background: var(--cream-100);
+}
+
+.suggestion-chip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 640px) {
+  .search-bar {
+    padding: 0.25rem;
+  }
+
+  .search-menu-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .search-submit-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .search-input {
+    font-size: 0.875rem;
+  }
+
+  .search-suggestions {
+    justify-content: center;
+  }
+
+  .suggestions-label {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0.25rem;
+  }
+}

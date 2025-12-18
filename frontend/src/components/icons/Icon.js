@@ -232,6 +232,13 @@ const Icon = ({ name, size = 18, className = "", ...props }) => {
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
         </svg>
       );
+    case "clock":
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 6v6l4 2" />
+        </svg>
+      );
     case "bot":
       return (
         <svg {...common}>

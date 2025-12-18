@@ -48,6 +48,26 @@ export async function apiCall(endpoint, options = {}) {
 
 // API functions
 export const api = {
+  // Job listings
+  getJobs: (category, timeRange = 'all', jobType = 'internship') => {
+    const params = new URLSearchParams();
+    if (category) params.set('category', category);
+    if (timeRange) params.set('timeRange', timeRange);
+    if (jobType) params.set('jobType', jobType);
+    return apiCall(`/api/jobs?${params.toString()}`);
+  },
+  getJobCategories: () => apiCall('/api/jobs/categories'),
+  getJobStats: (jobType = 'internship') => apiCall(`/api/jobs/stats?jobType=${jobType}`),
+  refreshJobs: (jobType = 'internship') => apiCall(`/api/jobs/refresh?jobType=${jobType}`, { method: 'POST' }),
+  
+  // Get company contacts via Hunter.io
+  getCompanyContacts: (company, limit = 4) => {
+    const params = new URLSearchParams();
+    params.set('company', company);
+    params.set('limit', limit.toString());
+    return apiCall(`/api/jobs/company-contacts?${params.toString()}`);
+  },
+  
   // User profile
   getProfile: () => apiCall('/api/user/profile'),
   

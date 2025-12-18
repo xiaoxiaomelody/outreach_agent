@@ -69,6 +69,12 @@ const NavBar = () => {
           >
             Search
           </button>
+          <button
+            className={`navbar-link ${isActive("/job-agent") ? "active" : ""}`}
+            onClick={() => navigate("/job-agent")}
+          >
+            Jobs
+          </button>
           <div className="navbar-user" ref={wrapperRef}>
             <div className="user-avatar">
               {user?.displayName?.charAt(0) || user?.email?.charAt(0) || "U"}

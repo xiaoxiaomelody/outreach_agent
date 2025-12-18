@@ -1,59 +1,70 @@
+/* Template Card - Brown University Minimalist Style */
+
 .template-card {
-  background-color: #ffffff;
-  border: 2px solid #e0e0e0;
-  border-radius: 12px;
+  background-color: var(--bg-card);
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-lg);
   padding: 1.5rem;
   text-align: center;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--transition-normal);
   position: relative;
   min-width: 120px;
 }
 
 .template-card:hover {
-  border-color: #999;
+  border-color: var(--border-medium);
+  box-shadow: var(--shadow-sm);
 }
 
 .template-card.selected {
-  border-color: #333;
-  background-color: #f9f9f9;
+  border-color: var(--brown-700);
+  background-color: var(--cream-100);
 }
 
 .template-card.new-template {
   border-style: dashed;
+  border-color: var(--border-medium);
+}
+
+.template-card.new-template:hover {
+  border-color: var(--brown-400);
+  background-color: var(--cream-100);
 }
 
 .template-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background-color: #333;
-  color: white;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-lg);
+  background-color: var(--brown-700);
+  color: var(--cream-100);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
-  margin: 0 auto 0.75rem;
+  font-size: 1.75rem;
+  margin: 0 auto 0.875rem;
 }
 
 .template-icon-placeholder {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background-color: #e0e0e0;
-  color: #666;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-lg);
+  background-color: var(--cream-200);
+  color: var(--text-muted);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 1.375rem;
+  font-family: var(--font-serif);
   font-weight: 600;
-  margin: 0 auto 0.75rem;
+  margin: 0 auto 0.875rem;
+  border: 1px solid var(--border-light);
 }
 
 .template-name {
-  font-size: 0.9rem;
+  font-size: 0.9375rem;
   font-weight: 500;
-  color: #333;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -61,33 +72,32 @@
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
-  background: none;
+  background: transparent;
   border: none;
-  font-size: 1.15rem;
-  color: #666;
+  font-size: 1rem;
+  color: var(--text-light);
   cursor: pointer;
   width: 28px;
   height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
-  transition: background-color 0.15s, color 0.15s, transform 0.08s;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
   padding: 0;
-  line-height: 0; /* ensure glyph is centered vertically */
-  transform: translateY(-4px); /* small visual nudge upwards to center glyph */
+  line-height: 0;
 }
 
 .template-delete:hover {
-  background-color: #e6e6e6; /* darker gray highlight */
-  color: #333; /* darker icon color */
+  background-color: var(--cream-200);
+  color: var(--text-secondary);
 }
 
 .template-delete:active {
-  transform: translateY(-4px) scale(0.98);
+  transform: scale(0.95);
 }
 
 .template-delete:focus {
-  outline: 2px solid rgba(0, 0, 0, 0.08);
+  outline: 2px solid rgba(78, 54, 41, 0.1);
   outline-offset: 2px;
 }

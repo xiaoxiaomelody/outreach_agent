@@ -1,23 +1,25 @@
+/* Toast Container - Brown University Minimalist Style */
+
 .toast-container {
   position: fixed;
-  right: 16px;
-  bottom: 16px;
+  right: 20px;
+  bottom: 20px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   z-index: 9999;
   pointer-events: none;
 }
 
 .toast {
-  min-width: 220px;
-  max-width: 360px;
-  background: #fff;
-  color: #111;
-  border-radius: 8px;
-  padding: 0.6rem 0.8rem;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  min-width: 240px;
+  max-width: 380px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border-radius: var(--radius-lg);
+  padding: 0.75rem 1rem;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-light);
   display: flex;
   align-items: center;
   pointer-events: auto;
@@ -27,19 +29,21 @@
 }
 
 .toast-container .toast-message {
-  color: #111;
-  font-size: 0.95rem;
+  color: var(--text-primary);
+  font-size: 0.9375rem;
   flex: 1 1 auto;
 }
 
 .toast-success {
-  border-left: 4px solid #10b981;
+  border-left: 4px solid var(--brown-600);
 }
+
 .toast-error {
-  border-left: 4px solid #ef4444;
+  border-left: 4px solid var(--rust);
 }
+
 .toast-info {
-  border-left: 4px solid #6366f1;
+  border-left: 4px solid var(--gold);
 }
 
 .toast-action {
@@ -47,22 +51,33 @@
   margin-right: 8px;
   background: transparent;
   border: none;
-  color: #2563eb;
+  color: var(--brown-600);
   font-weight: 600;
   cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.toast-action:hover {
+  color: var(--brown-700);
 }
 
 .toast-close {
   margin-left: auto;
   background: transparent;
   border: none;
-  color: #999;
-  font-size: 1.1rem;
+  color: var(--text-light);
+  font-size: 1rem;
   cursor: pointer;
+  transition: color var(--transition-fast);
 }
+
+.toast-close:hover {
+  color: var(--text-secondary);
+}
+
 @keyframes toast-in {
   from {
-    transform: translateY(6px);
+    transform: translateY(8px);
     opacity: 0;
   }
   to {

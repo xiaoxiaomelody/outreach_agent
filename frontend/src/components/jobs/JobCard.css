@@ -1,0 +1,228 @@
+/* Job Card - Brown University Minimalist Style */
+
+.job-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  transition: all var(--transition-normal);
+  position: relative;
+}
+
+.job-card:hover {
+  border-color: var(--border-medium);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* Header */
+.job-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.job-company-info {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.job-company-avatar {
+  width: 44px;
+  height: 44px;
+  background: var(--brown-100);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--brown-700);
+  text-transform: uppercase;
+  flex-shrink: 0;
+  border: 1px solid var(--border-light);
+}
+
+.job-company-details {
+  min-width: 0;
+}
+
+.job-company-name {
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem 0;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
+}
+
+.job-role {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.job-date {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  background: var(--cream-200);
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-weight: 500;
+}
+
+/* Body */
+.job-card-body {
+  margin-bottom: 1.25rem;
+}
+
+.job-location {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.location-icon {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  stroke: var(--brown-400);
+}
+
+/* Footer */
+.job-card-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+/* Connect Insiders Button */
+.job-connect-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: var(--cream-200);
+  color: var(--brown-600);
+  border: 1.5px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.job-connect-btn:hover {
+  background: var(--cream-300);
+  border-color: var(--brown-300);
+  color: var(--brown-700);
+}
+
+.job-connect-btn:active {
+  transform: scale(0.98);
+}
+
+.connect-icon {
+  width: 15px;
+  height: 15px;
+  stroke: var(--brown-500);
+}
+
+/* Apply Button */
+.job-apply-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background: var(--brown-700);
+  color: var(--cream-100);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.job-apply-btn:hover:not(:disabled) {
+  background: var(--brown-800);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.job-apply-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.apply-icon {
+  width: 15px;
+  height: 15px;
+}
+
+/* No link available state */
+.job-no-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background: var(--cream-200);
+  color: var(--text-light);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.no-link-icon {
+  width: 15px;
+  height: 15px;
+  stroke: var(--text-light);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .job-card {
+    padding: 1.25rem;
+  }
+  
+  .job-company-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+  
+  .job-company-name {
+    font-size: 1rem;
+    max-width: 150px;
+  }
+  
+  .job-role {
+    font-size: 0.8125rem;
+  }
+  
+  .job-card-footer {
+    flex-direction: column;
+  }
+  
+  .job-connect-btn,
+  .job-apply-btn {
+    justify-content: center;
+    width: 100%;
+  }
+}
